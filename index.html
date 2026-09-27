@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PANO">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609270854">
+<meta name="pano-surum" content="202609270926">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -155,7 +155,7 @@ button.satir:hover{border-color:var(--ink)}
 .lejant{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2)}
 .lejant span{display:inline-flex;align-items:center;gap:6px}
 .sw{display:inline-block;width:18px;height:3px;border-radius:2px}
-.sw-l{background:var(--wire-l)} .sw-l2{background:var(--wire-l2)} .sw-l3{background:var(--wire-l3)} .sw-kacak{background:repeating-linear-gradient(90deg,var(--dc-plus) 0 4px,transparent 4px 7px)} .sw-n{background:var(--wire-n)} .sw-sig{background:var(--signal)} .sw-dc{background:var(--dc-plus)} .sw-ink{background:var(--ink)}
+.sw-l{background:var(--wire-l)} .sw-l2{background:var(--wire-l2)} .sw-l3{background:var(--wire-l3)} .sw-acc{background:var(--accent);height:8px} .sw-opt2{background:repeating-linear-gradient(90deg,var(--ink) 0 5px,transparent 5px 9px)} .sw-kacak{background:repeating-linear-gradient(90deg,var(--dc-plus) 0 4px,transparent 4px 7px)} .sw-n{background:var(--wire-n)} .sw-sig{background:var(--signal)} .sw-dc{background:var(--dc-plus)} .sw-ink{background:var(--ink)}
 .sw-pe{background:repeating-linear-gradient(90deg,var(--wire-pe) 0 6px,var(--wire-pe2) 6px 12px)}
 .sw-opt{background:repeating-linear-gradient(90deg,var(--signal) 0 5px,transparent 5px 9px)}
 
@@ -229,7 +229,7 @@ button.satir:hover{border-color:var(--ink)}
 .sonuc{padding:14px;border-radius:14px;background:var(--panel);color:var(--panel-ink);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
 .sonuc div{display:flex;flex-direction:column;gap:2px;min-width:0}
 .sonuc-ad{font-size:12px;color:var(--panel-muted)}
-.sonuc-deger{font-family:var(--f-mono);font-size:21px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sonuc-deger{font-family:var(--f-mono);font-size:18px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .adimlar{display:flex;flex-direction:column;gap:6px;font-family:var(--f-mono);font-size:13px;line-height:1.4;font-variant-numeric:tabular-nums}
 
 /* Sonraki */
@@ -322,11 +322,11 @@ const VERI = {
       ozet: 'Adım açısı, mikroadım, bağlantı',
       giris: 'Step motor her darbede sabit bir açı döner. Geri besleme yoktur; konumu, gönderilen darbe sayısından bilinir.',
       altlar: [
-        { id: 'step-calisma-prensibi', kod: '1,8°', ad: 'Çalışma prensibi', alt: 'Adım açısı, tam ve yarım adım, tutma torku' },
-        { id: 'step-nema', kod: 'NEMA', ad: 'Gövde boyutları (NEMA)', alt: 'NEMA 17, 23, 34 · flanş ve mil ölçüleri' },
+        { id: 'step-calisma-prensibi', kod: '1,8°', ad: 'Çalışma prensibi', alt: 'Adım açısı, tam ve yarım adım, tutma torku', sayfa: 'step-calisma-prensibi' },
+        { id: 'step-nema', kod: 'NEMA', ad: 'Gövde boyutları (NEMA)', alt: 'NEMA 17, 23, 34 · flanş ve mil ölçüleri', sayfa: 'step-nema' },
         { id: 'step-surucu-baglantisi', kod: 'PUL', ad: 'Step motor ve sürücü bağlantısı', alt: 'PLC → sürücü → motor · darbe hesabı', sayfa: 'step-surucu-baglantisi' },
-        { id: 'step-mikroadim', kod: '1/16', ad: 'Mikroadım ve rezonans', alt: 'Daha düzgün hareket, titreşimden kaçınma' },
-        { id: 'step-tork-hiz', kod: 'N·m', ad: 'Tork–hız eğrisi', alt: 'Hız arttıkça tork neden düşer' }
+        { id: 'step-mikroadim', kod: '1/16', ad: 'Mikroadım ve rezonans', alt: 'Daha düzgün hareket, titreşimden kaçınma', sayfa: 'step-mikroadim' },
+        { id: 'step-tork-hiz', kod: 'N·m', ad: 'Tork–hız eğrisi', alt: 'Hız arttıkça tork neden düşer', sayfa: 'step-tork-hiz' }
       ]
     },
     {
@@ -334,11 +334,11 @@ const VERI = {
       ozet: 'Enkoder, geri besleme, ayar',
       giris: 'Servo motor, enkoderden gelen geri beslemeyle konumunu sürekli ölçer ve hatayı sürücü düzeltir.',
       altlar: [
-        { id: 'servo-enkoder', kod: 'ENC', ad: 'Enkoder türleri', alt: 'Artımsal ve mutlak enkoder, çözünürlük' },
-        { id: 'servo-baglanti', kod: 'AC', ad: 'Servo motor ve sürücü bağlantısı', alt: 'Güç, enkoder ve fren kabloları' },
-        { id: 'servo-ayar', kod: 'PID', ad: 'Kazanç ayarı (tuning)', alt: 'Konum, hız ve akım döngüleri' },
-        { id: 'servo-fren', kod: 'BRK', ad: 'Frenli servo', alt: 'Düşey eksende fren kontrolü' },
-        { id: 'servo-reduktor', kod: 'RED', ad: 'Servo ve redüktör montajı', alt: 'Servo ile yük arasında kaplin veya flanş' }
+        { id: 'servo-enkoder', kod: 'ENC', ad: 'Enkoder türleri', alt: 'Artımsal ve mutlak enkoder, çözünürlük', sayfa: 'servo-enkoder' },
+        { id: 'servo-baglanti', kod: 'AC', ad: 'Servo motor ve sürücü bağlantısı', alt: 'Güç, enkoder ve fren kabloları', sayfa: 'servo-baglanti' },
+        { id: 'servo-ayar', kod: 'PID', ad: 'Kazanç ayarı (tuning)', alt: 'Konum, hız ve akım döngüleri', sayfa: 'servo-ayar' },
+        { id: 'servo-fren', kod: 'BRK', ad: 'Frenli servo', alt: 'Düşey eksende fren kontrolü', sayfa: 'servo-fren' },
+        { id: 'servo-reduktor', kod: 'RED', ad: 'Servo ve redüktör montajı', alt: 'Servo ile yük arasında kaplin veya flanş', sayfa: 'servo-reduktor' }
       ]
     },
     {
@@ -346,10 +346,10 @@ const VERI = {
       ozet: 'Step, servo ve hız sürücüleri',
       giris: 'Sürücü, kontrol sinyalini motorun ihtiyaç duyduğu akım ve gerilime çeviren güç katıdır.',
       altlar: [
-        { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP switch' },
-        { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork' },
-        { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler' },
-        { id: 'surucu-io', kod: 'I/O', ad: 'Sürücü giriş–çıkışları', alt: 'Dijital girişler, alarm ve hazır çıkışları' }
+        { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP switch', sayfa: 'surucu-step' },
+        { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork', sayfa: 'surucu-servo' },
+        { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler', sayfa: 'surucu-vfd' },
+        { id: 'surucu-io', kod: 'I/O', ad: 'Sürücü giriş–çıkışları', alt: 'Dijital girişler, alarm ve hazır çıkışları', sayfa: 'surucu-io' }
       ]
     }
   ],
@@ -797,11 +797,655 @@ const VERI = {
           { tip: 'parcalar', parcalar: ['Frekans konvertörü (VFD)', 'Yumuşak yolverici', 'Doğrultucu köprü', 'Sigorta tabanı', 'Mikro switch'] }
         ]}
       ]
+    },
+
+    'servo-enkoder': {
+      baslik: 'Enkoder türleri',
+      giris: 'Enkoder, motor milinin konumunu ölçüp sürücüye bildirir. Konum, hız ve yön bilgisinin hepsi buradan gelir; servo sistemin gözüdür.',
+      etiketler: ['Artımsal', 'Mutlak', 'A · B · Z'],
+      bolumler: [
+        { id: 'sema', kisa: 'Nasıl ölçer', baslik: 'Nasıl ölçer', bloklar: [
+          { tip: 'sema', svg: 'servoEnkoder',
+            lejant: [['sig', 'A kanalı'], ['ink', 'B kanalı'], ['dc', 'Z kanalı']],
+            isaretler: [
+              ['Disk ve yarıklar', 'Işık yarıklardan geçtikçe sensör darbe üretir. Yarık sayısı turdaki darbe sayısını (ppr) belirler.'],
+              ['A ve B kanalları', 'Aralarında 90° faz farkı var; hangisinin önde olduğu yönü verir. İki kanalın bütün kenarları sayılınca çözünürlük 4 katına çıkar.'],
+              ['Z kanalı', 'Turda bir darbe. Referans (sıfır) noktası bulunurken kullanılır.']
+            ] }
+        ]},
+        { id: 'turler', kisa: 'Türler', baslik: 'Artımsal ve mutlak', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'artimsal', baslik: 'Artımsal', etiket: 'Referans gerekir', metin: 'Enerji kesilince konumu unutur. Her açılışta referans (homing) hareketi yapılır.' },
+            { ikon: 'mutlak', baslik: 'Mutlak', etiket: 'Konumu hatırlar', metin: 'Tek turluk ya da çok turluk olur. Çok turlu modeller tur sayısını çoğunlukla pille saklar.' }
+          ]},
+          { tip: 'not', metin: 'Çok turlu mutlak enkoderde pil bitince tur bilgisi kaybolur; sürücü alarm verir ve referans yeniden alınır.' }
+        ]},
+        { id: 'cozunurluk', kisa: 'Çözünürlük', baslik: 'Çözünürlük hesabı', bloklar: [
+          { tip: 'hesap', tur: 'enkoder' }
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sürücü enkoder alarmı veriyor', satirlar: [
+            ['Konnektör gevşek ya da kablo kopuk', 'Kontrol: iki uçtaki konnektörü enerjisizken sök-tak, kabloyu hareketli bölgede kontrol et.'],
+            ['Kablo güç kablosuyla aynı kanalda', 'Olası neden: gürültü. Kontrol: enkoder kablosunu ayrı kanala al.'],
+            ['Kablo ekranı bağlı değil', 'Kontrol: ekranın konnektör gövdelerine bağlandığını kontrol et.'],
+            ['Mutlak enkoder pili bitmiş', 'Kontrol: pil gerilimini ölç, pili değiştir ve referansı yeniden al.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Enkoder kablosunu rastgele kabloyla uzatmak', 'Ekran ve bükümlü çiftler bozulunca gürültü alarmı çıkar. Doğrusu: üreticinin hazır kablosu ya da aynı yapıda kablo.'],
+            ['Enerji varken enkoder konnektörünü sökmek', 'Enkoder ya da sürücü girişi zarar görebilir, mutlak enkoderde konum kaybolabilir. Doğrusu: önce enerjiyi kes.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Enkoder kablosu', 'Mutlak enkoder pili', 'Referans sensörü', 'Ekranlı kablo', 'Kablo kanalı'] }
+        ]}
+      ]
+    },
+
+    'servo-baglanti': {
+      baslik: 'Servo motor ve sürücü bağlantısı',
+      giris: 'Servo motor ile sürücü arasında iki kablo vardır: güç kablosu (U-V-W-PE) ve enkoder kablosu. Frenli motorlarda buna 24 V fren beslemesi eklenir.',
+      etiketler: ['U · V · W · PE', 'Enkoder', 'Fren 24 V'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Bağlantı şeması', bloklar: [
+          { tip: 'sema', svg: 'servoBaglanti',
+            lejant: [['l', 'L1 / U'], ['l2', 'L2 / V'], ['l3', 'L3 / W'], ['pe', 'PE'], ['sig', 'Sinyal'], ['dc', 'Fren 24 V']],
+            isaretler: [
+              ['Ana besleme', 'Sürücünün güç girişi. Küçük güçlerde tek faz, büyüklerde üç faz olur.'],
+              ['Kontrol bağlantısı', 'PLC ile sürücü arası: darbe/yön, analog ya da EtherCAT gibi haberleşme.'],
+              ['Enkoder kablosu', 'Motorun konum bilgisi. Ekranlı kablodur, güç kablosundan ayrı döşenir.'],
+              ['Motor güç çıkışı', 'U-V-W-PE. Sıra motor kablosundaki gibi olmalı; asenkron motordaki gibi iki faz değiştirilerek yön çevrilmez.'],
+              ['Fren beslemesi', 'Frenli motorlarda 24 V DC. Sürücünün fren çıkışı bir röleyi sürer, röle freni besler.'],
+              ['Fren direnci', 'Hızlı yavaşlamada motordan dönen enerjiyi ısıya çevirir. İç direnç yetmezse dış direnç bağlanır.']
+            ],
+            not: 'Klemens adları üreticiye göre değişir; sürücünün bağlantı şemasını esas al.' }
+        ]},
+        { id: 'klemensler', kisa: 'Klemensler', baslik: 'Klemensler', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['L1 · L2 · L3', '', 'Ana besleme girişi.'],
+            ['L1C · L2C', '', 'Kontrol devresi beslemesi (bazı modellerde). Ana güç kesilince sürücü açık kalır, alarm okunabilir.'],
+            ['U · V · W', '', 'Motor fazları. Sıra değişirse motor titrer ya da kontrolden çıkar.'],
+            ['PE', '', 'Motor gövdesi ve sürücü toprağı.'],
+            ['P+ · BR', 'dc', 'Dış fren direnci klemensleri; adları üreticiye göre değişir.'],
+            ['Enkoder', 'sig', 'Enkoder konnektörü (CN).'],
+            ['BR+ · BR−', 'dc', 'Motor freni bobini, 24 V DC.']
+          ]}
+        ]},
+        { id: 'ilk', kisa: 'İlk çalıştırma', baslik: 'İlk çalıştırma', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Enerji vermeden önce U-V-W sırasını, PE’yi ve enkoder konnektörünü kontrol et.',
+            'Önce yalnızca sürücüyü enerjile; alarm olmamalı.',
+            'Motoru yükten ayırıp düşük hızda JOG ile çalıştır, yönü kontrol et.',
+            'Frenli motorda frenin açılıp kapandığını dinle.',
+            'Sonra yükü bağla ve kazanç ayarına geç.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Servo enable olunca titriyor ya da kontrolden çıkıyor', satirlar: [
+            ['U-V-W sırası yanlış', 'Kontrol: motor kablosundaki U-V-W işaretlerini sürücü klemensleriyle karşılaştır.'],
+            ['Enkoder kablosu başka eksenin motoruna takılı', 'Kontrol: çok eksenli panoda güç ve enkoder kablosunun aynı motora gittiğini doğrula.'],
+            ['Kazanç çok yüksek', 'Kontrol: rijitlik ayarını düşür, yeniden ayarla.'],
+            ['Mekanik boşluk ya da gevşek kaplin', 'Kontrol: kaplin ve sıkma bileziği vidalarını kontrol et.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Yönü U-V-W’yi değiştirerek çevirmek', 'Servoda faz sırası enkoderle eşleşir; değişince motor kontrolden çıkar. Doğrusu: yön parametresini değiştir.'],
+            ['Güç ve enkoder kablosunu aynı kanala döşemek', 'PWM gürültüsü enkoder sinyalini bozar. Doğrusu: ayrı kanal ya da aralarında mesafe.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Motor güç kablosu', 'Enkoder kablosu', 'Fren direnci', 'Hat filtresi', 'Ferrit'] }
+        ]}
+      ]
+    },
+
+    'servo-ayar': {
+      baslik: 'Kazanç ayarı (tuning)',
+      giris: 'Servo sürücü iç içe üç döngüyle çalışır. Kazanç ayarı bu döngülerin yüke ne kadar sert tepki vereceğini belirler: yumuşak ayar geç kalır, fazla sert ayar titretir.',
+      etiketler: ['Konum · hız · akım', 'Atalet oranı', 'Rijitlik'],
+      bolumler: [
+        { id: 'sema', kisa: 'Döngüler', baslik: 'Kontrol döngüleri', bloklar: [
+          { tip: 'sema', svg: 'servoAyar',
+            isaretler: [
+              ['Konum döngüsü', 'Hedef konumu enkoder konumuyla karşılaştırır, hız komutu üretir. En yavaş döngüdür.'],
+              ['Hız döngüsü', 'Hız hatasından tork (akım) komutu üretir. Sertliği asıl bu döngünün kazancı belirler.'],
+              ['Akım döngüsü', 'En hızlı döngü. Sürücü çoğunlukla bunu kendisi ayarlar.'],
+              ['Geri besleme', 'Konum ve hız enkoderden, akım sürücünün akım sensörlerinden gelir.']
+            ] }
+        ]},
+        { id: 'kavramlar', kisa: 'Kavramlar', baslik: 'Temel kavramlar', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['Atalet oranı', '', 'Yük ataletinin motor ataletine oranı. Otomatik ayarın ilk tahmin ettiği değer; büyüdükçe ayar zorlaşır.'],
+            ['Rijitlik', '', 'Birçok sürücüde kazançları tek ayardan birlikte değiştiren kademe. Yükseldikçe tepki hızlanır, titreşim riski artar.'],
+            ['Konum kazancı', '', 'Konum hatasına ne kadar hızlı tepki verileceği.'],
+            ['Hız kazancı', '', 'Hız hatasına verilen tork tepkisi.'],
+            ['Notch filtre', '', 'Mekanik rezonans frekansındaki titreşimi bastırır.']
+          ]}
+        ]},
+        { id: 'sira', kisa: 'Ayar sırası', baslik: 'Ayar sırası', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Yükü gerçek haliyle bağla; boşta yapılan ayar yük altında tutmaz.',
+            'Otomatik atalet tahminini çalıştır.',
+            'Rijitliği düşük bir kademeden başlat, adım adım artır.',
+            'Titreşim ya da ses başlayınca bir iki kademe geri dön.',
+            'Belirli bir frekansta vınlama varsa notch filtreyi o frekansa ayarla.',
+            'Konumlanma süresini ve aşımı sürücü yazılımının grafiğinden kontrol et.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Motor dururken vınlıyor ya da titriyor', satirlar: [
+            ['Kazanç yüksek', 'Kontrol: rijitliği bir iki kademe düşür.'],
+            ['Mekanik rezonans', 'Kontrol: sürücünün frekans analiziyle rezonansı bul, notch filtre uygula.'],
+            ['Atalet oranı yanlış', 'Kontrol: atalet tahminini yük bağlıyken tekrarla.'],
+            ['Kaplin ya da kayış gevşek', 'Kontrol: mekanik bağlantıları sık, kayış gerginliğini ayarla.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Kazancı yüksüz motorda ayarlamak', 'Yük bağlanınca atalet değişir; sistem ya yavaşlar ya titreşir. Doğrusu: ayarı yük bağlıyken yap.'],
+            ['Titreşimi yalnızca kazancı düşürerek çözmek', 'Tepki gereksiz yavaşlar. Doğrusu: önce mekanik gevşekliği ve rezonansı kontrol et.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Sürücü yazılımı', 'Kaplin', 'Redüktör', 'Kayış-kasnak', 'Osiloskop'] }
+        ]}
+      ]
+    },
+
+    'servo-fren': {
+      baslik: 'Frenli servo',
+      giris: 'Frenli servoda motorun içinde yaylı bir tutma freni vardır. Enerji yokken kapalıdır; düşey eksenin enerji kesilince düşmesini önler.',
+      etiketler: ['24 V DC', 'Tutma freni', 'Düşey eksen'],
+      bolumler: [
+        { id: 'sema', kisa: 'Devre', baslik: 'Fren devresi', bloklar: [
+          { tip: 'sema', svg: 'servoFren',
+            lejant: [['dc', '+24 V'], ['ink', '0 V'], ['sig', 'Kontrol sinyali']],
+            isaretler: [
+              ['Fren çıkışı', 'Sürücü, motor tork üretmeye başlayınca freni açma komutunu verir.'],
+              ['Röle', 'Fren bobininin akımını taşır; sürücü çıkışı bu akımı doğrudan veremeyebilir.'],
+              ['Söndürme elemanı', 'Bobin kesilince oluşan gerilim darbesini söndürür. Diyot freni geç kapatır, varistör daha hızlı kapatır.'],
+              ['Fren bobini', 'Enerjilenince freni açar. Enerji kesilince yay freni kapatır.']
+            ] }
+        ]},
+        { id: 'calisma', kisa: 'Çalışma', baslik: 'Nasıl çalışır', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'kilit', baslik: 'Tutma freni', etiket: 'Durdurma freni değil', metin: 'Motor dururken yükü tutar. Acil durum dışında hareket halindeyken kullanılmaz; balata aşınır.' },
+            { ikon: 'yay', baslik: 'Emniyetli yapı', etiket: 'Enerjisizken kapalı', metin: 'Enerji ya da kablo kesilince yay freni kapatır; eksen düşmez.' }
+          ]}
+        ]},
+        { id: 'zamanlama', kisa: 'Zamanlama', baslik: 'Zamanlama', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Çalıştırma: sürücü enable olur, motor tork üretir.',
+            'Kısa bir gecikmeden sonra fren açılır; hareket ancak bundan sonra başlar.',
+            'Durdurma: motor durur ve konumu tutar.',
+            'Fren kapanır; kapanma süresi kadar beklenir.',
+            'Sonra enable kesilir. Gecikmeler sürücü parametrelerinden ayarlanır.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Düşey eksen, enable kesilince bir miktar düşüyor', satirlar: [
+            ['Enable fren kapanmadan kesiliyor', 'Kontrol: fren kapanma gecikmesi parametresini artır.'],
+            ['Söndürme için yalnız diyot kullanılmış', 'Olası neden: fren geç kapanıyor. Kontrol: üreticinin önerdiği varistörlü devre.'],
+            ['Fren gerilimi düşük', 'Kontrol: motor ucunda 24 V’u ölç; uzun kabloda gerilim düşer.'],
+            ['Balata aşınmış', 'Kontrol: freni tutma torku testiyle dene, gerekirse motoru değiştir.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Freni sürücü çıkışından doğrudan beslemek', 'Çıkış akımı yetmez ya da çıkış yanar. Doğrusu: röle üzerinden ayrı 24 V besleme.'],
+            ['Freni durdurma freni gibi kullanmak', 'Balata aşınır, tutma torku düşer. Doğrusu: motor önce elektriksel olarak durur, fren sonra kapanır.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['24 V güç kaynağı', 'Röle', 'Varistör', 'Fren kablosu', 'Düşey eksen'] }
+        ]}
+      ]
+    },
+
+    'servo-reduktor': {
+      baslik: 'Servo ve redüktör montajı',
+      giris: 'Redüktör hızı düşürüp torku artırır ve yükün ataletini motora oranın karesi kadar küçük yansıtır. Servoda genellikle düşük boşluklu planet redüktör kullanılır.',
+      etiketler: ['Planet redüktör', 'Oran i', 'Boşluk (arcmin)'],
+      bolumler: [
+        { id: 'sema', kisa: 'Yapı', baslik: 'Yapısı', bloklar: [
+          { tip: 'sema', svg: 'servoReduktor',
+            isaretler: [
+              ['Adaptör flanş', 'Motor flanşını redüktöre uydurur; motor modeline göre seçilir.'],
+              ['Sıkma bileziği', 'Motor milini redüktörün girişine sürtünmeyle bağlar. Vidası tork anahtarıyla sıkılır.'],
+              ['Planet dişli kademesi', 'Güneş dişli, planet dişliler ve çember dişliden oluşur. Tek kademede oran çoğunlukla 3 ile 10 arasıdır.'],
+              ['Çıkış mili', 'Kamalı ya da düz mil. Kasnak, pinyon ya da kaplin buraya bağlanır.']
+            ] }
+        ]},
+        { id: 'hesap', kisa: 'Hesap', baslik: 'Hız, tork ve atalet', bloklar: [
+          { tip: 'hesap', tur: 'reduktor' }
+        ]},
+        { id: 'montaj', kisa: 'Montaj', baslik: 'Montaj', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Motor milini ve sıkma bileziğinin içini yağdan arındır.',
+            'Redüktörü dik tut, motoru eksenine paralel ve zorlamadan yerleştir.',
+            'Sıkma bileziği vidasını katalogdaki torkla sık.',
+            'Flanş vidalarını çapraz sırayla sık.',
+            'Erişim tapasını kapat, motoru JOG ile çevirip sıkışma olmadığını kontrol et.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Konum doğru görünüyor ama yük hedefte salınıyor', satirlar: [
+            ['Redüktör boşluğu', 'Kontrol: çıkış milini iki yöne elle çevirip boşluğu hisset, katalogdaki arcmin değeriyle karşılaştır.'],
+            ['Sıkma bileziği kayıyor', 'Kontrol: mil ile bilezik üzerine işaret çiz, çalıştıktan sonra kayma var mı bak.'],
+            ['Atalet oranı yüksek', 'Kontrol: yük ataletini hesapla; gerekirse oranı büyüt.'],
+            ['Kazanç yüke göre ayarlanmamış', 'Kontrol: kazanç ayarını yük bağlıyken tekrarla.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Sıkma bileziğini tork anahtarsız sıkmak', 'Az sıkılırsa mil kayar, fazla sıkılırsa bilezik zarar görür. Doğrusu: katalogdaki tork.'],
+            ['Çıkış torkunu redüktörün sınırına bakmadan hesaplamak', 'Motor torku × oran, redüktörün izin verdiği torku aşabilir. Doğrusu: redüktör kataloğundaki anma ve acil durdurma torku.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Planet redüktör', 'Adaptör flanş', 'Sıkma bileziği', 'Kaplin', 'Tork anahtarı'] }
+        ]}
+      ]
+    },
+
+    'step-calisma-prensibi': {
+      baslik: 'Step motor çalışma prensibi',
+      giris: 'Step motorun iki sargısı sırayla enerjilenir; rotor her seferinde enerjili kutba doğru bir adım döner. Hibrit motorda dişli rotor bu adımı 1,8°’ye böler.',
+      etiketler: ['Hibrit', '2 faz', '200 adım/tur'],
+      bolumler: [
+        { id: 'sema', kisa: 'Adım sırası', baslik: 'Adım sırası', bloklar: [
+          { tip: 'sema', svg: 'stepPrensip',
+            lejant: [['acc', 'Enerjili kutuplar'], ['dc', 'Rotorun yönü']],
+            not: 'Tam adımda sıra A+ → B+ → A− → B− şeklindedir. Sıra tersine dönünce motor ters döner. Çizim prensibi gösterir; gerçek motorda her adım 1,8°’dir.' }
+        ]},
+        { id: 'aci', kisa: 'Adım açısı', baslik: 'Adım açısı', bloklar: [
+          { tip: 'formul', formul: '360° ÷ 1,8° = 200 adım/tur', tanimlar: [] },
+          { tip: 'tablo', satirlar: [
+            ['1,8°', '', '200 adım/tur. En yaygın hibrit step motor.'],
+            ['0,9°', '', '400 adım/tur. Daha hassas, düşük hızlı uygulamalar.'],
+            ['7,5° · 15°', '', '48 · 24 adım/tur. Kalıcı mıknatıslı, ucuz motorlar.']
+          ]}
+        ]},
+        { id: 'modlar', kisa: 'Tam / yarım', baslik: 'Tam ve yarım adım', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'tamadim', baslik: 'Tam adım', etiket: '200 adım', metin: 'Sargılar sırayla ya da ikisi birlikte enerjilenir. Tork yüksek, hareket kaba.' },
+            { ikon: 'yarimadim', baslik: 'Yarım adım', etiket: '400 adım', metin: 'Tek ve çift sargı adımları sırayla uygulanır. Daha düzgün, tork biraz dalgalı.' }
+          ]}
+        ]},
+        { id: 'tork', kisa: 'Tork', baslik: 'Tutma ve detent torku', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['Tutma torku', '', 'Sargılar anma akımındayken mili döndürmek için gereken tork. Katalogdaki ana değerdir.'],
+            ['Detent torku', '', 'Enerji yokken mıknatısın tuttuğu küçük tork. Mil elle çevrilince hissedilen tıkırtı budur.']
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Motor adım kaçırıyor, konum kayıyor', satirlar: [
+            ['Hızlanma çok kısa', 'Kontrol: rampa süresini uzat.'],
+            ['Sürücü akımı düşük', 'Kontrol: akım ayarını motor etiketine göre yap.'],
+            ['Rezonans bölgesinde çalışıyor', 'Kontrol: mikroadımı artır ya da o hızdan hızlı geç.'],
+            ['Yük torku fazla', 'Kontrol: tork–hız eğrisinde çalışma hızındaki torka bak.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Motoru yalnızca tutma torkuna göre seçmek', 'Hız arttıkça tork düşer; yüksek hızda motor yetmez. Doğrusu: tork–hız eğrisine bak.'],
+            ['Sıcak gövdeyi hemen arıza sanmak', 'Step motor dururken de akım çeker ve ısınır. Doğrusu: katalogdaki sıcaklık sınırına bak, sürücüde bekleme akımı azaltmayı aç.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Step sürücü', 'Kaplin', 'Enkoder', 'Bilyalı vida', 'Kayış-kasnak'] }
+        ]}
+      ]
+    },
+
+    'step-nema': {
+      baslik: 'Gövde boyutları (NEMA)',
+      giris: 'NEMA numarası step motorun ön yüz ölçüsünü ve bağlantı deliklerini tanımlar. Tork gövde uzunluğuna ve sargıya bağlıdır; aynı NEMA’lı iki motorun torku çok farklı olabilir.',
+      etiketler: ['NEMA 17', 'NEMA 23', 'NEMA 34'],
+      bolumler: [
+        { id: 'sema', kisa: 'Ön yüz', baslik: 'Ön yüz ölçüleri', bloklar: [
+          { tip: 'sema', svg: 'stepNema',
+            isaretler: [
+              ['Yüz ölçüsü', 'Kare flanşın kenarı. NEMA numarası bu ölçünün inç karşılığıdır: NEMA 17 ≈ 1,7 inç.'],
+              ['Delik aralığı', 'Bağlantı deliklerinin merkezleri arası.'],
+              ['Merkezleme çıkıntısı', 'Pilot. Motoru montaj plakasında ortalar.'],
+              ['Mil', 'Çapı ve boyu üreticiye göre değişir; düz ya da D kesitli olur.']
+            ] }
+        ]},
+        { id: 'olculer', kisa: 'Ölçüler', baslik: 'Ölçü tablosu', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['NEMA 11', '', 'Yüz 28 mm · delik aralığı 23 mm · mil 4–5 mm'],
+            ['NEMA 14', '', 'Yüz 35 mm · delik aralığı 26 mm · mil 5 mm'],
+            ['NEMA 17', '', 'Yüz ≈ 42 mm · delik aralığı 31 mm · pilot Ø22 mm · mil 5 mm'],
+            ['NEMA 23', '', 'Yüz ≈ 57 mm · delik aralığı 47,1 mm · pilot Ø38,1 mm · mil 6,35 ya da 8 mm'],
+            ['NEMA 34', '', 'Yüz ≈ 86 mm · delik aralığı 69,6 mm · pilot Ø73 mm · mil 9,5–14 mm']
+          ]},
+          { tip: 'not', metin: 'Değerler tipiktir; mil ve pilot ölçüleri üreticiye göre değişir. Motorun teknik çizimine bak.' }
+        ]},
+        { id: 'secim', kisa: 'Seçim', baslik: 'Seçerken', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Gereken torku ve hızı tork–hız eğrisinden kontrol et.',
+            'Aynı NEMA’da uzun gövde daha çok tork verir.',
+            'Mil çapını kaplin ya da kasnakla eşleştir.',
+            'Sürücünün akımı motorun faz akımına yetmeli.'
+          ]}
+        ]},
+        { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+          { tip: 'hatalar', hatalar: [
+            ['NEMA numarasını tork sanmak', 'NEMA yalnızca yüz ölçüsüdür. Doğrusu: katalogdaki tutma torku ve tork–hız eğrisi.'],
+            ['Mil çapına bakmadan kaplin almak', 'NEMA 23’te 6,35 ve 8 mm’lik miller var. Doğrusu: motorun çizimindeki mil çapı.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Montaj plakası', 'Kaplin', 'Kasnak', 'Step sürücü'] }
+        ]}
+      ]
+    },
+
+    'step-mikroadim': {
+      baslik: 'Mikroadım ve rezonans',
+      giris: 'Mikroadımda sürücü iki sargının akımını sinüse yakın basamaklarla değiştirir. Rotor tam adımlar arasındaki ara konumlarda durur; hareket düzgünleşir, titreşim azalır.',
+      etiketler: ['1/2 – 1/256', 'Sinüs akım', 'Rezonans'],
+      bolumler: [
+        { id: 'sema', kisa: 'Akımlar', baslik: 'Sargı akımları', bloklar: [
+          { tip: 'sema', svg: 'stepMikro',
+            lejant: [['sig', 'A sargısı'], ['ink', 'B sargısı']],
+            not: 'Tam adımda akım kare dalga gibi aniden değişir. Mikroadımda sinüse yaklaşan basamaklarla değişir.' }
+        ]},
+        { id: 'darbe', kisa: 'Darbe', baslik: 'Tur başına darbe', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['Tam', '', '200 darbe/tur'],
+            ['1/2', '', '400 darbe/tur'],
+            ['1/4', '', '800 darbe/tur'],
+            ['1/8', '', '1.600 darbe/tur'],
+            ['1/16', '', '3.200 darbe/tur'],
+            ['1/32', '', '6.400 darbe/tur']
+          ]},
+          { tip: 'not', metin: 'Mikroadım arttıkça aynı hız için PLC’nin daha yüksek frekansta darbe vermesi gerekir.' }
+        ]},
+        { id: 'artieksi', kisa: 'Artı / eksi', baslik: 'Artısı ve eksisi', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'arti', baslik: 'Artısı', etiket: 'Düzgün hareket', metin: 'Titreşim ve ses azalır, düşük hızda hareket akıcı olur.' },
+            { ikon: 'eksi', baslik: 'Eksisi', etiket: 'Doğruluk sınırlı', metin: 'Mikroadım başına tork küçüktür; yük altında rotor her mikroadımı tam izlemez. Çözünürlük artar, doğruluk aynı oranda artmaz.' }
+          ]}
+        ]},
+        { id: 'rezonans', kisa: 'Rezonans', baslik: 'Rezonanstan kaçınma', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Mikroadımı artır; en kolay ve etkili çözüm.',
+            'Rezonans hızında sürekli çalışma; rampa ile o bölgeden hızlı geç.',
+            'Sürücüde anti-rezonans özelliği varsa aç.',
+            'Mile ya da kaplin tarafına mekanik sönümleyici ekle.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Belli bir hızda ses ve titreşim artıyor, motor duruyor', satirlar: [
+            ['Orta hız rezonansı', 'Kontrol: hızı biraz değiştir; sorun kayboluyorsa rezonanstır.'],
+            ['Tam adımda çalışıyor', 'Kontrol: 1/8 ya da daha yüksek mikroadım dene.'],
+            ['Motor boşta çalışıyor', 'Olası neden: sönüm yok; boşta rezonans daha belirgindir. Kontrol: yük bağlıyken dene.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Mikroadımı artırınca doğruluğun aynı oranda arttığını sanmak', 'Mekanik boşluk ve yük torku gerçek konumu belirler. Doğrusu: hassasiyet gerekiyorsa enkoderli sistem.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Step sürücü', 'Sönümleyici', 'Kaplin', 'Enkoder'] }
+        ]}
+      ]
+    },
+
+    'step-tork-hiz': {
+      baslik: 'Tork–hız eğrisi',
+      giris: 'Step motorun torku hız arttıkça düşer: sargı endüktansı yüzünden akım, yüksek hızda anma değerine ulaşacak zamanı bulamaz. Motor seçimi bu eğriye göre yapılır.',
+      etiketler: ['Pull-out', 'Pull-in', 'Emniyet payı'],
+      bolumler: [
+        { id: 'sema', kisa: 'Eğri', baslik: 'Eğriyi okumak', bloklar: [
+          { tip: 'sema', svg: 'stepTork',
+            lejant: [['sig', 'Pull-out'], ['opt2', 'Pull-in']],
+            isaretler: [
+              ['Tutma torku', 'Sıfır hızdaki tork; eğrinin başlangıcı.'],
+              ['Pull-out eğrisi', 'Rampayla hızlanırken motorun verebileceği en yüksek tork. Bunun üstünde adım kaçırır.'],
+              ['Pull-in eğrisi', 'Rampasız, anında kalkışta verebileceği tork. Daha düşüktür.'],
+              ['Rezonans bölgesi', 'Eğride çukur oluşabilen bölge; bu hızda sürekli çalışılmaz.']
+            ],
+            not: 'Eğri belirli bir sürücü, besleme gerilimi ve mikroadım için ölçülür. Katalogdaki koşulları kontrol et.' }
+        ]},
+        { id: 'neden', kisa: 'Neden düşer', baslik: 'Tork neden düşer', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'manyetik', baslik: 'Endüktans', etiket: 'Akım gecikir', metin: 'Hız arttıkça her adımın süresi kısalır; akım hedef değere çıkamadan yön değiştirir.' },
+            { ikon: 'gerilim', baslik: 'Gerilim', etiket: 'Yüksek gerilim yardımcı olur', metin: 'Sürücü beslemesi yükseldikçe akım daha hızlı yükselir, yüksek hızdaki tork artar. Sürücü ve motor sınırlarına dikkat.' }
+          ]}
+        ]},
+        { id: 'secim', kisa: 'Seçim', baslik: 'Seçim adımları', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Yükü, en yüksek hızı ve hızlanma süresini yaz.',
+            'Hızlanma torkunu da hesaba kat: tork = atalet × açısal ivme.',
+            'Eğride en yüksek çalışma hızındaki torka bak.',
+            'En az %30–50 emniyet payı bırak.',
+            'Sürücü gerilimini katalog eğrisindekiyle aynı seç.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Yüksek hızda motor duruyor, uğulduyor', satirlar: [
+            ['Tork eğrinin altında kaldı', 'Kontrol: hızı düşür ya da daha büyük motor, daha yüksek gerilim.'],
+            ['Rampa çok kısa', 'Kontrol: hızlanma süresini uzat.'],
+            ['Sürücü gerilimi düşük', 'Kontrol: besleme gerilimini yük altında ölç.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Eğriyi farklı gerilimdeki sürücüye uygulamak', 'Katalog eğrisi 48 V’ta çizilmişse 24 V’ta yüksek hız torku daha düşüktür. Doğrusu: eğrinin koşullarını eşleştir.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Step sürücü', 'Güç kaynağı', 'Redüktör'] }
+        ]}
+      ]
+    },
+
+    'surucu-step': {
+      baslik: 'Step sürücüler',
+      giris: 'Step sürücü PLC’den gelen darbeleri sargı akımına çevirir. Akımı, mikroadımı ve bekleme akımını çoğunlukla üstündeki DIP anahtarlarla ayarlarsın.',
+      etiketler: ['DIP switch', 'Tepe / RMS', 'Bekleme akımı'],
+      bolumler: [
+        { id: 'sema', kisa: 'Anahtarlar', baslik: 'Ayar anahtarları', bloklar: [
+          { tip: 'sema', svg: 'surucuDip',
+            isaretler: [
+              ['Akım (SW1–3)', 'Motorun faz akımına göre seçilir.'],
+              ['Bekleme akımı (SW4)', 'Motor durunca akımı düşürür; ısınma azalır, tutma torku düşer.'],
+              ['Mikroadım (SW5–8)', 'Tur başına darbe sayısını seçer.']
+            ],
+            not: 'Örnek düzendir. Hangi anahtarın ne yaptığı sürücünün üstündeki tabloda yazar.' }
+        ]},
+        { id: 'akim', kisa: 'Akım', baslik: 'Akım ayarı', bloklar: [
+          { tip: 'formul', formul: 'Tepe ≈ RMS × 1,41',
+            tanimlar: [['RMS', 'Etkin değer. Motor etiketindeki faz akımı genellikle bu değerle karşılaştırılır.'], ['Tepe', 'Sürücü tablolarında ayrıca verilir; RMS’nin yaklaşık 1,41 katıdır.']],
+            ornek: { baslik: 'Örnek · motor 2,8 A/faz', satirlar: [['RMS', '≈ 2,8 A'], ['Tepe', '≈ 2,8 × 1,41 ≈ 3,9 A']] },
+            kural: 'Akımı motor anma değerinin üstüne çıkarma; motor aşırı ısınır.' }
+        ]},
+        { id: 'cevrim', kisa: 'Açık / kapalı', baslik: 'Açık ve kapalı çevrim', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'acik', baslik: 'Açık çevrim', etiket: 'Enkodersiz', metin: 'Ucuz ve basit. Adım kaçırırsa sürücü fark etmez.' },
+            { ikon: 'kapali', baslik: 'Kapalı çevrim', etiket: 'Enkoderli', metin: 'Adım kaçırmayı algılar ve düzeltir, gerekmediğinde akımı düşürür. Hibrit servo da denir.' }
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sürücünün alarm LED’i yanıyor', satirlar: [
+            ['Aşırı akım ya da kısa devre', 'Kontrol: motor kablosunda faz-faz ve faz-gövde kısa devre ölç.'],
+            ['Aşırı gerilim', 'Olası neden: hızlı yavaşlamada motor enerji geri basar. Kontrol: yavaşlama rampasını uzat, beslemeyi ölç.'],
+            ['Düşük gerilim', 'Kontrol: besleme gerilimini ve bağlantıyı ölç.'],
+            ['Motor bağlı değil ya da sargı kopuk', 'Kontrol: sargı dirençlerini ölç.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['DIP ayarını enerji varken değiştirmek', 'Çoğu sürücü ayarı açılışta okur; değişiklik görünmez. Doğrusu: enerjiyi kesip ayarla.'],
+            ['Sürücü beslemesini motor etiketindeki gerilime göre seçmek', 'Etiketteki gerilim sargı direncinden hesaplanan düşük bir değerdir; sürücü çok daha yüksek gerilimle beslenir. Doğrusu: sürücünün izin verdiği aralık.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Step motor', 'Güç kaynağı', 'Enkoder', 'PLC transistör çıkışı'] }
+        ]}
+      ]
+    },
+
+    'surucu-servo': {
+      baslik: 'Servo sürücüler',
+      giris: 'Servo sürücü motoru enkoderden aldığı geri beslemeyle sürer. Aynı sürücü konum, hız ya da tork modunda çalışabilir; komut darbe, analog gerilim ya da haberleşmeyle gelir.',
+      etiketler: ['Konum · hız · tork', 'Elektronik dişli', 'EtherCAT'],
+      bolumler: [
+        { id: 'sema', kisa: 'Komutlar', baslik: 'Komut yolları', bloklar: [
+          { tip: 'sema', svg: 'surucuServo',
+            isaretler: [
+              ['Darbe / yön', 'Konum modu. Her darbe bir adım; elektronik dişliyle ölçeklenir.'],
+              ['Analog ±10 V', 'Hız ya da tork modu. Gerilim komutun kendisidir; konum döngüsü PLC’de kapanır.'],
+              ['EtherCAT (ya da CANopen)', 'Konum, hız, tork komutları ve durum bilgisi tek kablodan. CSP modunda PLC her çevrimde hedef konum gönderir.']
+            ] }
+        ]},
+        { id: 'modlar', kisa: 'Modlar', baslik: 'Kontrol modları', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['Konum', '', 'Motor verilen konuma gider ve orada durur.'],
+            ['Hız', '', 'Motor verilen hızda döner.'],
+            ['Tork', '', 'Motor verilen torku uygular; sarma ve gerdirme uygulamaları.'],
+            ['CSP · CSV · CST', 'sig', 'EtherCAT’te döngüsel senkron konum, hız, tork. CiA 402’de mod numaraları 8, 9, 10.']
+          ]},
+          { tip: 'not', metin: 'Kinco FD serisinde mod, Operation_Mode parametresiyle (nesne 6060h) seçilir. Kılavuzdaki değerler:' },
+          { tip: 'tablo', satirlar: [
+            ['−4', 'sig', 'Darbe modu: darbe/yön ya da CW/CCW.'],
+            ['−3', '', 'Anlık hız modu.'],
+            ['1', '', 'İç konum modu.'],
+            ['3', '', 'Rampalı hız modu.'],
+            ['4', '', 'Tork modu.'],
+            ['6', '', 'Referans (homing) modu.']
+          ]}
+        ]},
+        { id: 'disli', kisa: 'Dişli', baslik: 'Elektronik dişli', bloklar: [
+          { tip: 'hesap', tur: 'disli' }
+        ]},
+        { id: 'devreye', kisa: 'Devreye alma', baslik: 'Devreye alma', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Sürücüye motor modelini tanıt; enkoder alarmı olmamalı.',
+            'Motoru yükten ayırıp JOG ile yönü kontrol et.',
+            'Elektronik dişliyi (tur başına darbe) ayarla.',
+            'Limit ve referans sensörlerini test et.',
+            'Yükü bağlayıp kazanç ayarı yap.',
+            'Takip hatası sınırını makineye göre ayarla.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Takip hatası (following error) alarmı', satirlar: [
+            ['Hızlanma çok yüksek', 'Kontrol: rampayı uzat, motorun yetip yetmediğini hesapla.'],
+            ['Kazanç düşük', 'Kontrol: rijitliği artır.'],
+            ['Mekanik sıkışma ya da fren açılmıyor', 'Kontrol: ekseni elle hareket ettir, frenin açıldığını dinle.'],
+            ['Tork sınırı düşük', 'Kontrol: tork sınırı parametresine bak.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['STO girişlerini kalıcı köprülemek', 'Güvenli tork kesme devre dışı kalır; acil durdurma motoru güvenle durdurmaz. Doğrusu: güvenlik rölesi ya da güvenlik PLC’si üzerinden bağla.'],
+            ['Darbe frekansını PLC sınırına dayamak', 'Yüksek hızda darbe kaybolabilir. Doğrusu: elektronik dişliyle darbe başına yolu büyüt.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Servo motor', 'Enkoder kablosu', 'EtherCAT kablosu', 'Güvenlik rölesi', 'Fren direnci'] }
+        ]}
+      ]
+    },
+
+    'surucu-vfd': {
+      baslik: 'Hız kontrol cihazı (VFD)',
+      giris: 'VFD (frekans konvertörü) şebekeyi önce DC’ye, sonra ayarlanabilir frekanslı AC’ye çevirir. Asenkron motorun hızı frekansla orantılı değişir.',
+      etiketler: ['V/f', 'Vektör kontrol', 'Fren direnci'],
+      bolumler: [
+        { id: 'sema', kisa: 'Yapı', baslik: 'İç yapı', bloklar: [
+          { tip: 'sema', svg: 'surucuVfd',
+            lejant: [['l', 'L1'], ['l2', 'L2'], ['l3', 'L3'], ['dc', 'DC +']],
+            isaretler: [
+              ['Doğrultucu', 'Şebeke AC’sini DC’ye çevirir.'],
+              ['DC bara', 'Kondansatörler gerilimi düzgünleştirir ve enerji depolar.'],
+              ['Fren kıyıcısı ve direnci', 'Yavaşlamada motor jeneratör gibi çalışır, DC bara gerilimi yükselir. Kıyıcı bu enerjiyi dirence aktarır.'],
+              ['Evirici (IGBT)', 'DC’yi PWM ile istenen frekans ve gerilimde üç faz AC’ye çevirir.']
+            ] }
+        ]},
+        { id: 'hesap', kisa: 'Hesap', baslik: 'Frekans ve hız', bloklar: [
+          { tip: 'hesap', tur: 'vfd' }
+        ]},
+        { id: 'param', kisa: 'Parametreler', baslik: 'Temel parametreler', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['Motor etiketi', '', 'Güç, gerilim, akım, frekans ve devir girilir. Koruma ve vektör kontrol buna göre çalışır.'],
+            ['Hızlanma / yavaşlama', '', 'Çok kısa tutulursa aşırı akım ya da aşırı gerilim alarmı gelir.'],
+            ['Alt / üst frekans', '', 'Motorun ve makinenin çalışma aralığı.'],
+            ['Komut kaynağı', '', 'Çalıştırma nereden gelir: panel, klemens ya da haberleşme.'],
+            ['Frekans referansı', '', 'Hız nereden gelir: potansiyometre, analog giriş ya da haberleşme.'],
+            ['Kontrol modu', '', 'V/f basit yükler için; vektör kontrol düşük hızda yüksek tork için.']
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Yavaşlarken aşırı gerilim (OV) alarmı', satirlar: [
+            ['Yavaşlama süresi kısa', 'Kontrol: süreyi uzat.'],
+            ['Fren direnci yok ya da arızalı', 'Kontrol: direnci ölç, fren kıyıcısı parametresine bak.'],
+            ['Yük ataleti büyük (fan, volan)', 'Kontrol: fren direnci ekle ya da serbest durdurma kullan.'],
+            ['Şebeke gerilimi yüksek', 'Kontrol: giriş gerilimini ölç.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Çıkıştaki kontaktörü motor dönerken açıp kapamak', 'Ani akım darbesi sürücüyü alarma sokar ya da zarar verir. Doğrusu: kontaktörü sürücü dururken anahtarla, çalıştırmayı sürücüden yap.'],
+            ['Çıkışa kompanzasyon kondansatörü bağlamak', 'PWM çıkışı kondansatörü ve sürücüyü zorlar. Doğrusu: VFD çıkışında kondansatör olmaz.'],
+            ['Çalıştırıp durdurmayı giriş kontaktörüyle yapmak', 'DC bara her seferinde yeniden şarj olur, ömür kısalır. Doğrusu: çalıştır/durdur komutunu klemensten ver.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Fren direnci', 'Hat şoku', 'EMC filtresi', 'Ekranlı motor kablosu', 'Potansiyometre'] }
+        ]}
+      ]
+    },
+
+    'surucu-io': {
+      baslik: 'Sürücü giriş–çıkışları',
+      giris: 'Sürücünün dijital girişleri PLC’den ve sensörlerden komut alır, çıkışları durum bilgisi verir. Bağlantı, girişin NPN ya da PNP mantığına göre yapılır.',
+      etiketler: ['NPN / PNP', '24 V DC', 'COM'],
+      bolumler: [
+        { id: 'sema', kisa: 'Bağlantı', baslik: 'NPN ve PNP bağlantı', bloklar: [
+          { tip: 'sema', svg: 'surucuIo',
+            lejant: [['dc', '+24 V'], ['ink', '0 V'], ['sig', 'Sinyal']],
+            isaretler: [
+              ['NPN (sink) sensör', 'Çıkış tetiklenince 0 V’a çeker. Girişin COM ucu +24 V’a bağlanır.'],
+              ['PNP (source) sensör', 'Çıkış tetiklenince +24 V verir. Girişin COM ucu 0 V’a bağlanır.'],
+              ['Ortak 0 V', 'Sensörler ile sürücü farklı kaynaklardan besleniyorsa 0 V’lar birleştirilir.']
+            ] }
+        ]},
+        { id: 'sinyaller', kisa: 'Sinyaller', baslik: 'Tipik sinyaller', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['SON', 'sig', 'Servo enable. Motoru enerjiler.'],
+            ['ARST', 'sig', 'Alarm reset.'],
+            ['POT · NOT', 'sig', 'İleri ve geri limit.'],
+            ['ORG', 'sig', 'Referans (home) sensörü.'],
+            ['ALM', '', 'Alarm çıkışı.'],
+            ['RDY', '', 'Hazır çıkışı.'],
+            ['INP', '', 'Konuma ulaştı çıkışı.'],
+            ['BRK', 'dc', 'Fren çıkışı.']
+          ]},
+          { tip: 'not', metin: 'Sinyal adları üreticiye göre değişir. Birçok sürücüde girişe hangi fonksiyonun atanacağı parametreden seçilir.' }
+        ]},
+        { id: 'mantik', kisa: 'NPN / PNP', baslik: 'NPN mi, PNP mi?', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'npn', baslik: 'NPN', etiket: 'Sink', metin: 'Asya menşeli ekipmanda yaygın. Sinyal 0 V’a çekilince aktif olur.' },
+            { ikon: 'pnp', baslik: 'PNP', etiket: 'Source', metin: 'Avrupa’da yaygın. Sinyal +24 V olunca aktif olur.' }
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sensör çalışıyor ama sürücü girişi görmüyor', satirlar: [
+            ['NPN/PNP uyumsuz', 'Kontrol: COM ucunun bağlandığı yeri sensör tipine göre kontrol et.'],
+            ['0 V’lar birleşik değil', 'Kontrol: iki kaynağın 0 V’u arasında süreklilik ölç.'],
+            ['Giriş fonksiyonu atanmamış', 'Kontrol: giriş parametresinde fonksiyonu ata.'],
+            ['Mantık ters', 'Kontrol: girişin NO/NC mantık parametresine bak.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Limit anahtarlarını NO bağlamak', 'Kablo koparsa limit hiç algılanmaz. Doğrusu: limitler NC bağlanır; kablo kopması da ekseni durdurur.'],
+            ['Röle bobinini çıkışa diyotsuz bağlamak', 'Bobin kesilince oluşan gerilim darbesi transistör çıkışı bozar. Doğrusu: bobine ters paralel diyot.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Endüktif sensör', 'Limit anahtarı', 'Röle', 'Klemens', 'PLC'] }
+        ]}
+      ]
     }
   }
 };
 
 /* Şemalar: renkler temaya göre CSS sınıflarından gelir. */
+/* Şema yardımcıları */
+const _no = (x, y, n) => `<circle cx="${x}" cy="${y}" r="10" style="fill:var(--ink)"></circle><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">${n}</text>`;
+const _cizgi = (d) => `<path d="${d}" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>`;
+const _yazi = (x, y, t, o = {}) => `<text x="${x}" y="${y}" font-size="${o.b || 11}"${o.a ? ` text-anchor="${o.a}"` : ''}${o.w ? ` font-weight="${o.w}"` : ''} style="fill:var(${o.r || '--ink'})">${t}</text>`;
+const _kutu = (x, y, w, h, o = {}) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.rx == null ? 6 : o.rx}" style="fill:var(${o.f || '--svg-body'});stroke:var(--ink)" stroke-width="${o.sw || 1.5}"></rect>`;
+const _tel = (d, renk, o = {}) => `<path d="${d}" style="stroke:var(${renk})" stroke-width="${o.w || 3}"${o.k ? ` stroke-dasharray="${o.k}"` : ''} stroke-linejoin="round" fill="none"></path>`;
+const _pe = (d) => _tel(d, '--wire-pe') + _tel(d, '--wire-pe2', { k: '6 6' });
+const _okSag = (x, y) => `<path d="M${x - 7} ${y - 4}L${x} ${y}L${x - 7} ${y + 4}Z" style="fill:var(--ink)"></path>`;
+const _okYukari = (x, y) => `<path d="M${x - 4} ${y + 7}L${x} ${y}L${x + 4} ${y + 7}Z" style="fill:var(--ink)"></path>`;
+
 const SEMALAR = {
   mcb: `<svg class="sema" viewBox="0 0 318 292" role="img" aria-label="Tek kutuplu otomatik sigortanın priz hattına bağlantı şeması">
     <text x="80" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l)">L</text>
@@ -1056,7 +1700,253 @@ const SEMALAR = {
     <circle cx="185" cy="176" r="10" style="fill:var(--ink)"></circle><text x="185" y="180" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
     <circle cx="270" cy="176" r="10" style="fill:var(--ink)"></circle><text x="270" y="180" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
     <circle cx="120" cy="21" r="10" style="fill:var(--ink)"></circle><text x="120" y="25" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
-  </svg>`
+  </svg>`,
+
+  servoEnkoder: (() => {
+    const cx = 70, cy = 88;
+    let yarik = '';
+    for (let i = 0; i < 24; i++) {
+      const a = (i * Math.PI) / 12, c = Math.cos(a), s = Math.sin(a);
+      yarik += `M${(cx + 38 * c).toFixed(1)} ${(cy + 38 * s).toFixed(1)}L${(cx + 48 * c).toFixed(1)} ${(cy + 48 * s).toFixed(1)}`;
+    }
+    const kare = (y0, ilk) => {
+      const hi = y0 - 11, lo = y0 + 11;
+      let d = `M150 ${lo}`, x = ilk, yuksek = false;
+      while (x <= 280) { d += `H${x}V${yuksek ? lo : hi}`; yuksek = !yuksek; x += 20; }
+      return d + 'H290';
+    };
+    return `<svg class="sema" viewBox="0 0 318 184" role="img" aria-label="Artımsal enkoder diski ve A, B, Z kanal sinyalleri">
+      <circle cx="${cx}" cy="${cy}" r="52" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.5"></circle>
+      <path d="${yarik}" style="stroke:var(--ink)" stroke-width="3" fill="none"></path>
+      <path d="M${cx} ${cy - 32}V${cy - 24}" style="stroke:var(--dc-plus)" stroke-width="4" fill="none"></path>
+      <circle cx="${cx}" cy="${cy}" r="11" style="fill:var(--ink)"></circle>
+      ${_yazi(142, 44, 'A', { a: 'end', w: 600, r: '--signal' })}
+      ${_yazi(142, 92, 'B', { a: 'end', w: 600 })}
+      ${_yazi(142, 140, 'Z', { a: 'end', w: 600, r: '--dc-plus' })}
+      ${_tel(kare(40, 160), '--signal', { w: 2 })}
+      ${_tel(kare(88, 170), '--ink', { w: 2 })}
+      ${_tel('M150 147H200V125H210V147H290', '--dc-plus', { w: 2 })}
+      ${_yazi(220, 172, 'A önde → ileri yön', { a: 'middle', b: 10, r: '--muted' })}
+      ${_cizgi(`M${cx} 141V150`)}
+      ${_no(cx, 160, 1)}${_no(306, 64, 2)}${_no(306, 136, 3)}
+    </svg>`;
+  })(),
+
+  servoBaglanti: `<svg class="sema" viewBox="0 0 318 330" role="img" aria-label="Servo sürücü bağlantısı: besleme, PLC, enkoder, motor güç kablosu, fren ve fren direnci">
+    ${_yazi(130, 14, 'L1', { a: 'middle', w: 600, r: '--wire-l' })}${_yazi(150, 14, 'L2', { a: 'middle', w: 600, r: '--wire-l2' })}${_yazi(170, 14, 'L3', { a: 'middle', w: 600, r: '--wire-l3' })}
+    ${_tel('M130 20V60', '--wire-l')}${_tel('M150 20V60', '--wire-l2')}${_tel('M170 20V60', '--wire-l3')}
+    ${_kutu(110, 60, 100, 210)}
+    ${_yazi(160, 84, 'SERVO', { a: 'middle', b: 10, w: 600 })}${_yazi(160, 97, 'SÜRÜCÜ', { a: 'middle', b: 10, w: 600 })}
+    ${_yazi(202, 174, 'U', { a: 'end', b: 9, r: '--muted' })}${_yazi(202, 189, 'V', { a: 'end', b: 9, r: '--muted' })}${_yazi(202, 204, 'W', { a: 'end', b: 9, r: '--muted' })}${_yazi(202, 219, 'PE', { a: 'end', b: 9, r: '--muted' })}
+    ${_tel('M210 170H250', '--wire-l')}${_tel('M210 185H250', '--wire-l2')}${_tel('M210 200H250', '--wire-l3')}${_pe('M210 215H250')}
+    ${_kutu(250, 150, 60, 100, { rx: 10, f: '--card' })}
+    ${_yazi(280, 196, 'SERVO', { a: 'middle', b: 9, w: 600 })}${_yazi(280, 209, 'MOTOR', { a: 'middle', b: 9, w: 600 })}
+    ${_kutu(262, 118, 36, 32, { rx: 4, f: '--chip', sw: 1.2 })}${_yazi(280, 138, 'ENC', { a: 'middle', b: 9 })}
+    ${_tel('M210 104H280V118', '--signal', { w: 2 })}
+    ${_tel('M280 250V300H236', '--dc-plus', { w: 2 })}
+    ${_kutu(176, 288, 60, 24, { rx: 4, f: '--chip', sw: 1.2 })}${_yazi(206, 304, '24 V', { a: 'middle', b: 10 })}
+    ${_kutu(10, 130, 70, 70, { f: '--card' })}${_yazi(45, 170, 'PLC', { a: 'middle', w: 600 })}
+    ${_tel('M80 150H110M80 180H110', '--signal', { w: 2 })}
+    ${_kutu(28, 242, 52, 24, { rx: 3, f: '--card', sw: 1.2 })}
+    ${_tel('M34 254l4-6 4 12 4-12 4 12 4-12 4 12 4-6', '--ink', { w: 1.2 })}
+    ${_tel('M80 248H110M80 260H110', '--ink', { w: 1.5 })}
+    ${_cizgi('M110 40H127')}
+    ${_no(100, 40, 1)}${_no(95, 120, 2)}${_no(236, 80, 3)}${_no(230, 234, 4)}${_no(160, 300, 5)}${_no(95, 228, 6)}
+  </svg>`,
+
+  servoAyar: `<svg class="sema" viewBox="0 0 318 184" role="img" aria-label="Servo sürücüde iç içe konum, hız ve akım döngüleri">
+    ${_kutu(10, 40, 70, 36, { f: '--card' })}${_yazi(45, 62, 'Konum', { a: 'middle', w: 600 })}
+    ${_kutu(104, 40, 62, 36, { f: '--card' })}${_yazi(135, 62, 'Hız', { a: 'middle', w: 600 })}
+    ${_kutu(190, 40, 62, 36, { f: '--card' })}${_yazi(221, 62, 'Akım', { a: 'middle', w: 600 })}
+    <circle cx="288" cy="58" r="18" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>${_yazi(288, 62, 'M', { a: 'middle', w: 600 })}
+    ${_tel('M80 58H100M166 58H186M252 58H266', '--ink', { w: 1.8 })}
+    ${_okSag(104, 58)}${_okSag(190, 58)}${_okSag(270, 58)}
+    ${_tel('M288 76V150H45V80M135 150V80', '--signal', { w: 1.8 })}
+    ${_okYukari(45, 76)}${_okYukari(135, 76)}
+    ${_tel('M261 58V110H221V80', '--dc-plus', { w: 1.8 })}${_okYukari(221, 76)}
+    <circle cx="261" cy="58" r="2.5" style="fill:var(--ink)"></circle><circle cx="135" cy="150" r="2.5" style="fill:var(--signal)"></circle>
+    ${_yazi(232, 144, 'enkoder', { a: 'middle', b: 10, r: '--muted' })}${_yazi(242, 104, 'akım ölçümü', { a: 'middle', b: 10, r: '--muted' })}
+    ${_cizgi('M45 30V40M135 30V40M221 30V40M100 150V158')}
+    ${_no(45, 20, 1)}${_no(135, 20, 2)}${_no(221, 20, 3)}${_no(100, 168, 4)}
+  </svg>`,
+
+  servoFren: `<svg class="sema" viewBox="0 0 318 222" role="img" aria-label="Servo motor freninin röle üzerinden 24 V ile beslenmesi">
+    ${_kutu(10, 30, 70, 80, { f: '--card' })}${_yazi(45, 74, '24 V DC', { a: 'middle', w: 600 })}
+    ${_yazi(72, 54, '+', { a: 'end', w: 600, r: '--dc-plus' })}${_yazi(72, 98, '−', { a: 'end', w: 600 })}
+    ${_tel('M80 50H128', '--dc-plus', { w: 2.5 })}
+    ${_tel('M128 50L154 40', '--ink', { w: 2 })}
+    ${_tel('M160 50H250V66', '--dc-plus', { w: 2.5 })}
+    <rect x="232" y="56" width="72" height="50" rx="6" style="stroke:var(--muted)" stroke-width="1" stroke-dasharray="4 3" fill="none"></rect>
+    ${_tel('M250 66c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5', '--ink', { w: 2 })}
+    ${_tel('M250 66H284V78M284 90V96H250', '--ink', { w: 1.5 })}
+    <path d="M276 78H292" style="stroke:var(--ink)" stroke-width="2" fill="none"></path>
+    <path d="M276 90H292L284 78Z" style="fill:var(--ink)"></path>
+    ${_tel('M250 96V122H94V94H80', '--ink', { w: 2.5 })}
+    ${_kutu(128, 150, 44, 28, { rx: 4, f: '--chip', sw: 1.2 })}${_yazi(150, 168, 'röle', { a: 'middle', b: 10 })}
+    <path d="M150 150V47" style="stroke:var(--muted)" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
+    ${_kutu(10, 144, 70, 40, { f: '--card' })}${_yazi(45, 161, 'Sürücü', { a: 'middle', b: 10, w: 600 })}${_yazi(45, 175, 'fren çıkışı', { a: 'middle', b: 9, r: '--muted' })}
+    ${_tel('M80 164H128', '--signal', { w: 2 })}
+    ${_cizgi('M45 185V196M150 179V196M228 84H246')}
+    ${_no(45, 206, 1)}${_no(150, 206, 2)}${_no(304, 84, 3)}${_no(218, 84, 4)}
+  </svg>`,
+
+  servoReduktor: `<svg class="sema" viewBox="0 0 318 170" role="img" aria-label="Servo motor, adaptör flanş, sıkma bileziği, planet redüktör ve çıkış mili">
+    ${_kutu(6, 52, 88, 76, { rx: 6 })}${_yazi(50, 94, 'SERVO', { a: 'middle', w: 600 })}
+    <rect x="94" y="58" width="22" height="64" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="84" y="82" width="34" height="16" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="3 2" fill="none"></rect>
+    ${_kutu(116, 62, 92, 56, { rx: 8 })}
+    <circle cx="162" cy="90" r="21" style="stroke:var(--ink)" stroke-width="1.5" fill="none"></circle>
+    <circle cx="162" cy="90" r="6" style="fill:var(--ink)"></circle>
+    <circle cx="162" cy="77" r="7" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.2"></circle>
+    <circle cx="150.7" cy="96.5" r="7" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.2"></circle>
+    <circle cx="173.3" cy="96.5" r="7" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.2"></circle>
+    <rect x="208" y="66" width="10" height="48" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <rect x="218" y="83" width="56" height="14" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <rect x="236" y="83" width="24" height="4" style="fill:var(--ink)"></rect>
+    <rect x="274" y="70" width="26" height="40" rx="3" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.2"></rect>
+    ${_cizgi('M105 40V58M101 140V99M162 40V62M246 140V98')}
+    ${_no(105, 30, 1)}${_no(101, 150, 2)}${_no(162, 30, 3)}${_no(246, 150, 4)}
+  </svg>`,
+
+  stepPrensip: (() => {
+    const panel = (cx, i, etiket) => {
+      const cy = 62;
+      const aA = i % 2 === 0;
+      const yon = [[1, 0], [0, -1], [-1, 0], [0, 1]][i];
+      const kutup = (x, y, w, h, on) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" style="fill:var(${on ? '--accent' : '--chip'});stroke:var(--ink)" stroke-width="1.2"></rect>`;
+      const ux = cx + yon[0] * 20, uy = cy + yon[1] * 20;
+      const bas = yon[0] ? `M${ux} ${uy}L${ux - yon[0] * 7} ${uy - 5}L${ux - yon[0] * 7} ${uy + 5}Z` : `M${ux} ${uy}L${ux - 5} ${uy - yon[1] * 7}L${ux + 5} ${uy - yon[1] * 7}Z`;
+      return `<circle cx="${cx}" cy="${cy}" r="30" style="stroke:var(--line)" stroke-width="2" fill="none"></circle>
+        ${kutup(cx - 38, cy - 6, 10, 12, aA)}${kutup(cx + 28, cy - 6, 10, 12, aA)}${kutup(cx - 6, cy - 38, 12, 10, !aA)}${kutup(cx - 6, cy + 28, 12, 10, !aA)}
+        <circle cx="${cx}" cy="${cy}" r="13" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>
+        <path d="M${cx} ${cy}L${ux - yon[0] * 4} ${uy - yon[1] * 4}" style="stroke:var(--dc-plus)" stroke-width="2.5" fill="none"></path>
+        <path d="${bas}" style="fill:var(--dc-plus)"></path>
+        ${_yazi(cx, 124, etiket, { a: 'middle', b: 12, w: 600 })}`;
+    };
+    return `<svg class="sema" viewBox="0 0 318 136" role="img" aria-label="Tam adım sırası: A+, B+, A−, B−; her adımda rotor 90 derece elektriksel döner">
+      ${panel(42, 0, '1 · A+')}${panel(120, 1, '2 · B+')}${panel(198, 2, '3 · A−')}${panel(276, 3, '4 · B−')}
+    </svg>`;
+  })(),
+
+  stepNema: `<svg class="sema" viewBox="0 0 318 222" role="img" aria-label="NEMA step motor ön yüzü: yüz ölçüsü, delik aralığı, merkezleme çıkıntısı ve mil">
+    <rect x="70" y="30" width="150" height="150" rx="10" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <circle cx="145" cy="105" r="42" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <circle cx="145" cy="105" r="10" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <path d="M137 99H153" style="stroke:var(--ink)" stroke-width="1.5" fill="none"></path>
+    <circle cx="90" cy="50" r="6" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <circle cx="200" cy="50" r="6" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <circle cx="90" cy="160" r="6" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <circle cx="200" cy="160" r="6" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.5"></circle>
+    ${_tel('M90 16H200M90 10V22M200 10V22M70 200H220M70 194V206M220 194V206', '--muted', { w: 1 })}
+    <path d="M90 22V44M200 22V44M70 182V194M220 182V194" style="stroke:var(--muted)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    ${_cizgi('M222 200H232M202 16H212M252 90L187 99M252 126L154 110')}
+    ${_no(242, 200, 1)}${_no(222, 16, 2)}${_no(262, 90, 3)}${_no(262, 126, 4)}
+  </svg>`,
+
+  stepMikro: (() => {
+    const x0 = 40, gen = 260;
+    const tamA = `M40 ${50 - 18}H170V${50 + 18}H300`;
+    const tamB = `M40 ${50 + 14}H105V${50 - 14}H235V${50 + 14}H300`;
+    const basamak = (f, gen0, orta, genlik) => {
+      const w = gen0 / 16;
+      let d = '';
+      for (let k = 0; k < 16; k++) {
+        const v = f((k * 22.5 * Math.PI) / 180);
+        const y = (orta - v * genlik).toFixed(1);
+        const xa = (x0 + k * w).toFixed(1), xb = (x0 + (k + 1) * w).toFixed(1);
+        d += k === 0 ? `M${xa} ${y}H${xb}` : `V${y}H${xb}`;
+      }
+      return d;
+    };
+    return `<svg class="sema" viewBox="0 0 318 186" role="img" aria-label="Tam adımda ve 1/4 mikroadımda A ve B sargı akımları">
+      ${_yazi(40, 14, 'Tam adım', { w: 600 })}
+      <path d="M40 50H300M40 146H300" style="stroke:var(--line)" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
+      ${_tel(tamB, '--ink', { w: 1.8 })}${_tel(tamA, '--signal', { w: 2.5 })}
+      ${_yazi(40, 108, 'Mikroadım (1/4)', { w: 600 })}
+      ${_tel(basamak((x) => -Math.cos(x), gen, 146, 22), '--ink', { w: 1.8 })}${_tel(basamak(Math.sin, gen, 146, 26), '--signal', { w: 2.5 })}
+    </svg>`;
+  })(),
+
+  stepTork: `<svg class="sema" viewBox="0 0 318 214" role="img" aria-label="Step motor tork–hız eğrisi: pull-out ve pull-in eğrileri, rezonans bölgesi">
+    <rect x="72" y="24" width="30" height="156" style="fill:var(--danger-bg)"></rect>
+    ${_tel('M40 12V180H306', '--ink', { w: 1.5 })}
+    ${_yazi(48, 14, 'Tork', { b: 11, w: 600 })}${_yazi(306, 198, 'Hız', { a: 'end', b: 11, w: 600 })}
+    ${_tel('M40 40H70C78 40 82 54 87 54C92 54 96 42 104 42C140 42 160 60 190 90S260 146 300 154', '--signal', { w: 2.5 })}
+    ${_tel('M40 72C90 74 110 90 140 118S190 164 208 178', '--ink', { w: 2, k: '5 4' })}
+    ${_cizgi('M244 108L236 126M132 144L150 128')}
+    ${_no(24, 40, 1)}${_no(250, 100, 2)}${_no(124, 152, 3)}${_no(87, 14, 4)}
+  </svg>`,
+
+  surucuDip: (() => {
+    const acik = [1, 0, 1, 0, 1, 1, 0, 1];
+    let s = '';
+    acik.forEach((on, i) => {
+      const x = 30 + i * 34;
+      s += `<rect x="${x}" y="46" width="22" height="54" rx="3" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.2"></rect>
+        <rect x="${x + 2}" y="${on ? 48 : 74}" width="18" height="24" rx="2" style="fill:var(--ink)"></rect>
+        ${_yazi(x + 11, 114, String(i + 1), { a: 'middle', b: 10 })}`;
+    });
+    return `<svg class="sema" viewBox="0 0 318 176" role="img" aria-label="Step sürücü DIP anahtarları: akım, bekleme akımı ve mikroadım grupları">
+      ${_yazi(18, 26, 'ON ↑', { b: 10, w: 600 })}
+      <rect x="16" y="34" width="286" height="86" rx="6" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></rect>
+      ${s}
+      ${_tel('M30 128V134H120V128M132 128V134H154V128M166 128V134H290V128', '--ink', { w: 1.2 })}
+      ${_cizgi('M75 134V150M143 134V150M228 134V150')}
+      ${_no(75, 160, 1)}${_no(143, 160, 2)}${_no(228, 160, 3)}
+    </svg>`;
+  })(),
+
+  surucuServo: `<svg class="sema" viewBox="0 0 318 228" role="img" aria-label="PLC'den servo sürücüye üç komut yolu: darbe/yön, analog ve EtherCAT">
+    ${_kutu(8, 28, 62, 172, { f: '--card' })}${_yazi(39, 118, 'PLC', { a: 'middle', w: 600 })}
+    ${_kutu(206, 28, 56, 172, { f: '--card' })}${_yazi(234, 118, 'SÜRÜCÜ', { a: 'middle', b: 9, w: 600 })}
+    ${_tel('M70 54H206M70 66H206', '--signal', { w: 2 })}
+    ${_tel('M70 114H206', '--ink', { w: 2, k: '6 3' })}
+    ${_tel('M70 168H206', '--signal', { w: 4 })}
+    ${_yazi(150, 44, 'darbe / yön', { a: 'middle', b: 10, r: '--muted' })}
+    ${_yazi(150, 104, 'analog ±10 V', { a: 'middle', b: 10, r: '--muted' })}
+    ${_yazi(150, 158, 'EtherCAT', { a: 'middle', b: 10, r: '--muted' })}
+    ${_tel('M262 114H276', '--ink', { w: 2 })}
+    <circle cx="294" cy="114" r="18" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>${_yazi(294, 118, 'M', { a: 'middle', w: 600 })}
+    ${_no(100, 60, 1)}${_no(100, 114, 2)}${_no(100, 168, 3)}
+  </svg>`,
+
+  surucuVfd: `<svg class="sema" viewBox="0 0 318 180" role="img" aria-label="Frekans konvertörünün iç yapısı: doğrultucu, DC bara, fren kıyıcısı ve evirici">
+    ${_tel('M6 75H40', '--wire-l')}${_tel('M6 95H40', '--wire-l2')}${_tel('M6 115H40', '--wire-l3')}
+    ${_kutu(40, 50, 50, 90)}
+    <path d="M58 88V102L70 95Z" style="fill:var(--ink)"></path><path d="M71 88V102" style="stroke:var(--ink)" stroke-width="2" fill="none"></path>
+    ${_tel('M90 60H200', '--dc-plus', { w: 2.5 })}${_tel('M90 130H200', '--ink', { w: 2.5 })}
+    ${_tel('M115 60V89M115 101V130', '--ink', { w: 1.5 })}
+    ${_tel('M103 89H127M103 101H127', '--ink', { w: 2.5 })}
+    ${_tel('M160 60V68M160 96V104', '--ink', { w: 1.5 })}
+    <rect x="153" y="68" width="14" height="28" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.5"></rect>
+    ${_tel('M160 104L170 116M160 120V130', '--ink', { w: 1.8 })}
+    <circle cx="160" cy="120" r="2" style="fill:var(--ink)"></circle>
+    ${_kutu(200, 50, 50, 90)}${_yazi(225, 99, 'PWM', { a: 'middle', b: 10, r: '--muted' })}
+    ${_tel('M250 80H264', '--wire-l', { w: 2.5 })}${_tel('M250 95H264', '--wire-l2', { w: 2.5 })}${_tel('M250 110H264', '--wire-l3', { w: 2.5 })}
+    <circle cx="286" cy="95" r="22" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>
+    ${_yazi(286, 96, 'M', { a: 'middle', b: 13, w: 600 })}${_yazi(286, 110, '3~', { a: 'middle', b: 9 })}
+    ${_cizgi('M65 141V154M115 131V154M160 131V154M225 141V154')}
+    ${_no(65, 164, 1)}${_no(115, 164, 2)}${_no(160, 164, 3)}${_no(225, 164, 4)}
+  </svg>`,
+
+  surucuIo: (() => {
+    const panel = (x0, baslik, npn) => `
+      ${_yazi(x0 + 77, 14, baslik, { a: 'middle', b: 12, w: 600 })}
+      ${_tel(`M${x0 + 8} 34H${x0 + 148}`, '--dc-plus', { w: 2.5 })}${_yazi(x0 + 148, 28, '+24 V', { a: 'end', b: 10, r: '--dc-plus' })}
+      ${_kutu(x0 + 10, 84, 50, 56, { f: '--card' })}${_yazi(x0 + 35, 116, 'sensör', { a: 'middle', b: 10 })}
+      ${_tel(`M${x0 + 22} 34V84`, '--dc-plus', { w: 2 })}${_tel(`M${x0 + 22} 140V204`, '--ink', { w: 2 })}
+      ${_tel(`M${x0 + 60} 112H${x0 + 96}`, '--signal', { w: 2.5 })}
+      ${_kutu(x0 + 96, 84, 52, 56, { f: '--card' })}
+      ${_yazi(x0 + 101, 116, 'IN', { b: 10, w: 600 })}${_yazi(x0 + 122, npn ? 98 : 134, 'COM', { a: 'middle', b: 9 })}
+      ${npn ? _tel(`M${x0 + 138} 84V34`, '--dc-plus', { w: 2 }) : _tel(`M${x0 + 138} 140V204`, '--ink', { w: 2 })}
+      <circle cx="${x0 + 22}" cy="34" r="2.5" style="fill:var(--dc-plus)"></circle><circle cx="${x0 + 22}" cy="204" r="2.5" style="fill:var(--ink)"></circle>
+      ${npn ? `<circle cx="${x0 + 138}" cy="34" r="2.5" style="fill:var(--dc-plus)"></circle>` : `<circle cx="${x0 + 138}" cy="204" r="2.5" style="fill:var(--ink)"></circle>`}`;
+    return `<svg class="sema" viewBox="0 0 318 230" role="img" aria-label="NPN (sink) ve PNP (source) sensörlerin sürücü girişine bağlanışı">
+      ${panel(0, 'NPN (sink)', true)}${panel(163, 'PNP (source)', false)}
+      ${_tel('M8 204H310', '--ink', { w: 2.5 })}${_yazi(310, 222, '0 V', { a: 'end', b: 10 })}
+      ${_no(78, 112, 1)}${_no(241, 112, 2)}${_no(159, 204, 3)}
+    </svg>`;
+  })()
 };
 
 /* =====================================================================
@@ -1069,7 +1959,7 @@ const SEMALAR = {
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const azHareket = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
-  const sayi = (n) => { try { return Number(n).toLocaleString('tr-TR'); } catch (e) { return String(n); } };
+  const sayi = (n, b) => { try { return Number(n).toLocaleString('tr-TR', { maximumFractionDigits: b == null ? 2 : b }); } catch (e) { return String(Math.round(n * 100) / 100); } };
 
   const IKON = {
     sigorta: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="10" y="14" width="20" height="12" rx="1"></rect><path d="M3 20h34"></path></svg>',
@@ -1088,7 +1978,106 @@ const SEMALAR = {
     cam: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2" y="8" width="20" height="8" rx="2"></rect><path d="M6 12h12"></path></svg>',
     seramik: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2" y="8" width="20" height="8" rx="2"></rect><path d="M6 11h1M10 13h1M13 11h1M17 13h1"></path></svg>',
     yariiletken: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h6M16 12h6"></path><path d="M8 6v12l8-6z"></path><path d="M16 6v12"></path></svg>',
+    artimsal: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 1v3M12 20v3M1 12h3M20 12h3"></path></svg>',
+    mutlak: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5.5"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+    kilit: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>',
+    yay: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12M8 6l8 2-8 2 8 2-8 2 8 2"></path></svg>',
+    tamadim: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h6v-7h6V5h6"></path></svg>',
+    yarimadim: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h3v-3.5h3V12h3V8.5h3V5h6"></path></svg>',
+    arti: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>',
+    eksi: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg>',
+    gerilim: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg>',
+    acik: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h15"></path><path d="M14 8l4 4-4 4"></path></svg>',
+    kapali: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h13"></path><path d="M12 6l4 4-4 4"></path><path d="M19 10v8H6v-3"></path></svg>',
+    npn: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"></path><path d="M7 14l5 5 5-5"></path></svg>',
+    pnp: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V5"></path><path d="M7 10l5-5 5 5"></path></svg>',
     uyari: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"></path><path d="M12 10v5"></path><path d="M12 18v.5"></path></svg>'
+  };
+
+  /* ---------- Hesaplayıcılar ----------
+     Yeni hesaplayıcı: buraya bir kayıt ekle, bilgi sayfasında { tip: 'hesap', tur: '<ad>' } kullan. */
+  const HESAPLAR = {
+    step: {
+      gruplar: [
+        { k: 'ms', ad: 'Mikroadım', v: 8, s: [[1, 'Tam'], [2, '1/2'], [4, '1/4'], [8, '1/8'], [16, '1/16']] },
+        { k: 'hatve', ad: 'Vida hatvesi', v: 5, s: [[4, '4 mm'], [5, '5 mm'], [8, '8 mm'], [10, '10 mm']] },
+        { k: 'hiz', ad: 'İlerleme hızı', v: 20, s: [[10, '10 mm/s'], [20, '20 mm/s'], [50, '50 mm/s']] }
+      ],
+      hesapla(d) {
+        const ppr = 200 * d.ms, ppmm = ppr / d.hatve, hz = ppmm * d.hiz, rpm = (d.hiz / d.hatve) * 60;
+        return {
+          sonuclar: [['Darbe / tur', sayi(ppr)], ['Darbe / mm', sayi(ppmm)], ['Darbe frekansı', sayi(hz) + ' Hz'], ['Motor hızı', sayi(rpm) + ' d/dk']],
+          adimlar: [`200 × ${d.ms} = ${sayi(ppr)} darbe/tur`, `${sayi(ppr)} ÷ ${d.hatve} = ${sayi(ppmm)} darbe/mm`, `${sayi(ppmm)} × ${d.hiz} = ${sayi(hz)} Hz`]
+        };
+      },
+      not: '1,8° motor: 360 ÷ 1,8 = 200 tam adım/tur. PLC darbe çıkışının frekans sınırını kataloğundan kontrol et; motor torku yüksek devirde düşer.'
+    },
+    enkoder: {
+      gruplar: [
+        { k: 'c', ad: 'Enkoder', v: 131072, s: [[10000, '2500 ppr'], [131072, '17 bit'], [8388608, '23 bit']] },
+        { k: 'hatve', ad: 'Vida hatvesi', v: 10, s: [[5, '5 mm'], [10, '10 mm'], [20, '20 mm']] }
+      ],
+      hesapla(d) {
+        const um = (d.hatve * 1000) / d.c;
+        const yol = um >= 1 ? sayi(um, 2) + ' µm' : sayi(um * 1000, 1) + ' nm';
+        const aci = (360 * 3600) / d.c;
+        const ad = d.c === 10000 ? '2500 ppr × 4' : d.c === 131072 ? '2¹⁷' : '2²³';
+        return {
+          sonuclar: [['Sayım / tur', sayi(d.c)], ['Sayım başına yol', yol], ['Sayım başına açı', sayi(aci, 2) + '″'], ['1 mm için sayım', sayi(d.c / d.hatve, 0)]],
+          adimlar: [`${ad} = ${sayi(d.c)} sayım/tur`, `${d.hatve} mm ÷ ${sayi(d.c)} = ${yol}`, `360° ÷ ${sayi(d.c)} = ${sayi(aci, 2)} yay saniyesi`]
+        };
+      },
+      not: 'Mekanik doğruluk (vida hatası, boşluk) çoğu zaman enkoder çözünürlüğünden büyüktür; çözünürlük tek başına hassasiyet demek değildir.'
+    },
+    reduktor: {
+      gruplar: [
+        { k: 'p', ad: 'Servo motor (3000 d/dk)', v: 750, s: [[400, '400 W'], [750, '750 W'], [1000, '1 kW']] },
+        { k: 'i', ad: 'Redüktör oranı', v: 10, s: [[3, '3:1'], [5, '5:1'], [10, '10:1'], [20, '20:1']] }
+      ],
+      hesapla(d) {
+        const T = d.p / ((2 * Math.PI * 3000) / 60);
+        const Tc = T * d.i * 0.95;
+        const n = 3000 / d.i;
+        return {
+          sonuclar: [['Motor anma torku', sayi(T, 2) + ' N·m'], ['Çıkış torku', '≈ ' + sayi(Tc, 1) + ' N·m'], ['Çıkış hızı', sayi(n, 0) + ' d/dk'], ['Yansıyan atalet', '÷ ' + sayi(d.i * d.i)]],
+          adimlar: [`T = ${sayi(d.p)} W ÷ (2π × 3000 ÷ 60) ≈ ${sayi(T, 2)} N·m`, `${sayi(T, 2)} × ${d.i} × 0,95 ≈ ${sayi(Tc, 1)} N·m`, `3000 ÷ ${d.i} = ${sayi(n, 0)} d/dk`, `Yük ataleti motora ${d.i}² = ${sayi(d.i * d.i)} kat küçük yansır`]
+        };
+      },
+      not: 'Verim tek kademeli planet redüktör için yaklaşık %95 alındı. Çıkış torku redüktör kataloğundaki sınırı aşmamalı.'
+    },
+    disli: {
+      gruplar: [
+        { k: 'dt', ad: 'Tur başına darbe', v: 10000, s: [[1000, '1.000'], [10000, '10.000'], [100000, '100.000']] },
+        { k: 'hatve', ad: 'Vida hatvesi', v: 10, s: [[5, '5 mm'], [10, '10 mm'], [20, '20 mm']] },
+        { k: 'hiz', ad: 'İlerleme hızı', v: 100, s: [[50, '50 mm/s'], [100, '100 mm/s'], [500, '500 mm/s']] }
+      ],
+      hesapla(d) {
+        const um = (d.hatve * 1000) / d.dt;
+        const f = (d.dt / d.hatve) * d.hiz;
+        const rpm = (d.hiz / d.hatve) * 60;
+        return {
+          sonuclar: [['Darbe başına yol', sayi(um, 2) + ' µm'], ['1 mm için darbe', sayi(d.dt / d.hatve, 0)], ['Darbe frekansı', sayi(f, 0) + ' Hz'], ['Motor hızı', sayi(rpm, 0) + ' d/dk']],
+          adimlar: [`${d.hatve} mm ÷ ${sayi(d.dt)} = ${sayi(um, 2)} µm/darbe`, `${sayi(d.dt / d.hatve, 0)} × ${d.hiz} = ${sayi(f, 0)} Hz`, `${d.hiz} ÷ ${d.hatve} × 60 = ${sayi(rpm, 0)} d/dk`]
+        };
+      },
+      not: 'Elektronik dişli, PLC’nin gönderdiği darbeleri enkoder sayımına ölçekler. Darbe başına yolu büyütmek aynı hız için gereken frekansı düşürür.'
+    },
+    vfd: {
+      gruplar: [
+        { k: 'f', ad: 'Çıkış frekansı', v: 50, s: [[10, '10 Hz'], [25, '25 Hz'], [50, '50 Hz'], [75, '75 Hz']] },
+        { k: 'p', ad: 'Motor kutup sayısı', v: 4, s: [[2, '2 kutup'], [4, '4 kutup'], [6, '6 kutup']] }
+      ],
+      hesapla(d) {
+        const ns = (120 * d.f) / d.p;
+        const n = Math.round((ns * 0.96) / 5) * 5;
+        const V = d.f <= 50 ? (400 * d.f) / 50 : 400;
+        return {
+          sonuclar: [['Senkron hız', sayi(ns, 0) + ' d/dk'], ['Yaklaşık mil hızı', '≈ ' + sayi(n, 0) + ' d/dk'], ['Çıkış gerilimi', sayi(V, 0) + ' V'], ['Bölge', d.f <= 50 ? 'Sabit tork' : 'Sabit güç']],
+          adimlar: [`n = 120 × ${d.f} ÷ ${d.p} = ${sayi(ns, 0)} d/dk`, `%4 kayma ile ≈ ${sayi(n, 0)} d/dk`, d.f <= 50 ? `V/f: 400 × ${d.f} ÷ 50 = ${sayi(V, 0)} V` : '50 Hz üstünde gerilim 400 V’ta kalır; tork düşer']
+        };
+      },
+      not: '400 V / 50 Hz asenkron motor için. Kayma motora ve yüke göre değişir; etiketteki devir 50 Hz tam yükteki değerdir.'
+    }
   };
 
   /* ---------- Dizinler ---------- */
@@ -1118,13 +2107,14 @@ const SEMALAR = {
     son: DEPO.oku('son', null),
     ilerleme: DEPO.oku('ilerleme', {}),
     aramalar: DEPO.oku('aramalar', []),
-    hesap: Object.assign({ ms: 8, hatve: 5, hiz: 20 }, DEPO.oku('hesap', {})),
+    hesaplar: DEPO.oku('hesaplar', {}),
     filtre: {},
     sorgu: ''
   };
   if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
   if (!Array.isArray(durum.aramalar)) durum.aramalar = [];
   if (!durum.ilerleme || typeof durum.ilerleme !== 'object') durum.ilerleme = {};
+  if (!durum.hesaplar || typeof durum.hesaplar !== 'object') durum.hesaplar = {};
 
   /* ---------- Arama dizini ---------- */
   const KATLA = { 'ı': 'i', 'ş': 's', 'ğ': 'g', 'ü': 'u', 'ö': 'o', 'ç': 'c', 'â': 'a', 'î': 'i', 'û': 'u' };
@@ -1147,7 +2137,7 @@ const SEMALAR = {
       case 'aralik': ekle(b.baslik, b.eksen); b.satirlar.forEach((r) => ekle(r.ad + ' ' + r.bas + '–' + r.son, r.metin)); ekle(b.not); break;
       case 'formul': ekle(b.formul); b.tanimlar.forEach((t) => ekle(t)); if (b.ornek) { ekle(b.ornek.baslik); b.ornek.satirlar.forEach((t) => ekle(t)); } ekle(b.kural); break;
       case 'tablo': b.satirlar.forEach((r) => ekle(r[0], r[2])); break;
-      case 'hesap': ekle('Mikroadım, vida hatvesi, ilerleme hızı, darbe/tur, darbe/mm, darbe frekansı, motor hızı'); break;
+      case 'hesap': if (HESAPLAR[b.tur]) { ekle(HESAPLAR[b.tur].gruplar.map((g) => g.ad).join(', ')); ekle(HESAPLAR[b.tur].not); } break;
       case 'ariza': ekle('Belirti: ' + b.belirti); b.satirlar.forEach((r) => ekle(r)); break;
       case 'hatalar': b.hatalar.forEach((r) => ekle(r)); break;
       case 'parcalar': ekle(b.parcalar.join(', ')); break;
@@ -1257,7 +2247,7 @@ const SEMALAR = {
     app.innerHTML = html;
     menuGuncelle();
     aktifBolum = null;
-    if (ALT[t]) { hesapYaz(); sayfaAcildi(ALT[t]); }
+    if (ALT[t]) sayfaAcildi(ALT[t]);
     if (koru) {
       window.scrollTo(0, y);
     } else if (bekleyenBolum && ALT[t]) {
@@ -1406,7 +2396,7 @@ const SEMALAR = {
       case 'aralik': return aralikBlok(b);
       case 'formul': return formulBlok(b);
       case 'tablo': return `<div class="tablo">${b.satirlar.map((r) => `<div class="tablo-satir"><span class="tablo-etiket ${esc(r[1] || '')}">${esc(r[0])}</span><span class="tablo-metin">${esc(r[2])}</span></div>`).join('')}</div>`;
-      case 'hesap': return b.tur === 'step' ? hesapStep() : '';
+      case 'hesap': return hesapBlok(b.tur);
       case 'ariza': return `
         <div class="ariza">
           <div class="ariza-ust"><span class="panel-etiket">Belirti</span><span class="ariza-belirti">${esc(b.belirti)}</span></div>
@@ -1463,54 +2453,42 @@ const SEMALAR = {
     return `
       <div class="kart" style="gap:14px">
         <div class="formul">${esc(b.formul)}</div>
-        <div class="tanimlar">${b.tanimlar.map((t) => `<div class="tanim"><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div>`).join('')}</div>
+        <div class="tanimlar">${(b.tanimlar || []).map((t) => `<div class="tanim"><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div>`).join('')}</div>
         ${b.ornek ? `<div class="ornek"><span class="ust" style="font-size:11px">${esc(b.ornek.baslik)}</span>${b.ornek.satirlar.map((t) => `<div class="ornek-satir"><b>${esc(t[0])}</b> ${esc(t[1])}</div>`).join('')}</div>` : ''}
         ${b.kural ? `<p class="kural">${esc(b.kural)}</p>` : ''}
       </div>`;
   }
 
-  /* ---------- Step hesaplayıcı ---------- */
-  const SECENEK = {
-    ms: [[1, 'Tam'], [2, '1/2'], [4, '1/4'], [8, '1/8'], [16, '1/16']],
-    hatve: [[4, '4 mm'], [5, '5 mm'], [8, '8 mm'], [10, '10 mm']],
-    hiz: [[10, '10 mm/s'], [20, '20 mm/s'], [50, '50 mm/s']]
-  };
-  Object.keys(SECENEK).forEach((k) => {
-    if (!SECENEK[k].some(([v]) => v === durum.hesap[k])) durum.hesap[k] = { ms: 8, hatve: 5, hiz: 20 }[k];
-  });
-  function hesapStep() {
-    const grup = (k, ad) => `
-      <fieldset class="hesap-grup"><legend>${ad}</legend>
-        <div class="secenekler">${SECENEK[k].map(([v, l]) => `<button type="button" class="secenek" data-hesap="${k}" data-deger="${v}" aria-pressed="${durum.hesap[k] === v}">${l}</button>`).join('')}</div>
+  /* ---------- Hesaplayıcı görünümü ---------- */
+  function hesapDurum(tur) {
+    const h = HESAPLAR[tur];
+    const kayit = (durum.hesaplar[tur] = durum.hesaplar[tur] && typeof durum.hesaplar[tur] === 'object' ? durum.hesaplar[tur] : {});
+    h.gruplar.forEach((g) => { if (!g.s.some(([v]) => v === kayit[g.k])) kayit[g.k] = g.v; });
+    return kayit;
+  }
+  function hesapBlok(tur) {
+    const h = HESAPLAR[tur];
+    if (!h) return '';
+    const d = hesapDurum(tur);
+    const r = h.hesapla(d);
+    const grup = (g) => `
+      <fieldset class="hesap-grup"><legend>${esc(g.ad)}</legend>
+        <div class="secenekler">${g.s.map(([v, l]) => `<button type="button" class="secenek" data-hesap-tur="${tur}" data-hesap="${g.k}" data-deger="${v}" aria-pressed="${d[g.k] === v}">${esc(l)}</button>`).join('')}</div>
       </fieldset>`;
     return `
-      <div class="kart" style="gap:16px">
-        ${grup('ms', 'Mikroadım')}${grup('hatve', 'Vida hatvesi')}${grup('hiz', 'İlerleme hızı')}
-        <div class="sonuc" aria-live="polite">
-          <div><span class="sonuc-ad">Darbe / tur</span><span class="sonuc-deger" id="h-ppr"></span></div>
-          <div><span class="sonuc-ad">Darbe / mm</span><span class="sonuc-deger" id="h-ppmm"></span></div>
-          <div><span class="sonuc-ad">Darbe frekansı</span><span class="sonuc-deger" id="h-hz"></span></div>
-          <div><span class="sonuc-ad">Motor hızı</span><span class="sonuc-deger" id="h-rpm"></span></div>
-        </div>
-        <div class="adimlar"><span id="h-f1"></span><span id="h-f2"></span><span id="h-f3"></span></div>
-        <p class="kucuk">1,8° motor: 360 ÷ 1,8 = 200 tam adım/tur. PLC darbe çıkışının frekans sınırını kataloğundan kontrol et; motor torku yüksek devirde düşer.</p>
+      <div class="kart" style="gap:16px" data-hesap-kutu="${tur}">
+        ${h.gruplar.map(grup).join('')}
+        <div class="sonuc" aria-live="polite">${r.sonuclar.map((s, i) => `<div><span class="sonuc-ad">${esc(s[0])}</span><span class="sonuc-deger" id="h-${tur}-s${i}">${esc(s[1])}</span></div>`).join('')}</div>
+        <div class="adimlar">${r.adimlar.map((a, i) => `<span id="h-${tur}-a${i}">${esc(a)}</span>`).join('')}</div>
+        ${h.not ? `<p class="kucuk">${esc(h.not)}</p>` : ''}
       </div>`;
   }
-  function hesapYaz() {
-    const el = $('#h-ppr');
-    if (!el) return;
-    const { ms, hatve, hiz } = durum.hesap;
-    const ppr = 200 * ms;
-    const ppmm = ppr / hatve;
-    const hz = ppmm * hiz;
-    const rpm = (hiz / hatve) * 60;
-    el.textContent = sayi(ppr);
-    $('#h-ppmm').textContent = sayi(ppmm);
-    $('#h-hz').textContent = sayi(hz) + ' Hz';
-    $('#h-rpm').textContent = sayi(rpm) + ' d/dk';
-    $('#h-f1').textContent = `200 × ${ms} = ${sayi(ppr)} darbe/tur`;
-    $('#h-f2').textContent = `${sayi(ppr)} ÷ ${hatve} = ${sayi(ppmm)} darbe/mm`;
-    $('#h-f3').textContent = `${sayi(ppmm)} × ${hiz} = ${sayi(hz)} Hz`;
+  function hesapYaz(tur) {
+    const h = HESAPLAR[tur];
+    if (!h) return;
+    const r = h.hesapla(hesapDurum(tur));
+    r.sonuclar.forEach((s, i) => { const e = document.getElementById(`h-${tur}-s${i}`); if (e) e.textContent = s[1]; });
+    r.adimlar.forEach((a, i) => { const e = document.getElementById(`h-${tur}-a${i}`); if (e) e.textContent = a; });
   }
 
   /* ---------- Arama ekranı ---------- */
@@ -1663,10 +2641,12 @@ const SEMALAR = {
       const b = $(`[data-filtre="${d.filtre}"]`);
       if (b) b.focus({ preventScroll: true });
     } else if (d.hesap) {
-      durum.hesap[d.hesap] = Number(d.deger);
-      DEPO.yaz('hesap', durum.hesap);
-      $$(`[data-hesap="${d.hesap}"]`).forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
-      hesapYaz();
+      const tur = d.hesapTur;
+      if (!HESAPLAR[tur]) return;
+      hesapDurum(tur)[d.hesap] = Number(d.deger);
+      DEPO.yaz('hesaplar', durum.hesaplar);
+      $$(`[data-hesap-tur="${tur}"][data-hesap="${d.hesap}"]`).forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+      hesapYaz(tur);
     } else if (d.araTerim) {
       durum.sorgu = d.araTerim;
       aramaKaydet(d.araTerim);
