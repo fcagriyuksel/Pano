@@ -1,5 +1,5 @@
 /* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır. */
-const KABUK = 'pano-202609272136';
+const KABUK = 'pano-202609272155';
 const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./barlow-condensed-latin-ext-600-normal.woff2", "./barlow-condensed-latin-600-normal.woff2", "./barlow-condensed-latin-ext-700-normal.woff2", "./barlow-condensed-latin-700-normal.woff2", "./ibm-plex-sans-latin-ext-400-normal.woff2", "./ibm-plex-sans-latin-400-normal.woff2", "./ibm-plex-sans-latin-ext-500-normal.woff2", "./ibm-plex-sans-latin-500-normal.woff2", "./ibm-plex-sans-latin-ext-600-normal.woff2", "./ibm-plex-sans-latin-600-normal.woff2", "./ibm-plex-mono-latin-ext-500-normal.woff2", "./ibm-plex-mono-latin-500-normal.woff2", "./ibm-plex-mono-latin-ext-600-normal.woff2", "./ibm-plex-mono-latin-600-normal.woff2"];
 
 self.addEventListener('install', (e) => {

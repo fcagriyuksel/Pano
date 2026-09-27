@@ -5,7 +5,7 @@ Kullanım (depo kökünden):
   python3 test_sayfalar.py --ekran DIR  # ayrıca her şemanın ekran görüntüsünü DIR’e kaydeder
   python3 test_sayfalar.py --sayfa pid,ladder --ekran /tmp/ekran
 
-Kontroller: JavaScript hatası, ekranda 'undefined' / 'NaN' / '[object', yatay taşma, h1 yokluğu,
+Kontroller: açılış ekranının kendiliğinden kalkması, JavaScript hatası, ekranda 'undefined' / 'NaN' / '[object', yatay taşma, h1 yokluğu,
 her simülasyon düğmesine bir kez basma. Gerçek yazı tipleri depo kökündeki woff2 dosyalarından yüklenir.
 Gerekli: pip install playwright && playwright install chromium (ortamda Chromium varsa kurulum gerekmez).
 """
@@ -43,6 +43,9 @@ try:
             pg.on('pageerror', lambda e: hatalar.append(str(e)))
             pg.on('console', lambda m: hatalar.append(m.text) if m.type == 'error' else None)
             pg.goto(f'http://127.0.0.1:{port}/_test_sayfalar.html'); pg.wait_for_timeout(500)
+            # Açılış ekranı kendiliğinden kalkmalı ve giriş animasyonu bitmeli
+            try: pg.wait_for_function("!document.getElementById('acilis') && !document.documentElement.classList.contains('acilis')", timeout=4000)
+            except Exception: sorunlar.append((tema, 'açılış', 'açılış ekranı 4 sn içinde kalkmadı'))
             pg.evaluate("localStorage.setItem('pano.uyariOnay','true')")
             rotalar = pg.evaluate("() => { const r = []; for (const k of VERI.konular) { r.push(k.id); for (const x of k.altlar) if (x.sayfa) r.push(x.id); } return r; }")
             if a.sayfa: rotalar = [r for r in rotalar if r in a.sayfa.split(',')]

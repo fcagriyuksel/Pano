@@ -18,13 +18,14 @@ Depoda klasör yok; her şey kökte durur (GitHub Pages kökü yayınlar).
 ```
 pano-kaynak.html       TEK ANA KAYNAK: içerik + stil + kod (elle düzenlenen tek dosya)
 pwa_olustur.py         pano-kaynak.html → yayın dosyaları
+simge_olustur.py       uygulama simgeleri (SVG → PNG, Playwright)
 test_hesaplar.js       bütün hesaplayıcı kombinasyonları
 test_sayfalar.py       bütün sayfalar, iki tema, taşma ve hata kontrolü
 index.html             DERLENİR, elle düzenleme
 privacy.html           DERLENİR
 manifest.webmanifest   DERLENİR
 sw.js                  DERLENİR (önbellek sürümü her derlemede değişir)
-*.woff2, *.png         yazı tipleri ve simgeler (sabit)
+*.woff2, *.png         yazı tipleri (@fontsource, OFL) ve simgeler (simge_olustur.py üretir)
 CLAUDE.md, README.md
 ```
 
@@ -44,7 +45,7 @@ Eski sw.js dursa bile yalnızca index.html’in güncellenmesi yeter. Yine de he
 
 ## Kodun yapısı (pano-kaynak.html)
 
-Sırayla: CSS (tema belirteçleri `:root`, koyu tema iki kez tanımlı) → menü → `VERI` → `UYGULAMA` + `METINLER` → şema yardımcıları + `SEMALAR` → uygulama IIFE’si (`IKON`, `HESAPLAR`, `SIMLER`, dizinler, arama, premium, yönlendirme, ekranlar, bloklar, olaylar).
+Sırayla: CSS (tema belirteçleri `:root`, koyu tema iki kez tanımlı) → `.app` → erken betik (seçili tema + açılış ekranı kararı) → açılış ekranı `#acilis` → menü → `VERI` → `UYGULAMA` + `METINLER` → şema yardımcıları + `SEMALAR` → uygulama IIFE’si (`IKON`, `HESAPLAR`, `SIMLER`, dizinler, arama, premium, yönlendirme, ekranlar, bloklar, olaylar).
 
 ### İçerik: VERI
 
@@ -123,6 +124,9 @@ python3 test_sayfalar.py --sayfa pid --ekran /tmp/ekran   # şema görüntüleri
 - Arama, katlama tablosuyla tire türlerini eşitler (`4-20` = `4–20`); katlama tek karakteri tek karakterle değiştirmeli, yoksa vurgulama kayar.
 - Hesap seçenek düğmelerinde bölünemeyen uzun metin taşar (CSS artık kırıyor; yine de kısa tut).
 - Pnömatik valf sembolünde aktif kare portların altına kaydırılır; port x konumları sabittir.
+- Açılış ekranı oturum başına bir kez (sessionStorage `pano.acilis`) ve yalnızca hareket azaltma kapalıyken görünür. CSS ile kendi kendine kapanır (≈ 1,7 sn); JS çökse bile uygulamayı örtmez. Dokununca atlanır.
+- Açılış çizimi ile `simge_olustur.py` aynı koordinatları kullanır (bara, sigorta, uç). Biri değişirse öbürünü de güncelle.
+- Erken betik seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
 
 ## Premium ve Play Store (ertelendi)
 
