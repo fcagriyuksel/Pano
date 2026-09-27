@@ -176,7 +176,7 @@
           { nesne: stator, isaret: [21.2, -8, 4], patlat: [0, 0, 0] },
           { nesne: sargilar, isaret: [-3.5, 15, 14], patlat: [0, 0, 0] },
           { nesne: rotorN, isaret: [-8, 5, 5.05], patlat: [0, 46, 6] },
-          { nesne: miknatis, isaret: [6.2, 6.2, 0], patlat: [0, 46, 0] },
+          { nesne: miknatis, isaret: [8.3, -2.9, 0], patlat: [0, 46, 0] },
           { nesne: rotorS, isaret: [-5, 8.8, 5.05], patlat: [0, 46, -6] },
           { nesne: mil, isaret: [0, 2.05, 40], patlat: [0, 46, 0] },
           { nesne: arkaRulman, isaret: [5.7, 5.7, 0], patlat: [0, 0, -22] },
