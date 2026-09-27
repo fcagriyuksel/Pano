@@ -34,11 +34,14 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
       kamera: { yon: [1, 0.7, 1.6], patlak: [1, 0.45, 0.3] },   // bakış yönü (merkezden kameraya); patlak: Parçala’da dönülecek yön (isteğe bağlı)
       kesitler: [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }],   // isteğe bağlı; [] verilirse Kesit düğmesi yok
       patlat: true,                                      // false: Parçala düğmesi yok
+      secimdeOdak: false,                                // true: seçilen parçaya kamera yaklaşır (küçük parçalı modeller)
+      etiketBaslik: 'Klemensler',                        // isteğe bağlı: etiket tablosunun başlığı
+      etiketler: [['PUL+', 'Darbe girişi …'], /* … */],   // isteğe bağlı: 3B’deki kısa yazılar ve açıklamaları
       yeni: () => ({ acik: false }),                     // modele özgü durum (isteğe bağlı)
       dugmeler: (s) => [['ac', s.acik ? 'Kapat' : 'Aç', s.acik]],
       olay(s, olay) { if (olay === 'ac') s.acik = !s.acik; },
       tik(s, dt) { return false; },                      // animasyon sürüyorsa true döndür
-      durum: (s) => ({ metin: 'Durum satırı.' }),        // isteğe bağlı
+      durum: (s) => ({ metin: 'Durum satırı.', uyari: false }),   // isteğe bağlı; uyari: true kırmızı gösterilir
       kur(y, s) {
         const T = y.T, kok = new T.Group();
         const govde = y.ag(y.cek(y.pahliKare(40, 4), 30), 'aluminyum');
@@ -46,6 +49,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
         return {
           kok,
           parcalar: [{ nesne: govde, isaret: [0, 20, 15], patlat: [0, 0, 30] }],   // parcalar listesiyle aynı sıra
+          etiketYerleri: [{ nesne: govde, konum: [0, 25, 15], parca: 0 }],          // etiketler listesiyle aynı sıra
           uygula(s) { /* durumu sahneye yansıt: dönüş, renk … */ }
         };
       }
@@ -56,6 +60,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 
 - `parcalar[i]` ile `kur()` dönüşündeki `parcalar[i]` aynı parçadır. `isaret`: numaranın durduğu nokta (parçanın yerel koordinatı). `patlat`: parçalanınca kayma (parçanın üst nesnesinin koordinatında).
 - Durum (`s`) bellekte tutulur; sayfaya dönünce kaldığı yerden sürer. Kamera her açılışta sıfırlanır.
+- **Etiketler** (ör. klemens uçları `PUL+`, `A−`) yalnızca ait oldukları parça seçiliyken 3B’de görünür. Etikete dokununca açıklaması seçim kutusunda çıkar. Aynı etiketler modelin altında tablo olarak listelenir ve aranabilir. `secimdeOdak: true` ile birlikte kullan: parça seçilince kamera yaklaşır, etiketler okunur hâle gelir.
 - `tik` yalnızca çizim döngüsü çalışırken çağrılır. Döngü bir düğmeye basınca, sürüklerken ve `tik` true döndürdükçe sürer; durunca kendiliğinden durur (pil tüketmez).
 
 ## `y` yardımcıları
@@ -93,6 +98,8 @@ Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleşti
 - **Dönen parçalar kökün doğrudan çocuğu olmalı.** `patlat` kayması parçanın üst nesnesinin koordinatındadır. Dönen bir grubun içindeki parçaya yan kayma verirsen, grup döndükçe kayma yönü de döner. Dönen her parçayı ayrı ayrı döndür (`uygula` içinde `rotation.z`).
 - **Malzemeyi `uygula` anında oku.** Çalışma zamanı her parçaya kendi malzeme kopyasını verir (seçim vurgusu için). `kur` sırasında sakladığın malzeme nesnesi değil, `ag.material` değişir. Parça içinde ayrı renklenecek ağlara ayrı malzeme ver (ör. her bobine `bakir.clone()`).
 - **Yeni Three.js sınıfı.** `T.X is not a constructor` hatası: sınıfı `araclar/three_olustur.py` → `DISA` listesine ekle ve betiği çalıştır.
+- **Örtülme payı küçük ve sabit olmalı.** Numara ve etiketin arkada kalıp kalmadığı ışın testiyle bulunur. Pay mesafeye oranlı olursa (ör. %2) uzak kamerada 2 mm’lik bir kapağın arkasındaki numara görünür kalır. Pay mm cinsinden sabittir (numara 0,3 mm, etiket 0,5 mm); numarayı yüzeyin 0,05–0,1 mm dışına koy.
+- **Belgelenen her alan çalışmalı.** `durum().uyari` bir süre çalışma zamanında hiç okunmadı; uyarılar düz görünüyordu. Model biçimine yeni bir alan eklersen hem bu rehbere hem `86-model.js`’e ekle ve bir kez gözle dene.
 - **Işık.** Işık kameraya bağlıdır. Yoğunluğu artırırsan kameraya dik bakan açık renkli yüzler beyaza kaçar; önden bakarak kontrol et.
 
 ## Three.js’i güncellemek

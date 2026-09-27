@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PANO">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609272303">
+<meta name="pano-surum" content="202609272313">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
@@ -369,6 +369,15 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 .model-secim .isaret-no,.model-parca[aria-pressed="true"] .isaret-no{background:var(--accent);color:var(--on-accent)}
 .model-parcalar li{display:block}
 .model-parca{display:flex;gap:12px;width:100%;padding:4px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:8px}
+/* Etiketler: klemens ve uç adları; ait oldukları parça seçiliyken görünür */
+.model-etiket{position:absolute;left:0;top:0;padding:2px 5px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:var(--ink);font-family:var(--f-mono);font-size:10px;font-weight:600;line-height:1.2;white-space:nowrap;pointer-events:auto;cursor:pointer;transition:opacity .2s}
+.model-etiket::before{content:'';position:absolute;inset:-6px}
+.model-etiket.gizli-no{visibility:hidden}
+.model-etiket.arkada{opacity:0;pointer-events:none}
+.model-etiket[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.model-etiket-ad{flex-shrink:0;align-self:flex-start;padding:2px 7px;border-radius:6px;background:var(--accent);color:var(--on-accent);font-family:var(--f-mono);font-size:13px;font-weight:600}
+.model-etiket-satir{width:100%;border:0;border-bottom:1px solid var(--line-soft);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.model-etiket-satir[aria-pressed="true"]{background:var(--chip)}
 
 @media (prefers-reduced-motion: reduce){
   *{scroll-behavior:auto!important;transition:none!important}
@@ -473,7 +482,7 @@ const MODELLER = {};
    ===================================================================== */
 const UYGULAMA = {
   ad: 'PANO',
-  surum: '1.5.0',
+  surum: '1.6.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
@@ -2541,6 +2550,7 @@ VERI.konular.push({
   ozet: 'Step, servo ve hız sürücüleri',
   giris: 'Sürücü, kontrol sinyalini motorun ihtiyaç duyduğu akım ve gerilime çeviren güç katıdır.',
   altlar: [
+    { id: 'surucu-ic-yapi', kod: '3B', ad: 'Step sürücü: klemensler (3B model)', alt: 'PUL, DIR, ENA, A±, B± · DIP anahtarları · iç yapı', sayfa: 'surucu-ic-yapi' },
     { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP anahtarı', sayfa: 'surucu-step' },
     { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork', sayfa: 'surucu-servo' },
     { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler', sayfa: 'surucu-vfd' },
@@ -2549,6 +2559,37 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'surucu-ic-yapi': {
+    baslik: 'Step sürücü: klemensler ve iç yapı',
+    giris: 'Step sürücünün bir yanında sinyal ve güç klemensleri, DIP anahtarları ve LED’ler bulunur. İçinde sinyalleri yalıtan optokuplörler, denetleyici ve motor akımını ayarlayan MOSFET köprüleri vardır.',
+    etiketler: ['3B model', 'PUL · DIR · ENA', 'A± · B±', 'DIP anahtarı'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Klemensler ve parçalar', bloklar: [
+        { tip: 'model', tur: 'step-surucu' }
+      ]},
+      { id: 'baglanti', kisa: 'Bağlantı', baslik: 'Bağlantı sırası', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enerjiyi kes. Sargı çiftlerini motor tarafında ölçerek bul.',
+          'A sargısını A+ / A−, B sargısını B+ / B− uçlarına bağla.',
+          'DC beslemeyi +V ve GND uçlarına bağla; kutbu iki kez kontrol et.',
+          'PLC’nin darbe ve yön çıkışlarını PUL ve DIR girişlerine bağla. NPN çıkışta artı uçlar ortak artıya, eksi uçlar PLC çıkışlarına gider.',
+          'DIP anahtarlarıyla akımı motor etiketine, mikroadımı PLC’deki darbe/tur ayarına göre seç.',
+          'Enerji ver: PWR yanmalı, ALM sönük kalmalı. İlk denemeyi düşük hızla yap.'
+        ]},
+        { tip: 'not', metin: 'Uç adları ve sırası üreticiye göre değişir; sürücünün üstündeki etikete ve kataloğa bak. Anahtarların anlamı ve NPN/PNP bağlantı: Step sürücüler ve Sürücü giriş–çıkışları sayfaları.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['PUL ve DIR girişlerini doğrudan 24 V ile sürmek', 'Giriş 5 V içinse optokuplör aşırı akımla bozulabilir. Doğrusu: sürücü 24 V girişi destekliyorsa onu kullan; desteklemiyorsa katalogdaki seri direnci tak.'],
+          ['Motor kablosunu enerji varken sökmek ya da takmak', 'Sargıdaki akım kesilince oluşan ark ve gerilim sıçraması sürücünün çıkış katını bozabilir. Doğrusu: önce enerjiyi kes.'],
+          ['Sürücüyü havasız bir köşeye sıkıştırmak', 'Taban ısıyı atamaz; sürücü ısınır, akımı düşürür ya da alarma geçer. Doğrusu: metal yüzeye bağla, çevresinde boşluk bırak.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Step motor', 'DC güç kaynağı', 'PLC transistör çıkışı', 'Ekranlı kablo'] }
+      ]}
+    ]
+  },
   'surucu-step': {
     baslik: 'Step sürücüler',
     giris: 'Step sürücü PLC’den gelen darbeleri sargı akımına çevirir. Akımı, mikroadımı ve bekleme akımını çoğunlukla üstündeki DIP anahtarlarla ayarlarsın.',
@@ -2864,6 +2905,182 @@ Object.assign(HESAPLAR, {
     not: '400 V / 50 Hz asenkron motor için. Kayma motora ve yüke göre değişir; etiketteki devir 50 Hz tam yükteki değerdir.'
   },
 });
+
+/* ---- kaynak/konular/04-suruculer/modeller.js ---- */
+/* Sürücüler: 3B modeller. Ölçüler mm; sürücü panoya tabanıyla bağlanır (z = 0 pano yüzü, +z öne),
+   uzun kenarı dikey (y), klemensler sağ yandadır (+x). */
+(() => {
+  const ACIK = (b) => (b ? 'ON' : 'OFF');
+  const grupYaz = (d, a, b) => d.slice(a, b).map(ACIK).join(' ');
+  /* Etiket sırası: 6 sinyal ucu, 6 güç ve motor ucu, 3 DIP grubu, 2 LED. kur() içindeki etiketYerleri aynı sırada. */
+  const SINYAL = ['PUL+', 'PUL−', 'DIR+', 'DIR−', 'ENA+', 'ENA−'], GUC = ['+V', 'GND', 'A+', 'A−', 'B+', 'B−'];
+
+  Object.assign(MODELLER, {
+    'step-surucu': {
+      aciklama: 'Step sürücünün 3B modeli: soğutucu taban, kapak, sinyal ve güç klemensleri, DIP anahtarları, LED’ler, ana kart, optokuplörler, denetleyici, MOSFET köprüleri ve kondansatörler.',
+      not: 'Bir klemense dokun: kamera yaklaşır, uçların adları çıkar; bir ada dokununca oraya ne bağlanacağı yazar. DIP ayarını enerji varken değiştirip ne olduğuna bak. Örnek, DM542 tipi genel bir sürücüdür; uç adları ve sırası üreticiye göre değişir.',
+      etiketBaslik: 'Klemensler, anahtarlar ve LED’ler',
+      etiketler: [
+        ['PUL+', 'Darbe girişi (+). Her darbe bir adım ya da mikroadım. Giriş optokuplörlüdür; 5 V dışındaki sinyallerde seri direnç gerekebilir, kataloğa bak.'],
+        ['PUL−', 'Darbe girişi (−). NPN çıkışlı PLC’de PUL+ artıya, PUL− PLC çıkışına bağlanır (ortak anot). PNP çıkışta PUL+ çıkışa, PUL− 0 V’a gider (ortak katot).'],
+        ['DIR+', 'Yön girişi (+). Seviyesi dönüş yönünü seçer. Yön sinyali, ilk darbeden katalogdaki süre kadar (ör. 5 µs) önce değişmeli.'],
+        ['DIR−', 'Yön girişi (−). Bağlantı mantığı PUL− ile aynıdır.'],
+        ['ENA+', 'Etkinleştirme girişi (+). Çoğu sürücüde aktif olunca çıkış kesilir, motor serbest kalır; bağlı değilse sürücü çalışır. Mantığı kataloğa göre doğrula.'],
+        ['ENA−', 'Etkinleştirme girişi (−).'],
+        ['+V', 'DC besleme artı; sürücünün izin verdiği aralıkta (ör. 24–48 V). Ters bağlamak sürücüyü bozar.'],
+        ['GND', 'DC besleme eksi (0 V).'],
+        ['A+', 'Motorun A sargısının bir ucu.'],
+        ['A−', 'A sargısının öbür ucu. A+ ile A− aynı sargının iki ucudur; ölçerek bul.'],
+        ['B+', 'Motorun B sargısının bir ucu.'],
+        ['B−', 'B sargısının öbür ucu. Motor ters dönerse bir sargının iki ucunu yer değiştir ya da DIR mantığını çevir.'],
+        ['SW1–3', 'Çıkış akımı. Motorun faz akımına göre seçilir; hangi konumun hangi akım olduğu sürücünün üstündeki tabloda yazar.'],
+        ['SW4', 'Bekleme akımı. Motor durunca akımı düşürür: ısınma azalır, tutma torku düşer.'],
+        ['SW5–8', 'Mikroadım: tur başına darbe sayısı. PLC’deki darbe/tur ayarıyla aynı olmalı.'],
+        ['PWR', 'Besleme LED’i (yeşil).'],
+        ['ALM', 'Alarm LED’i (kırmızı). Yanıp sönme sayısı arıza türünü gösterir (aşırı akım, aşırı ya da düşük gerilim …); tablo sürücünün üstündedir.']
+      ],
+      parcalar: [
+        ['Sinyal klemensi', 'PLC’den gelen darbe (PUL), yön (DIR) ve etkinleştirme (ENA) girişleri. Birçok sürücüde klemens fiş şeklindedir: kabloları sökmeden sürücü değiştirilebilir.'],
+        ['Güç ve motor klemensi', '+V ve GND besleme, A± ve B± motor sargıları. Motor kablosunu enerji varken sökme ya da takma: sürücü bozulabilir.'],
+        ['DIP anahtarları', 'Akım (SW1–3), bekleme akımı (SW4), mikroadım (SW5–8). Sürücü ayarı açılışta okur: enerjiyi kesip değiştir.'],
+        ['LED’ler', 'PWR besleme, ALM alarm.'],
+        ['Soğutucu taban', 'Alüminyum taban güç katının ısısını panoya iletir. Metal yüzeye oturmalı; çevresinde hava dolaşmalı.'],
+        ['Kapak', 'Kartı korur. Üstündeki tablolar akım ve mikroadım ayarlarını gösterir.'],
+        ['Ana kart', 'Denetleyici, optokuplörler ve güç katının bağlantıları bu karttadır.'],
+        ['Optokuplörler', 'PLC sinyallerini sürücü devresinden yalıtır. Giriş LED’inin akımı katalogdaki aralıkta olmalı; yüksek gerilimde seri direnç bu akımı sınırlar.'],
+        ['Denetleyici', 'Darbeleri sayar; mikroadım için iki sargının akımını sinüs ve kosinüs biçiminde ayarlar.'],
+        ['MOSFET köprüleri', 'Her sargı için bir H köprüsü. Akımı hızla açıp kapatarak (PWM) sargı akımını DIP ile seçilen değerde tutar; ısısını tabana verir.'],
+        ['Kondansatörler', 'Beslemeyi süzer ve motor yavaşlarken geri bastığı enerjiyi karşılar.']
+      ],
+      kamera: { yon: [1.5, 0.55, 1] },
+      secimdeOdak: true,
+      kesitler: [{ ad: 'kapaksız', planlar: [[0, 0, -1, 26]] }, { ad: 'kart altı', planlar: [[0, 0, -1, 11.9]] }],
+      yeni: () => ({ enerji: false, ena: false, dip: [true, false, true, false, true, true, false, true], okunan: null }),
+      dugmeler: (s) => [
+        ['enerji', s.enerji ? 'Enerjiyi kes' : 'Enerji ver', s.enerji],
+        ['dip', 'Akım ayarı (SW1–3)'],
+        ['ena', s.ena ? 'ENA: aktif' : 'ENA: pasif', s.ena]
+      ],
+      olay(s, olay) {
+        if (olay === 'enerji') { s.enerji = !s.enerji; s.okunan = s.enerji ? s.dip.slice() : null; }
+        else if (olay === 'dip') {
+          const n = ((s.dip[0] ? 1 : 0) + (s.dip[1] ? 2 : 0) + (s.dip[2] ? 4 : 0) + 1) % 8;
+          s.dip[0] = !!(n & 1); s.dip[1] = !!(n & 2); s.dip[2] = !!(n & 4);
+        } else if (olay === 'ena') s.ena = !s.ena;
+      },
+      durum(s) {
+        const ayar = `SW1–3: ${grupYaz(s.dip, 0, 3)} · SW4: ${grupYaz(s.dip, 3, 4)} · SW5–8: ${grupYaz(s.dip, 4, 8)}`;
+        if (!s.enerji) return { metin: `Enerji yok. ${ayar}. Ayarı enerjisizken değiştir.` };
+        if (s.okunan && s.okunan.join() !== s.dip.join()) return { metin: `Anahtar değişti ama sürücü ayarı açılışta okur; hâlâ eski akımla çalışıyor. Enerjiyi kesip yeniden ver. ${ayar}.`, uyari: true };
+        if (s.ena) return { metin: 'ENA aktif: çoğu sürücüde çıkış kesilir, motor serbest kalır ve elle çevrilebilir. PWR yanıyor.' };
+        return { metin: `Enerji var, PWR yanıyor. Sürücü darbe bekliyor; motor bekleme akımıyla tutuluyor. ${ayar}.` };
+      },
+
+      kur(y) {
+        const T = y.T, TUR = Math.PI * 2;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const kutu = (w, h, d, m, x, yy, z, sec) => yer(y.ag(new T.BoxGeometry(w, h, d), m, sec), x, yy, z);
+        const yuvarlakDikdortgen = (w, h, r) => {
+          const a = w / 2, b = h / 2;
+          return new T.Shape().moveTo(-a + r, -b).lineTo(a - r, -b).quadraticCurveTo(a, -b, a, -b + r).lineTo(a, b - r).quadraticCurveTo(a, b, a - r, b)
+            .lineTo(-a + r, b).quadraticCurveTo(-a, b, -a, b - r).lineTo(-a, -b + r).quadraticCurveTo(-a, -b, -a + r, -b);
+        };
+        const dikdortgenDelik = (x0, y0, x1, y1) => new T.Path().moveTo(x0, y0).lineTo(x0, y1).lineTo(x1, y1).lineTo(x1, y0).closePath();
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- soğutucu taban: bağlantı kulaklı alüminyum plaka ---- */
+        const tabanSekli = yuvarlakDikdortgen(75, 130, 3);
+        [[28, 61.5], [-28, 61.5], [28, -61.5], [-28, -61.5]].forEach(([x, yy]) => tabanSekli.holes.push(new T.Path().absarc(x, yy, 2.2, 0, TUR, true)));
+        const taban = yer(y.ag(y.cek(tabanSekli, 5, { pah: 0.4 }), 'aluminyum'), 0, 0, 2.5);
+
+        /* ---- kapak: üst levha, üç duvar ve açıklıklı sağ panel ---- */
+        const SINYAL_Y = 3, GUC_Y = -35, DIP_Y = 33, adim = 5.08;
+        const panelSekli = new T.Shape().moveTo(-31, -59).lineTo(-5.05, -59).lineTo(-5.05, 59).lineTo(-31, 59).closePath();   // x = −z (dünya)
+        panelSekli.holes.push(dikdortgenDelik(-24.05, SINYAL_Y - 15.3, -11.95, SINYAL_Y + 15.3), dikdortgenDelik(-24.05, GUC_Y - 15.3, -11.95, GUC_Y + 15.3),
+          dikdortgenDelik(-23.5, DIP_Y - 11, -14.5, DIP_Y + 11), new T.Path().absarc(-22, 51, 1.8, 0, TUR, true), new T.Path().absarc(-22, 55, 1.8, 0, TUR, true));
+        const kapak = grup(
+          yer(y.ag(y.cek(yuvarlakDikdortgen(75, 118, 3), 1.95, { pah: 0.4 }), 'plastik'), 0, 0, 32.025),
+          kutu(1.5, 118, 25.95, 'plastik', -36.75, 0, 18.025),
+          kutu(71.9, 1.5, 25.95, 'plastik', 0, 58.25, 18.025),
+          kutu(71.9, 1.5, 25.95, 'plastik', 0, -58.25, 18.025),
+          yer(y.ag(new T.ExtrudeGeometry(panelSekli, { depth: 1.5, bevelEnabled: false }).rotateY(Math.PI / 2), 'plastik'), 36, 0, 0),
+          kutu(56, 34, 0.1, 'plastikAcik', -2, 30, 33.1, { kenar: false }),    // akım ve mikroadım tabloları (yazısız gösterim)
+          kutu(56, 40, 0.1, 'plastikAcik', -2, -20, 33.1, { kenar: false })
+        );
+
+        /* ---- klemensler: gövde, vida başları, kablo girişleri ---- */
+        const klemens = (yc) => {
+          const g = grup(kutu(8.9, 30.5, 12, 'klemens', 42.05, yc, 18));
+          const vida = y.silindir(1.55, 1.2, 20), yuva = new T.BoxGeometry(0.5, 2.4, 0.3), giris = new T.BoxGeometry(0.3, 3.4, 3.6);
+          for (let i = 0; i < 6; i++) {
+            const yy = yc + (2.5 - i) * adim;
+            g.add(yer(y.ag(vida, 'celik', { esik: 60 }), 42.5, yy, 24.65), yer(y.ag(yuva, 'entegre', { kenar: false }), 42.5, yy, 25.42), yer(y.ag(giris, 'entegre', { kenar: false }), 46.7, yy, 16));
+          }
+          return g;
+        };
+        const sinyal = klemens(SINYAL_Y), guc = klemens(GUC_Y);
+
+        /* ---- DIP anahtarları ve LED’ler ---- */
+        const suruguler = [];
+        const dip = grup(kutu(3, 21, 8, 'kabloKirmizi', 39.05, DIP_Y, 19));
+        for (let j = 0; j < 8; j++) {
+          const sg = kutu(1.3, 1.5, 2.6, 'plastikAcik', 41.25, DIP_Y + (3.5 - j) * 2.54, 19, { esik: 60 });   // j = 0: SW1
+          dip.add(sg);
+          suruguler.push(sg);
+        }
+        const ledGeo = new T.CylinderGeometry(1.5, 1.5, 2.5, 20).rotateZ(Math.PI / 2);
+        const pwr = yer(y.ag(ledGeo, y.malzeme('ledYesil').clone(), { kenar: false }), 38.8, 55, 22);
+        const alm = yer(y.ag(ledGeo, y.malzeme('ledKirmizi').clone(), { kenar: false }), 38.8, 51, 22);
+        const ledler = grup(pwr, alm);
+        const pwrKapali = pwr.material.color.clone(), pwrAcik = new T.Color(0x39e86a);
+
+        /* ---- iç yapı ---- */
+        const kart = kutu(70, 112, 1.6, 'kart', 0, 0, 12.8);
+        const opto = grup(...[-8, 1, 10].map((yy) => kutu(4.6, 6.4, 3.4, 'plastikAcik', 28, yy, 15.35)));
+        const denetleyici = kutu(12, 12, 1.6, 'entegre', 5, 12, 14.45);
+        const mosfet = grup();
+        [-26, -12].forEach((x) => [-45, -33, -21, -9].forEach((yy) => mosfet.add(kutu(10, 6, 3.95, 'entegre', x, yy, 7.1))));
+        const kondansator = grup();
+        [-40, -28].forEach((yy) => kondansator.add(yer(y.ag(y.silindir(5, 16, 32), 'kondansator'), 20, yy, 21.65), yer(y.ag(y.silindir(4.6, 0.3, 32), 'celik', { kenar: false }), 20, yy, 29.85)));
+
+        const parcalar = [
+          { nesne: sinyal, isaret: [46.6, SINYAL_Y + 15.3, 24.1], patlat: [24, 0, 0] },
+          { nesne: guc, isaret: [46.6, GUC_Y + 15.3, 24.1], patlat: [24, 0, 0] },
+          { nesne: dip, isaret: [40.6, DIP_Y + 11, 23.1], patlat: [0, 0, 18] },
+          { nesne: ledler, isaret: [40.1, 57.5, 22], patlat: [0, 0, 18] },
+          { nesne: taban, isaret: [30, 63, 2.55], patlat: [0, 0, 0] },
+          { nesne: kapak, isaret: [-20, 20, 33.1], patlat: [0, 0, 44] },
+          { nesne: kart, isaret: [-30, 50, 0.85], patlat: [0, 0, 18] },
+          { nesne: opto, isaret: [28, 10, 17.1], patlat: [0, 0, 18] },
+          { nesne: denetleyici, isaret: [0, 0, 0.85], patlat: [0, 0, 18] },
+          { nesne: mosfet, isaret: [-26, -9, 9.1], patlat: [0, 0, 0] },
+          { nesne: kondansator, isaret: [20, -40, 30.05], patlat: [0, 0, 18] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+
+        /* Etiketler: klemens uçlarında kablo girişinin hemen önünde; DIP gruplarında ve LED’lerde yanda. */
+        const etiketYerleri = [];
+        SINYAL.forEach((ad, i) => etiketYerleri.push({ nesne: sinyal, konum: [47.6, SINYAL_Y + (2.5 - i) * adim, 21], parca: 0 }));
+        GUC.forEach((ad, i) => etiketYerleri.push({ nesne: guc, konum: [47.6, GUC_Y + (2.5 - i) * adim, 21], parca: 1 }));
+        const swY = (j) => DIP_Y + (3.5 - j) * 2.54;   // SW1 en üstte
+        [swY(1), swY(3), (swY(5) + swY(6)) / 2].forEach((yy) => etiketYerleri.push({ nesne: dip, konum: [42.5, yy, 24.5], parca: 2 }));
+        etiketYerleri.push({ nesne: ledler, konum: [41, 55, 24.5], parca: 3 }, { nesne: ledler, konum: [41, 51, 19.5], parca: 3 });
+
+        return {
+          kok,
+          parcalar,
+          etiketYerleri,
+          uygula(s) {
+            suruguler.forEach((sg, j) => { sg.position.z = s.dip[j] ? 21.1 : 16.9; });   // ON öne (+z)
+            pwr.material.color.copy(s.enerji ? pwrAcik : pwrKapali);
+          }
+        };
+      }
+    }
+  });
+})();
 
 /* ---- kaynak/konular/05-kontaktor-roleler/konu.js ---- */
 /* Kontaktör ve röleler: konu tanımı ve bilgi sayfaları. */
@@ -7528,6 +7745,10 @@ const MALZEMELER = {
   plastikAcik: { renk: 0xe8e4da, metal: 0, puruz: 0.65 },
   balata: { renk: 0x8c7b66, metal: 0, puruz: 0.85 },
   kart: { renk: 0x2f6b4a, metal: 0.05, puruz: 0.6 },
+  klemens: { renk: 0x2e7a4e, metal: 0, puruz: 0.6 },
+  kondansator: { renk: 0x2b4476, metal: 0.15, puruz: 0.45 },
+  ledYesil: { renk: 0x1f4d2e, metal: 0, puruz: 0.3 },
+  ledKirmizi: { renk: 0x5a2020, metal: 0, puruz: 0.3 },
   entegre: { renk: 0x1c1f22, metal: 0.1, puruz: 0.5 },
   vurgu: { r: '--accent', metal: 0.1, puruz: 0.5 },
   kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
@@ -7537,7 +7758,7 @@ const MALZEMELER = {
 };
 
 const modelDurum = (tur) => {
-  if (!durum.model[tur]) durum.model[tur] = Object.assign({ patlat: false, kesit: 0, secili: -1 }, MODELLER[tur].yeni ? MODELLER[tur].yeni() : {});
+  if (!durum.model[tur]) durum.model[tur] = Object.assign({ patlat: false, kesit: 0, secili: -1, etiket: -1 }, MODELLER[tur].yeni ? MODELLER[tur].yeni() : {});
   return durum.model[tur];
 };
 
@@ -7555,6 +7776,8 @@ function modelDugmeleri(tur, s) {
 const modelKesitleri = (tur) => MODELLER[tur].kesitler || [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }];
 
 function modelSecimMetni(tur, s) {
+  const e = s.etiket >= 0 && MODELLER[tur].etiketler ? MODELLER[tur].etiketler[s.etiket] : null;
+  if (e) return `<span class="model-etiket-ad">${esc(e[0])}</span><span><span class="isaret-metin">${esc(e[1])}</span></span>`;
   const p = MODELLER[tur].parcalar[s.secili];
   return p ? `<span class="isaret-no" aria-hidden="true">${s.secili + 1}</span><span><span class="isaret-ad">${esc(p[0])}</span><span class="isaret-metin">${esc(p[1])}</span></span>` : '';
 }
@@ -7568,15 +7791,17 @@ function modelBlok(tur) {
       <div class="kart model-kutu">
         <div class="model-sahne" id="model-${tur}-s" role="img" aria-label="${esc(M.aciklama)}">
           <p class="model-bilgi" id="model-${tur}-y">3B model yükleniyor…</p>
-          <div class="model-isaretler" id="model-${tur}-i">${M.parcalar.map((p, i) => `<button type="button" class="model-no" tabindex="-1" aria-hidden="true" data-model-parca="${i}" aria-pressed="${s.secili === i}">${i + 1}</button>`).join('')}</div>
+          <div class="model-isaretler" id="model-${tur}-i">${M.parcalar.map((p, i) => `<button type="button" class="model-no" tabindex="-1" aria-hidden="true" data-model-parca="${i}" aria-pressed="${s.secili === i}">${i + 1}</button>`).join('')}${(M.etiketler || []).map(([ad], i) => `<button type="button" class="model-etiket gizli-no" tabindex="-1" aria-hidden="true" data-model-etiket="${i}" aria-pressed="${s.etiket === i}">${esc(ad)}</button>`).join('')}</div>
         </div>
         <div class="model-secim" id="model-${tur}-c" aria-live="polite"${s.secili < 0 ? ' hidden' : ''}>${modelSecimMetni(tur, s)}</div>
-        ${d ? `<div class="sim-durum" id="model-${tur}-d" aria-live="polite">${esc(d.metin)}</div>` : ''}
+        ${d ? `<div class="sim-durum${d.uyari ? ' uyari' : ''}" id="model-${tur}-d" aria-live="polite">${esc(d.metin)}</div>` : ''}
         <div class="dugme-satir" id="model-${tur}-b">${modelDugmeleri(tur, s)}</div>
         <p class="kucuk">${esc(M.not)}</p>
       </div>
       <ol class="isaretler model-parcalar">${M.parcalar.map(([ad, m], i) => `
         <li><button type="button" class="model-parca" data-model-parca="${i}" aria-pressed="${s.secili === i}"><span class="isaret-no" aria-hidden="true">${i + 1}</span><span><span class="isaret-ad"><span class="gizli">${i + 1}. </span>${esc(ad)}</span><span class="isaret-metin">${esc(m)}</span></span></button></li>`).join('')}</ol>
+      ${M.etiketler ? `<p class="ust">${esc(M.etiketBaslik || 'Etiketler')}</p>
+      <div class="tablo">${M.etiketler.map(([ad, m], i) => `<button type="button" class="tablo-satir model-etiket-satir" data-model-etiket="${i}" aria-pressed="${s.etiket === i}"><span class="tablo-etiket">${esc(ad)}</span><span class="tablo-metin">${esc(m)}</span></button>`).join('')}</div>` : ''}
     </div>`;
 }
 
@@ -7612,7 +7837,11 @@ function modelHata(o, neden) {
 function modelYaz(o) {
   const M = MODELLER[o.tur], s = modelDurum(o.tur);
   const de = document.getElementById(`model-${o.tur}-d`);
-  if (de && M.durum) { const m = M.durum(s).metin; if (de.textContent !== m) de.textContent = m; }
+  if (de && M.durum) {
+    const d = M.durum(s);
+    if (de.textContent !== d.metin) de.textContent = d.metin;
+    de.classList.toggle('uyari', !!d.uyari);
+  }
   const be = document.getElementById(`model-${o.tur}-b`), yeni = modelDugmeleri(o.tur, s);
   if (be && be.dataset.son !== yeni) {
     const odak = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.modelOlay : null;
@@ -7622,22 +7851,28 @@ function modelYaz(o) {
   }
   const ce = document.getElementById(`model-${o.tur}-c`);
   if (ce) { ce.hidden = s.secili < 0; ce.innerHTML = modelSecimMetni(o.tur, s); }
-  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili)));
+  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili && s.etiket < 0)));
+  $$('[data-model-etiket]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelEtiket) === s.etiket)));
 }
 
 function modelTikla(o, e) {
-  const el = e.target.closest('[data-model-olay],[data-model-parca]');
+  const el = e.target.closest('[data-model-olay],[data-model-parca],[data-model-etiket]');
   if (!el) return;
   const M = MODELLER[o.tur], s = modelDurum(o.tur);
-  if (el.dataset.modelParca != null) {
+  if (el.dataset.modelEtiket != null) {
+    const i = Number(el.dataset.modelEtiket);
+    s.etiket = s.etiket === i ? -1 : i;
+    if (s.etiket >= 0 && o.etiketParca) s.secili = o.etiketParca[i];
+  } else if (el.dataset.modelParca != null) {
     const i = Number(el.dataset.modelParca);
-    s.secili = s.secili === i ? -1 : i;
+    s.secili = s.secili === i && s.etiket < 0 ? -1 : i;
+    s.etiket = -1;
   } else {
     const olay = el.dataset.modelOlay;
     if (olay === 'yeniden') { modelleriKur(); return; }
     if (olay === 'patlat') { s.patlat = !s.patlat; if (o.gorunum) o.gorunum.patlatildi(); }
     else if (olay === 'kesit') s.kesit = (s.kesit + 1) % (modelKesitleri(o.tur).length + 1);
-    else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
+    else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; s.etiket = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
     else if (M.olay) M.olay(s, olay);
   }
   modelYaz(o);
@@ -7821,6 +8056,9 @@ function modelBaslat(T, o) {
     });
   }
   const secilebilir = parcalar.flatMap((p) => p.aglar).concat(kapaklar);
+  /* Etiketler (ör. klemens adları): yalnızca ait oldukları parça seçiliyken görünür. */
+  const etiketYerleri = (m.etiketYerleri || []).map((e) => ({ nesne: e.nesne, konum: new T.Vector3(...e.konum), parca: e.parca }));
+  o.etiketParca = etiketYerleri.map((e) => e.parca);
 
   /* ---- kamera: başlangıç yönünden bakınca model (birleşik ve parçalı hâlde) çerçeveye sığar ---- */
   const yon = new T.Vector3(...(M.kamera && M.kamera.yon ? M.kamera.yon : [1, 0.7, 1.6])).normalize();
@@ -7897,10 +8135,19 @@ function modelBaslat(T, o) {
     const e = p * p * (3 - 2 * p);
     parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, e));
   }
+  /* secimdeOdak: seçilen parçaya yaklaş (küçük parçalı modellerde klemens, anahtar okunur hâle gelir). */
+  let odakQ = 0, odakParca = -1;
+  const odakKure = new T.Sphere();
   function kameraYerlestir() {
     const e = p * p * (3 - 2 * p);
     const merkez = cerceve[0].merkez.clone().lerp(cerceve[1].merkez, e);
-    const r = (cerceve[0].d + (cerceve[1].d - cerceve[0].d) * e) * gor.yakin;
+    let r = (cerceve[0].d + (cerceve[1].d - cerceve[0].d) * e) * gor.yakin;
+    if (odakQ > 0 && parcalar[odakParca]) {
+      new T.Box3().setFromObject(parcalar[odakParca].nesne).getBoundingSphere(odakKure);
+      const q = odakQ * odakQ * (3 - 2 * odakQ);
+      merkez.lerp(odakKure.center, q);
+      r += (Math.max(odakKure.radius, 12) / Math.sin((kamera.fov * Math.PI) / 360) * 1.3 * gor.yakin - r) * q;
+    }
     kamera.position.set(Math.sin(gor.fi) * Math.sin(gor.teta), Math.cos(gor.fi), Math.sin(gor.fi) * Math.cos(gor.teta)).multiplyScalar(r).add(merkez);
     kamera.near = Math.max(0.5, r / 50);
     kamera.far = r * 4;
@@ -7909,7 +8156,7 @@ function modelBaslat(T, o) {
   }
 
   /* ---- numaralı işaretler: ekrana izdüşüm; arkada kalanlar soluk ---- */
-  const noEl = $$('.model-no', isaretEl);
+  const noEl = $$('.model-no', isaretEl), etiketEl = $$('.model-etiket', isaretEl);
   const isin = new T.Raycaster();
   let sonOrtulme = 0;
   function isaretleriYerlestir(w, h, ortulmeHesapla) {
@@ -7929,7 +8176,27 @@ function modelBaslat(T, o) {
         isin.set(kamera.position, yonV.normalize());
         isin.far = mesafe + 0.01;
         const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
-        el.classList.toggle('arkada', (!!vurus && vurus.object.userData.parca !== i && vurus.distance < mesafe - mesafe * 0.02) || kesik(dunya));
+        /* Pay sabit ve küçük (mm): orana bağlı pay uzak kamerada ince kapağın arkasındaki numarayı görünür bırakır. */
+        el.classList.toggle('arkada', (!!vurus && vurus.object.userData.parca !== i && vurus.distance < mesafe - 0.3) || kesik(dunya));
+      }
+    });
+    etiketYerleri.forEach((et, i) => {
+      const el = etiketEl[i];
+      if (!el) return;
+      const goster = s.secili === et.parca;
+      el.classList.toggle('gizli-no', !goster);
+      if (!goster) return;
+      v.copy(et.konum);
+      et.nesne.localToWorld(v);
+      const dunya = v.clone();
+      v.project(kamera);
+      el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px) translate(-50%, -50%)`;
+      if (ortulmeHesapla) {
+        const yonV = dunya.clone().sub(kamera.position), mesafe = yonV.length();
+        isin.set(kamera.position, yonV.normalize());
+        isin.far = mesafe + 0.01;
+        const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
+        el.classList.toggle('arkada', (!!vurus && vurus.distance < mesafe - 0.5) || kesik(dunya));
       }
     });
   }
@@ -7946,6 +8213,12 @@ function modelBaslat(T, o) {
     if (p !== hedef) {
       p = azHareket() ? hedef : (hedef > p ? Math.min(hedef, p + dt * 2) : Math.max(hedef, p - dt * 2));
       patlatUygula();
+      devam = true;
+    }
+    const odakHedef = M.secimdeOdak && s.secili >= 0 ? 1 : 0;
+    if (odakHedef) odakParca = s.secili;
+    if (odakQ !== odakHedef) {
+      odakQ = azHareket() ? odakHedef : odakHedef > odakQ ? Math.min(1, odakQ + dt * 2.5) : Math.max(0, odakQ - dt * 2.5);
       devam = true;
     }
     if (kameraHedef) {
@@ -8021,7 +8294,8 @@ function modelBaslat(T, o) {
       isin.setFromCamera(new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), kamera);
       const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
       const i = vurus ? vurus.object.userData.parca : -1;
-      s.secili = s.secili === i ? -1 : i;
+      s.secili = s.secili === i && s.etiket < 0 ? -1 : i;
+      s.etiket = -1;
       modelYaz(o);
     }
     if (!isaretci.size) { surukleniyor = false; dokunus = null; }

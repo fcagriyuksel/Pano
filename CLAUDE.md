@@ -90,8 +90,8 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 69 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 2 3B model (step motor, servo motor).
+Mevcut: 13 konu, 70 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 3 3B model (step motor, servo motor, step sürücü).
 
-Sıradaki 3B modeller (kullanıcının sırasıyla): sürücü ve klemensleri (DIP anahtarları, LED’ler), otomatik sigorta (bimetal, manyetik bobin, ark hücresi), PLC; ardından öbür konular için de 3B modeller.
+Sıradaki 3B modeller (kullanıcının sırasıyla): otomatik sigorta (bimetal, manyetik bobin, ark hücresi), PLC; ardından öbür konular için de 3B modeller.
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

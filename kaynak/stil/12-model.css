@@ -20,3 +20,12 @@
 .model-secim .isaret-no,.model-parca[aria-pressed="true"] .isaret-no{background:var(--accent);color:var(--on-accent)}
 .model-parcalar li{display:block}
 .model-parca{display:flex;gap:12px;width:100%;padding:4px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:8px}
+/* Etiketler: klemens ve uç adları; ait oldukları parça seçiliyken görünür */
+.model-etiket{position:absolute;left:0;top:0;padding:2px 5px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:var(--ink);font-family:var(--f-mono);font-size:10px;font-weight:600;line-height:1.2;white-space:nowrap;pointer-events:auto;cursor:pointer;transition:opacity .2s}
+.model-etiket::before{content:'';position:absolute;inset:-6px}
+.model-etiket.gizli-no{visibility:hidden}
+.model-etiket.arkada{opacity:0;pointer-events:none}
+.model-etiket[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.model-etiket-ad{flex-shrink:0;align-self:flex-start;padding:2px 7px;border-radius:6px;background:var(--accent);color:var(--on-accent);font-family:var(--f-mono);font-size:13px;font-weight:600}
+.model-etiket-satir{width:100%;border:0;border-bottom:1px solid var(--line-soft);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.model-etiket-satir[aria-pressed="true"]{background:var(--chip)}

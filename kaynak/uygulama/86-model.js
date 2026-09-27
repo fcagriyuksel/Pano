@@ -20,6 +20,10 @@ const MALZEMELER = {
   plastikAcik: { renk: 0xe8e4da, metal: 0, puruz: 0.65 },
   balata: { renk: 0x8c7b66, metal: 0, puruz: 0.85 },
   kart: { renk: 0x2f6b4a, metal: 0.05, puruz: 0.6 },
+  klemens: { renk: 0x2e7a4e, metal: 0, puruz: 0.6 },
+  kondansator: { renk: 0x2b4476, metal: 0.15, puruz: 0.45 },
+  ledYesil: { renk: 0x1f4d2e, metal: 0, puruz: 0.3 },
+  ledKirmizi: { renk: 0x5a2020, metal: 0, puruz: 0.3 },
   entegre: { renk: 0x1c1f22, metal: 0.1, puruz: 0.5 },
   vurgu: { r: '--accent', metal: 0.1, puruz: 0.5 },
   kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
@@ -29,7 +33,7 @@ const MALZEMELER = {
 };
 
 const modelDurum = (tur) => {
-  if (!durum.model[tur]) durum.model[tur] = Object.assign({ patlat: false, kesit: 0, secili: -1 }, MODELLER[tur].yeni ? MODELLER[tur].yeni() : {});
+  if (!durum.model[tur]) durum.model[tur] = Object.assign({ patlat: false, kesit: 0, secili: -1, etiket: -1 }, MODELLER[tur].yeni ? MODELLER[tur].yeni() : {});
   return durum.model[tur];
 };
 
@@ -47,6 +51,8 @@ function modelDugmeleri(tur, s) {
 const modelKesitleri = (tur) => MODELLER[tur].kesitler || [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }];
 
 function modelSecimMetni(tur, s) {
+  const e = s.etiket >= 0 && MODELLER[tur].etiketler ? MODELLER[tur].etiketler[s.etiket] : null;
+  if (e) return `<span class="model-etiket-ad">${esc(e[0])}</span><span><span class="isaret-metin">${esc(e[1])}</span></span>`;
   const p = MODELLER[tur].parcalar[s.secili];
   return p ? `<span class="isaret-no" aria-hidden="true">${s.secili + 1}</span><span><span class="isaret-ad">${esc(p[0])}</span><span class="isaret-metin">${esc(p[1])}</span></span>` : '';
 }
@@ -60,15 +66,17 @@ function modelBlok(tur) {
       <div class="kart model-kutu">
         <div class="model-sahne" id="model-${tur}-s" role="img" aria-label="${esc(M.aciklama)}">
           <p class="model-bilgi" id="model-${tur}-y">3B model yükleniyor…</p>
-          <div class="model-isaretler" id="model-${tur}-i">${M.parcalar.map((p, i) => `<button type="button" class="model-no" tabindex="-1" aria-hidden="true" data-model-parca="${i}" aria-pressed="${s.secili === i}">${i + 1}</button>`).join('')}</div>
+          <div class="model-isaretler" id="model-${tur}-i">${M.parcalar.map((p, i) => `<button type="button" class="model-no" tabindex="-1" aria-hidden="true" data-model-parca="${i}" aria-pressed="${s.secili === i}">${i + 1}</button>`).join('')}${(M.etiketler || []).map(([ad], i) => `<button type="button" class="model-etiket gizli-no" tabindex="-1" aria-hidden="true" data-model-etiket="${i}" aria-pressed="${s.etiket === i}">${esc(ad)}</button>`).join('')}</div>
         </div>
         <div class="model-secim" id="model-${tur}-c" aria-live="polite"${s.secili < 0 ? ' hidden' : ''}>${modelSecimMetni(tur, s)}</div>
-        ${d ? `<div class="sim-durum" id="model-${tur}-d" aria-live="polite">${esc(d.metin)}</div>` : ''}
+        ${d ? `<div class="sim-durum${d.uyari ? ' uyari' : ''}" id="model-${tur}-d" aria-live="polite">${esc(d.metin)}</div>` : ''}
         <div class="dugme-satir" id="model-${tur}-b">${modelDugmeleri(tur, s)}</div>
         <p class="kucuk">${esc(M.not)}</p>
       </div>
       <ol class="isaretler model-parcalar">${M.parcalar.map(([ad, m], i) => `
         <li><button type="button" class="model-parca" data-model-parca="${i}" aria-pressed="${s.secili === i}"><span class="isaret-no" aria-hidden="true">${i + 1}</span><span><span class="isaret-ad"><span class="gizli">${i + 1}. </span>${esc(ad)}</span><span class="isaret-metin">${esc(m)}</span></span></button></li>`).join('')}</ol>
+      ${M.etiketler ? `<p class="ust">${esc(M.etiketBaslik || 'Etiketler')}</p>
+      <div class="tablo">${M.etiketler.map(([ad, m], i) => `<button type="button" class="tablo-satir model-etiket-satir" data-model-etiket="${i}" aria-pressed="${s.etiket === i}"><span class="tablo-etiket">${esc(ad)}</span><span class="tablo-metin">${esc(m)}</span></button>`).join('')}</div>` : ''}
     </div>`;
 }
 
@@ -104,7 +112,11 @@ function modelHata(o, neden) {
 function modelYaz(o) {
   const M = MODELLER[o.tur], s = modelDurum(o.tur);
   const de = document.getElementById(`model-${o.tur}-d`);
-  if (de && M.durum) { const m = M.durum(s).metin; if (de.textContent !== m) de.textContent = m; }
+  if (de && M.durum) {
+    const d = M.durum(s);
+    if (de.textContent !== d.metin) de.textContent = d.metin;
+    de.classList.toggle('uyari', !!d.uyari);
+  }
   const be = document.getElementById(`model-${o.tur}-b`), yeni = modelDugmeleri(o.tur, s);
   if (be && be.dataset.son !== yeni) {
     const odak = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.modelOlay : null;
@@ -114,22 +126,28 @@ function modelYaz(o) {
   }
   const ce = document.getElementById(`model-${o.tur}-c`);
   if (ce) { ce.hidden = s.secili < 0; ce.innerHTML = modelSecimMetni(o.tur, s); }
-  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili)));
+  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili && s.etiket < 0)));
+  $$('[data-model-etiket]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelEtiket) === s.etiket)));
 }
 
 function modelTikla(o, e) {
-  const el = e.target.closest('[data-model-olay],[data-model-parca]');
+  const el = e.target.closest('[data-model-olay],[data-model-parca],[data-model-etiket]');
   if (!el) return;
   const M = MODELLER[o.tur], s = modelDurum(o.tur);
-  if (el.dataset.modelParca != null) {
+  if (el.dataset.modelEtiket != null) {
+    const i = Number(el.dataset.modelEtiket);
+    s.etiket = s.etiket === i ? -1 : i;
+    if (s.etiket >= 0 && o.etiketParca) s.secili = o.etiketParca[i];
+  } else if (el.dataset.modelParca != null) {
     const i = Number(el.dataset.modelParca);
-    s.secili = s.secili === i ? -1 : i;
+    s.secili = s.secili === i && s.etiket < 0 ? -1 : i;
+    s.etiket = -1;
   } else {
     const olay = el.dataset.modelOlay;
     if (olay === 'yeniden') { modelleriKur(); return; }
     if (olay === 'patlat') { s.patlat = !s.patlat; if (o.gorunum) o.gorunum.patlatildi(); }
     else if (olay === 'kesit') s.kesit = (s.kesit + 1) % (modelKesitleri(o.tur).length + 1);
-    else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
+    else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; s.etiket = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
     else if (M.olay) M.olay(s, olay);
   }
   modelYaz(o);
@@ -313,6 +331,9 @@ function modelBaslat(T, o) {
     });
   }
   const secilebilir = parcalar.flatMap((p) => p.aglar).concat(kapaklar);
+  /* Etiketler (ör. klemens adları): yalnızca ait oldukları parça seçiliyken görünür. */
+  const etiketYerleri = (m.etiketYerleri || []).map((e) => ({ nesne: e.nesne, konum: new T.Vector3(...e.konum), parca: e.parca }));
+  o.etiketParca = etiketYerleri.map((e) => e.parca);
 
   /* ---- kamera: başlangıç yönünden bakınca model (birleşik ve parçalı hâlde) çerçeveye sığar ---- */
   const yon = new T.Vector3(...(M.kamera && M.kamera.yon ? M.kamera.yon : [1, 0.7, 1.6])).normalize();
@@ -389,10 +410,19 @@ function modelBaslat(T, o) {
     const e = p * p * (3 - 2 * p);
     parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, e));
   }
+  /* secimdeOdak: seçilen parçaya yaklaş (küçük parçalı modellerde klemens, anahtar okunur hâle gelir). */
+  let odakQ = 0, odakParca = -1;
+  const odakKure = new T.Sphere();
   function kameraYerlestir() {
     const e = p * p * (3 - 2 * p);
     const merkez = cerceve[0].merkez.clone().lerp(cerceve[1].merkez, e);
-    const r = (cerceve[0].d + (cerceve[1].d - cerceve[0].d) * e) * gor.yakin;
+    let r = (cerceve[0].d + (cerceve[1].d - cerceve[0].d) * e) * gor.yakin;
+    if (odakQ > 0 && parcalar[odakParca]) {
+      new T.Box3().setFromObject(parcalar[odakParca].nesne).getBoundingSphere(odakKure);
+      const q = odakQ * odakQ * (3 - 2 * odakQ);
+      merkez.lerp(odakKure.center, q);
+      r += (Math.max(odakKure.radius, 12) / Math.sin((kamera.fov * Math.PI) / 360) * 1.3 * gor.yakin - r) * q;
+    }
     kamera.position.set(Math.sin(gor.fi) * Math.sin(gor.teta), Math.cos(gor.fi), Math.sin(gor.fi) * Math.cos(gor.teta)).multiplyScalar(r).add(merkez);
     kamera.near = Math.max(0.5, r / 50);
     kamera.far = r * 4;
@@ -401,7 +431,7 @@ function modelBaslat(T, o) {
   }
 
   /* ---- numaralı işaretler: ekrana izdüşüm; arkada kalanlar soluk ---- */
-  const noEl = $$('.model-no', isaretEl);
+  const noEl = $$('.model-no', isaretEl), etiketEl = $$('.model-etiket', isaretEl);
   const isin = new T.Raycaster();
   let sonOrtulme = 0;
   function isaretleriYerlestir(w, h, ortulmeHesapla) {
@@ -421,7 +451,27 @@ function modelBaslat(T, o) {
         isin.set(kamera.position, yonV.normalize());
         isin.far = mesafe + 0.01;
         const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
-        el.classList.toggle('arkada', (!!vurus && vurus.object.userData.parca !== i && vurus.distance < mesafe - mesafe * 0.02) || kesik(dunya));
+        /* Pay sabit ve küçük (mm): orana bağlı pay uzak kamerada ince kapağın arkasındaki numarayı görünür bırakır. */
+        el.classList.toggle('arkada', (!!vurus && vurus.object.userData.parca !== i && vurus.distance < mesafe - 0.3) || kesik(dunya));
+      }
+    });
+    etiketYerleri.forEach((et, i) => {
+      const el = etiketEl[i];
+      if (!el) return;
+      const goster = s.secili === et.parca;
+      el.classList.toggle('gizli-no', !goster);
+      if (!goster) return;
+      v.copy(et.konum);
+      et.nesne.localToWorld(v);
+      const dunya = v.clone();
+      v.project(kamera);
+      el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px) translate(-50%, -50%)`;
+      if (ortulmeHesapla) {
+        const yonV = dunya.clone().sub(kamera.position), mesafe = yonV.length();
+        isin.set(kamera.position, yonV.normalize());
+        isin.far = mesafe + 0.01;
+        const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
+        el.classList.toggle('arkada', (!!vurus && vurus.distance < mesafe - 0.5) || kesik(dunya));
       }
     });
   }
@@ -438,6 +488,12 @@ function modelBaslat(T, o) {
     if (p !== hedef) {
       p = azHareket() ? hedef : (hedef > p ? Math.min(hedef, p + dt * 2) : Math.max(hedef, p - dt * 2));
       patlatUygula();
+      devam = true;
+    }
+    const odakHedef = M.secimdeOdak && s.secili >= 0 ? 1 : 0;
+    if (odakHedef) odakParca = s.secili;
+    if (odakQ !== odakHedef) {
+      odakQ = azHareket() ? odakHedef : odakHedef > odakQ ? Math.min(1, odakQ + dt * 2.5) : Math.max(0, odakQ - dt * 2.5);
       devam = true;
     }
     if (kameraHedef) {
@@ -513,7 +569,8 @@ function modelBaslat(T, o) {
       isin.setFromCamera(new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), kamera);
       const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
       const i = vurus ? vurus.object.userData.parca : -1;
-      s.secili = s.secili === i ? -1 : i;
+      s.secili = s.secili === i && s.etiket < 0 ? -1 : i;
+      s.etiket = -1;
       modelYaz(o);
     }
     if (!isaretci.size) { surukleniyor = false; dokunus = null; }

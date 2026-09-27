@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Step, servo ve hız sürücüleri',
   giris: 'Sürücü, kontrol sinyalini motorun ihtiyaç duyduğu akım ve gerilime çeviren güç katıdır.',
   altlar: [
+    { id: 'surucu-ic-yapi', kod: '3B', ad: 'Step sürücü: klemensler (3B model)', alt: 'PUL, DIR, ENA, A±, B± · DIP anahtarları · iç yapı', sayfa: 'surucu-ic-yapi' },
     { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP anahtarı', sayfa: 'surucu-step' },
     { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork', sayfa: 'surucu-servo' },
     { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler', sayfa: 'surucu-vfd' },
@@ -12,6 +13,37 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'surucu-ic-yapi': {
+    baslik: 'Step sürücü: klemensler ve iç yapı',
+    giris: 'Step sürücünün bir yanında sinyal ve güç klemensleri, DIP anahtarları ve LED’ler bulunur. İçinde sinyalleri yalıtan optokuplörler, denetleyici ve motor akımını ayarlayan MOSFET köprüleri vardır.',
+    etiketler: ['3B model', 'PUL · DIR · ENA', 'A± · B±', 'DIP anahtarı'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Klemensler ve parçalar', bloklar: [
+        { tip: 'model', tur: 'step-surucu' }
+      ]},
+      { id: 'baglanti', kisa: 'Bağlantı', baslik: 'Bağlantı sırası', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enerjiyi kes. Sargı çiftlerini motor tarafında ölçerek bul.',
+          'A sargısını A+ / A−, B sargısını B+ / B− uçlarına bağla.',
+          'DC beslemeyi +V ve GND uçlarına bağla; kutbu iki kez kontrol et.',
+          'PLC’nin darbe ve yön çıkışlarını PUL ve DIR girişlerine bağla. NPN çıkışta artı uçlar ortak artıya, eksi uçlar PLC çıkışlarına gider.',
+          'DIP anahtarlarıyla akımı motor etiketine, mikroadımı PLC’deki darbe/tur ayarına göre seç.',
+          'Enerji ver: PWR yanmalı, ALM sönük kalmalı. İlk denemeyi düşük hızla yap.'
+        ]},
+        { tip: 'not', metin: 'Uç adları ve sırası üreticiye göre değişir; sürücünün üstündeki etikete ve kataloğa bak. Anahtarların anlamı ve NPN/PNP bağlantı: Step sürücüler ve Sürücü giriş–çıkışları sayfaları.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['PUL ve DIR girişlerini doğrudan 24 V ile sürmek', 'Giriş 5 V içinse optokuplör aşırı akımla bozulabilir. Doğrusu: sürücü 24 V girişi destekliyorsa onu kullan; desteklemiyorsa katalogdaki seri direnci tak.'],
+          ['Motor kablosunu enerji varken sökmek ya da takmak', 'Sargıdaki akım kesilince oluşan ark ve gerilim sıçraması sürücünün çıkış katını bozabilir. Doğrusu: önce enerjiyi kes.'],
+          ['Sürücüyü havasız bir köşeye sıkıştırmak', 'Taban ısıyı atamaz; sürücü ısınır, akımı düşürür ya da alarma geçer. Doğrusu: metal yüzeye bağla, çevresinde boşluk bırak.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Step motor', 'DC güç kaynağı', 'PLC transistör çıkışı', 'Ekranlı kablo'] }
+      ]}
+    ]
+  },
   'surucu-step': {
     baslik: 'Step sürücüler',
     giris: 'Step sürücü PLC’den gelen darbeleri sargı akımına çevirir. Akımı, mikroadımı ve bekleme akımını çoğunlukla üstündeki DIP anahtarlarla ayarlarsın.',
