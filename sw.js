@@ -1,7 +1,6 @@
 /* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır. */
-const KABUK = 'pano-kabuk-v1';
-const YAZITIPI = 'pano-yazitipi-v1';
-const DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const KABUK = 'pano-202609272136';
+const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./barlow-condensed-latin-ext-600-normal.woff2", "./barlow-condensed-latin-600-normal.woff2", "./barlow-condensed-latin-ext-700-normal.woff2", "./barlow-condensed-latin-700-normal.woff2", "./ibm-plex-sans-latin-ext-400-normal.woff2", "./ibm-plex-sans-latin-400-normal.woff2", "./ibm-plex-sans-latin-ext-500-normal.woff2", "./ibm-plex-sans-latin-500-normal.woff2", "./ibm-plex-sans-latin-ext-600-normal.woff2", "./ibm-plex-sans-latin-600-normal.woff2", "./ibm-plex-mono-latin-ext-500-normal.woff2", "./ibm-plex-mono-latin-500-normal.woff2", "./ibm-plex-mono-latin-ext-600-normal.woff2", "./ibm-plex-mono-latin-600-normal.woff2"];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(KABUK).then((c) => c.addAll(DOSYALAR)).then(() => self.skipWaiting()));
@@ -10,7 +9,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK && k !== YAZITIPI).map((k) => caches.delete(k))))
+      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -38,15 +37,19 @@ function onceAg(r) {
   });
 }
 
+/* Yazı tipi ve simgeler değişmez: önce önbellek. */
+function onceOnbellek(r) {
+  return caches.match(r).then((m) => m || fetch(r).then((y) => {
+    if (y && y.ok) { const kopya = y.clone(); caches.open(KABUK).then((c) => c.put(r, kopya)); }
+    return y;
+  }));
+}
+
 self.addEventListener('fetch', (e) => {
   const r = e.request;
   if (r.method !== 'GET') return;
   const u = new URL(r.url);
-  if (u.origin === self.location.origin) { e.respondWith(onceAg(r)); return; }
-  if (u.hostname === 'fonts.googleapis.com' || u.hostname === 'fonts.gstatic.com') {
-    e.respondWith(caches.open(YAZITIPI).then((c) => c.match(r).then((m) => {
-      const ag = fetch(r).then((y) => { c.put(r, y.clone()); return y; }).catch(() => m);
-      return m || ag;
-    })));
-  }
+  if (u.origin !== self.location.origin) return;
+  if (/\.(woff2|png)$/.test(u.pathname)) { e.respondWith(onceOnbellek(r)); return; }
+  e.respondWith(onceAg(r));
 });
