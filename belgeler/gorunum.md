@@ -15,6 +15,7 @@ Stil `kaynak/stil/` altındadır ve dosya adındaki sırayla birleşir:
 | `09-dugmeler-metin.css` | düğmeler, uyarı, premium, metin sayfaları |
 | `10-simulasyon.css` | simülasyon |
 | `11-acilis.css` | açılış ekranı (simge-ve-acilis.md) |
+| `12-model.css` | 3B model bloğu (model-3b.md) |
 | `99-hareket-azaltma.css` | “hareketi azalt” açıkken animasyonları kapatır; en sonda kalmalı |
 
 ## Renk belirteçleri

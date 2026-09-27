@@ -15,6 +15,7 @@ node test/test_icerik.js                  # hesaplayıcı kombinasyonları, refe
 python3 test/test_sayfalar.py             # bütün sayfalar, iki tema, 360 px
 python3 test/test_sayfalar.py --sayfa pid --ekran /tmp/ekran   # seçili sayfaların şema görüntüleri
 python3 araclar/simge_olustur.py          # uygulama simgeleri
+python3 araclar/three_olustur.py          # Three.js alt kümesi (npm ve internet gerekir) → model-3b.md
 ```
 
 ## Değişiklik akışı
@@ -35,13 +36,15 @@ Yayın dosyaları (`index.html`, `privacy.html`, `manifest.webmanifest`, `sw.js`
 kaynak/sablon.html        sayfa iskeleti ({{SURUM}}, {{YAZITIPLERI}}, {{STIL}}, {{GOVDE}}, {{BETIK}})
 kaynak/stil/*.css         → <style>
 kaynak/govde/*            → <body>; .js parçaları <script> içine alınır
-kaynak/ortak/*.js         → genel kapsam: sayi(), kayıtlar (VERI, SEMALAR, HESAPLAR, SIMLER), ayarlar, metinler, şema araçları
-kaynak/konular/NN-*/      → konu.js, semalar.js, hesaplar.js, simler.js
+kaynak/ortak/*.js         → genel kapsam: sayi(), kayıtlar (VERI, SEMALAR, HESAPLAR, SIMLER, MODELLER), ayarlar, metinler, şema araçları
+kaynak/konular/NN-*/      → konu.js, semalar.js, hesaplar.js, simler.js, modeller.js
 kaynak/uygulama/*.js      → tek bir IIFE içinde ('use strict')
 ```
 
 - Birleşen betikte her dosyanın başında `/* ---- kaynak/…/dosya.js ---- */` yazar. Tarayıcıdaki bir hata satırının hangi dosyadan geldiği buradan bulunur.
 - Birleşen betik `node --check` ile denetlenir. Söz dizimi hatası varsa hiçbir dosya yazılmaz.
+- Betikte geçen her `varliklar/…` yolu diskte var olmalı; yoksa derleme durur.
+- `kaynak/sw.js` içinde `__SURUM__` ve `__DOSYALAR__` tam bir kez geçmeli. Yorumda bile yazma: derleme her geçtiği yere değer yazar.
 - `privacy.html`, `kaynak/gizlilik.html` şablonundan ve `METINLER.gizlilik` metninden üretilir.
 - `sw.js`, `kaynak/sw.js` şablonundan üretilir. Önbellek adı her derlemede değişir (`pano-YYYYAAGGSSDD`). `varliklar/` altındaki bütün `.woff2`, `.png`, `.js` dosyaları kendiliğinden önbellek listesine girer.
 - `--cikti DIR` başka klasöre derler. Testler bunu kullanır ve depodaki yayın dosyalarına dokunmaz.
@@ -49,7 +52,7 @@ kaynak/uygulama/*.js      → tek bir IIFE içinde ('use strict')
 ## Telefonda güncelleme
 
 - Service worker HTML için önce ağı dener (3,5 sn zaman aşımı), sonra önbelleğe düşer. İnternet varken uygulama bir sonraki açılışta yeni sürümü alır.
-- `varliklar/` altındaki dosyalar önce önbellekten gelir. Aynı adla değişen bir dosya, yeni derlemenin önbelleği yenilemesiyle güncellenir. Kütüphane eklenirse sürümünü klasör adına yaz (`varliklar/kutuphane/ad-1.2.3/`).
+- `varliklar/` altındaki dosyalar önce önbellekten gelir. Aynı adla değişen bir dosya, yeni derlemenin önbelleği yenilemesiyle güncellenir. Kütüphanelerin sürümü klasör adındadır (`varliklar/kutuphane/three-0.186.1/`); sürüm değişince yol da değişir ve telefonlar yeni dosyayı kendiliğinden alır.
 - Güncelleme görünmüyorsa uygulamayı tamamen kapatıp yeniden aç.
 
 ## Premium ve Play Store (ertelendi)

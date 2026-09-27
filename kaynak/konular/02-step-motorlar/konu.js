@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Adım açısı, mikroadım, bağlantı',
   giris: 'Step motor her darbede sabit bir açı döner. Geri besleme yoktur; konumu, gönderilen darbe sayısından bilinir.',
   altlar: [
+    { id: 'step-ic-yapi', kod: '3B', ad: 'İç yapı (3B model)', alt: 'Stator, sargılar, dişli rotor · parçala, kesit al, adım at', sayfa: 'step-ic-yapi' },
     { id: 'step-calisma-prensibi', kod: '1,8°', ad: 'Çalışma prensibi', alt: 'Adım açısı, tam ve yarım adım, tutma torku', sayfa: 'step-calisma-prensibi' },
     { id: 'step-nema', kod: 'NEMA', ad: 'Gövde boyutları (NEMA)', alt: 'NEMA 17, 23, 34 · flanş ve mil ölçüleri', sayfa: 'step-nema' },
     { id: 'step-surucu-baglantisi', kod: 'PUL', ad: 'Step motor ve sürücü bağlantısı', alt: 'PLC → sürücü → motor · darbe hesabı', sayfa: 'step-surucu-baglantisi' },
@@ -13,6 +14,56 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'step-ic-yapi': {
+    baslik: 'Step motorun iç yapısı',
+    giris: 'Hibrit step motor iki kapak, sekiz kutuplu bir stator ve mıknatıslı dişli bir rotordan oluşur. Modeli döndür, parçalarına ayır, kesit al ve adım adım çalıştır.',
+    etiketler: ['3B model', 'NEMA 17', 'Hibrit', '1,8°'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'step-motor' }
+      ]},
+      { id: 'rotor', kisa: 'Hibrit rotor', baslik: 'Rotor nasıl adım atar', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Mıknatıs, rotor kaplarından birini N, öbürünü S kutbu yapar.',
+          'İki kabın dişleri yarım diş kaydırılmıştır: bir kutbun altında N kabının dişleri hizalıyken S kabının dişleri iki diş arasına denk gelir.',
+          'Sargı enerjilenince stator kutbu N ya da S olur ve rotorun zıt kutuplu dişlerini kendine çeker.',
+          'Sıradaki faz enerjilenince hizalanma bir sonraki kutba kayar; rotor bir adım döner.',
+          'Sıra tersine dönünce motor ters döner. Sargı enerjili kaldıkça rotor olduğu yerde tutulur.'
+        ]},
+        { tip: 'formul', formul: 'θ = 360°/(2·m·Nr)', tanimlar: [['θ', 'adım açısı'], ['m', 'faz sayısı'], ['Nr', 'rotor kabı başına diş sayısı']],
+          ornek: { baslik: 'İki fazlı, 50 dişli motor', satirlar: [['θ', '360° ÷ (2 × 2 × 50) = 1,8°'], ['Tur', '360° ÷ 1,8° = 200 adım']] } }
+      ]},
+      { id: 'olcum', kisa: 'Sargı uçları', baslik: 'Sargı uçlarını ölçerek bulmak', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enerjiyi kes ve motor kablosunu sürücüden ayır.',
+          'Multimetreyi direnç kademesine al; dört teli ikişer ikişer ölç.',
+          'Birkaç ohm gösteren iki tel bir sargıdır (A+ / A−). Kalan iki tel öbür sargıdır (B+ / B−).',
+          'Farklı sargıların telleri arasında devre açıktır. Bir sargıda da açık devre ölçülüyorsa sargı kopuktur.',
+          'Motor istenenin tersine dönerse bir sargının iki ucunu (A+ ile A−) yer değiştir ya da sürücüde yön sinyalini ters çevir.'
+        ]},
+        { tip: 'not', metin: 'Faz direnci motora göre değişir; ölçtüğün değeri katalogdaki faz direnciyle karşılaştır. Altı ya da sekiz telli motorlarda sargıların orta ucu ya da ayrık yarımları vardır; bağlantı şekli kataloğa göre seçilir.' }
+      ]},
+      { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+        { tip: 'ariza', belirti: 'Motor titriyor ama dönmüyor', satirlar: [
+          ['Bir sargı kopuk ya da bağlantısı gevşek', 'Kontrol: iki sargının direncini ölç, klemens vidalarını sık.'],
+          ['Sargı uçları karışık bağlanmış', 'Kontrol: aynı sargının iki ucunun sürücüde A+ / A− (ya da B+ / B−) klemenslerine gittiğini doğrula.'],
+          ['Darbe frekansı ilk kalkış için çok yüksek', 'Kontrol: düşük hızla başlat, hızlanma rampası ekle.']
+        ]},
+        { tip: 'ariza', belirti: 'Motor gürültülü, elle çevrilince takılıyor', satirlar: [
+          ['Rulman aşınmış', 'Kontrol: enerjisizken mili elle çevir. Detent tıkırtısı düzenli olmalı; sürtünme ya da cızırtı olmamalı.'],
+          ['Kaplin eksenden kaçık ya da mil eğik', 'Kontrol: kaplini sök, motoru yüksüz çalıştır.']
+        ]},
+        { tip: 'hatalar', hatalar: [
+          ['Motoru içini görmek için sökmek', 'Rotor statordan çıkınca mıknatıs zayıflayabilir, tork kalıcı olarak düşer. Doğrusu: motoru sökme; arızalıysa değiştir.'],
+          ['Tel renklerine güvenerek bağlamak', 'Renk düzeni üreticiye göre değişir. Doğrusu: sargı çiftlerini ölçerek bul.'],
+          ['Sürücü enerjiliyken motor soketini çıkarıp takmak', 'Oluşan ark ve gerilim sıçraması sürücünün çıkış katını bozabilir. Doğrusu: önce enerjiyi kes.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Step sürücü', 'Kaplin', 'Multimetre'] }
+      ]}
+    ]
+  },
   'step-calisma-prensibi': {
     baslik: 'Step motor çalışma prensibi',
     giris: 'Step motorun iki sargısı sırayla enerjilenir; rotor her seferinde enerjili kutba doğru bir adım döner. Hibrit motorda dişli rotor bu adımı 1,8°’ye böler.',

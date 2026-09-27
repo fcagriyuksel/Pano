@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PANO">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609272219">
+<meta name="pano-surum" content="202609272249">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
@@ -347,6 +347,29 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 @keyframes acilis-gir{from{opacity:0;transform:translateY(14px)}}
 @keyframes acilis-menu{from{transform:translateY(100%)}}
 
+/* 3B model bloğu (kaynak/uygulama/86-model.js) */
+.model-blok{display:flex;flex-direction:column;gap:12px}
+.model-kutu{gap:14px}
+.model-sahne{position:relative;margin:-16px -16px 0;aspect-ratio:10/9;border-radius:15px 15px 0 0;overflow:hidden;background:radial-gradient(circle at 50% 42%,var(--svg-body) 0%,var(--card) 72%);border-bottom:1px solid var(--line-soft)}
+.model-tuval{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.model-tuval:active{cursor:grabbing}
+.model-bilgi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center;font-size:14px;line-height:1.5;color:var(--muted)}
+.model-blok[data-durum="hazir"] .model-bilgi{display:none}
+.model-isaretler{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.model-blok:not([data-durum="hazir"]) .model-isaretler{display:none}
+.model-no{position:absolute;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;padding:0;border:0;border-radius:12px;background:var(--ink);color:var(--paper);box-shadow:0 0 0 2px var(--card);font-family:var(--f-mono);font-size:12px;font-weight:600;line-height:1;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;transition:opacity .2s}
+.model-no::before{content:'';position:absolute;inset:-10px}
+/* Arkada kalan (ya da kesitte atılan) parçanın numarası gizlenir; seçiliyse soluk görünür. */
+.model-no.arkada{opacity:0;pointer-events:none}
+.model-no.arkada[aria-pressed="true"]{opacity:.55}
+.model-no.gizli-no{visibility:hidden}
+.model-no[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);opacity:1}
+.model-secim{display:flex;gap:12px;padding:12px 14px;border-radius:12px;background:var(--chip)}
+.model-secim[hidden]{display:none}
+.model-secim .isaret-no,.model-parca[aria-pressed="true"] .isaret-no{background:var(--accent);color:var(--on-accent)}
+.model-parcalar li{display:block}
+.model-parca{display:flex;gap:12px;width:100%;padding:4px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:8px}
+
 @media (prefers-reduced-motion: reduce){
   *{scroll-behavior:auto!important;transition:none!important}
   .acilis-ekran{display:none!important}
@@ -439,6 +462,9 @@ const HESAPLAR = {};
 /* Simülasyonlar: ad → { not, yeni, olay, dugmeler, durum, ciz, tik? }. Sayfada { tip: 'sim', tur: '<ad>' }. */
 const SIMLER = {};
 
+/* 3B modeller: ad → { aciklama, not, parcalar, kur, yeni?, olay?, tik?, dugmeler?, durum?, kamera? }. Sayfada { tip: 'model', tur: '<ad>' }. */
+const MODELLER = {};
+
 /* ---- kaynak/ortak/30-ayarlar.js ---- */
 /* =====================================================================
    PANO — UYGULAMA AYARLARI
@@ -447,7 +473,7 @@ const SIMLER = {};
    ===================================================================== */
 const UYGULAMA = {
   ad: 'PANO',
-  surum: '1.3.0',
+  surum: '1.4.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
@@ -1225,6 +1251,7 @@ VERI.konular.push({
   ozet: 'Adım açısı, mikroadım, bağlantı',
   giris: 'Step motor her darbede sabit bir açı döner. Geri besleme yoktur; konumu, gönderilen darbe sayısından bilinir.',
   altlar: [
+    { id: 'step-ic-yapi', kod: '3B', ad: 'İç yapı (3B model)', alt: 'Stator, sargılar, dişli rotor · parçala, kesit al, adım at', sayfa: 'step-ic-yapi' },
     { id: 'step-calisma-prensibi', kod: '1,8°', ad: 'Çalışma prensibi', alt: 'Adım açısı, tam ve yarım adım, tutma torku', sayfa: 'step-calisma-prensibi' },
     { id: 'step-nema', kod: 'NEMA', ad: 'Gövde boyutları (NEMA)', alt: 'NEMA 17, 23, 34 · flanş ve mil ölçüleri', sayfa: 'step-nema' },
     { id: 'step-surucu-baglantisi', kod: 'PUL', ad: 'Step motor ve sürücü bağlantısı', alt: 'PLC → sürücü → motor · darbe hesabı', sayfa: 'step-surucu-baglantisi' },
@@ -1234,6 +1261,56 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'step-ic-yapi': {
+    baslik: 'Step motorun iç yapısı',
+    giris: 'Hibrit step motor iki kapak, sekiz kutuplu bir stator ve mıknatıslı dişli bir rotordan oluşur. Modeli döndür, parçalarına ayır, kesit al ve adım adım çalıştır.',
+    etiketler: ['3B model', 'NEMA 17', 'Hibrit', '1,8°'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'step-motor' }
+      ]},
+      { id: 'rotor', kisa: 'Hibrit rotor', baslik: 'Rotor nasıl adım atar', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Mıknatıs, rotor kaplarından birini N, öbürünü S kutbu yapar.',
+          'İki kabın dişleri yarım diş kaydırılmıştır: bir kutbun altında N kabının dişleri hizalıyken S kabının dişleri iki diş arasına denk gelir.',
+          'Sargı enerjilenince stator kutbu N ya da S olur ve rotorun zıt kutuplu dişlerini kendine çeker.',
+          'Sıradaki faz enerjilenince hizalanma bir sonraki kutba kayar; rotor bir adım döner.',
+          'Sıra tersine dönünce motor ters döner. Sargı enerjili kaldıkça rotor olduğu yerde tutulur.'
+        ]},
+        { tip: 'formul', formul: 'θ = 360°/(2·m·Nr)', tanimlar: [['θ', 'adım açısı'], ['m', 'faz sayısı'], ['Nr', 'rotor kabı başına diş sayısı']],
+          ornek: { baslik: 'İki fazlı, 50 dişli motor', satirlar: [['θ', '360° ÷ (2 × 2 × 50) = 1,8°'], ['Tur', '360° ÷ 1,8° = 200 adım']] } }
+      ]},
+      { id: 'olcum', kisa: 'Sargı uçları', baslik: 'Sargı uçlarını ölçerek bulmak', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enerjiyi kes ve motor kablosunu sürücüden ayır.',
+          'Multimetreyi direnç kademesine al; dört teli ikişer ikişer ölç.',
+          'Birkaç ohm gösteren iki tel bir sargıdır (A+ / A−). Kalan iki tel öbür sargıdır (B+ / B−).',
+          'Farklı sargıların telleri arasında devre açıktır. Bir sargıda da açık devre ölçülüyorsa sargı kopuktur.',
+          'Motor istenenin tersine dönerse bir sargının iki ucunu (A+ ile A−) yer değiştir ya da sürücüde yön sinyalini ters çevir.'
+        ]},
+        { tip: 'not', metin: 'Faz direnci motora göre değişir; ölçtüğün değeri katalogdaki faz direnciyle karşılaştır. Altı ya da sekiz telli motorlarda sargıların orta ucu ya da ayrık yarımları vardır; bağlantı şekli kataloğa göre seçilir.' }
+      ]},
+      { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+        { tip: 'ariza', belirti: 'Motor titriyor ama dönmüyor', satirlar: [
+          ['Bir sargı kopuk ya da bağlantısı gevşek', 'Kontrol: iki sargının direncini ölç, klemens vidalarını sık.'],
+          ['Sargı uçları karışık bağlanmış', 'Kontrol: aynı sargının iki ucunun sürücüde A+ / A− (ya da B+ / B−) klemenslerine gittiğini doğrula.'],
+          ['Darbe frekansı ilk kalkış için çok yüksek', 'Kontrol: düşük hızla başlat, hızlanma rampası ekle.']
+        ]},
+        { tip: 'ariza', belirti: 'Motor gürültülü, elle çevrilince takılıyor', satirlar: [
+          ['Rulman aşınmış', 'Kontrol: enerjisizken mili elle çevir. Detent tıkırtısı düzenli olmalı; sürtünme ya da cızırtı olmamalı.'],
+          ['Kaplin eksenden kaçık ya da mil eğik', 'Kontrol: kaplini sök, motoru yüksüz çalıştır.']
+        ]},
+        { tip: 'hatalar', hatalar: [
+          ['Motoru içini görmek için sökmek', 'Rotor statordan çıkınca mıknatıs zayıflayabilir, tork kalıcı olarak düşer. Doğrusu: motoru sökme; arızalıysa değiştir.'],
+          ['Tel renklerine güvenerek bağlamak', 'Renk düzeni üreticiye göre değişir. Doğrusu: sargı çiftlerini ölçerek bul.'],
+          ['Sürücü enerjiliyken motor soketini çıkarıp takmak', 'Oluşan ark ve gerilim sıçraması sürücünün çıkış katını bozabilir. Doğrusu: önce enerjiyi kes.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Step sürücü', 'Kaplin', 'Multimetre'] }
+      ]}
+    ]
+  },
   'step-calisma-prensibi': {
     baslik: 'Step motor çalışma prensibi',
     giris: 'Step motorun iki sargısı sırayla enerjilenir; rotor her seferinde enerjili kutba doğru bir adım döner. Hibrit motorda dişli rotor bu adımı 1,8°’ye böler.',
@@ -1635,6 +1712,214 @@ Object.assign(HESAPLAR, {
     not: '1,8° motor: 360 ÷ 1,8 = 200 tam adım/tur. PLC darbe çıkışının frekans sınırını kataloğundan kontrol et; motor torku yüksek devirde düşer.'
   },
 });
+
+/* ---- kaynak/konular/02-step-motorlar/modeller.js ---- */
+/* Step motorlar: 3B modeller. Ölçüler mm; motor ekseni z, mil +z yönünde (öne) çıkar. */
+(() => {
+  /* Tam adım (tek faz) sırası: bilgi sayfasındaki A+ → B+ → A− → B− ile aynı. */
+  const FAZLAR = [['A', 1, 'A+'], ['B', 1, 'B+'], ['A', -1, 'A−'], ['B', -1, 'B−']];
+  const faz = (adim) => FAZLAR[((adim % 4) + 4) % 4];
+  const ADIM_ACISI = 1.8;
+  const HIZ = 10;   // Çalıştır: adım/sn
+
+  Object.assign(MODELLER, {
+    'step-motor': {
+      aciklama: 'NEMA 17 hibrit step motorun 3B modeli: kapaklar, stator, sargılar, iki dişli rotor kabı, mıknatıs, mil ve rulmanlar.',
+      not: 'Sürükleyerek döndür, iki parmakla yakınlaştır. Bir parçaya ya da numarasına dokununca parça öne çıkar. Enerjili sargılar kırmızı (N) ve mavi (S) görünür; mil ucundaki sarı çizgi dönüşü gösterir.',
+      parcalar: [
+        ['Ön kapak (flanş)', 'Alüminyum. NEMA 17’de yüz ≈ 42 mm, bağlantı delikleri 31 mm aralıklı (M3). Ortadaki Ø22 mm pilot çıkıntı motoru makinede merkezler.'],
+        ['Ön rulman', 'Sabit bilyalı rulman; mil iki rulmanla yataklanır. Rotor ile stator arasındaki hava aralığı çok dardır: aşınmış rulman rotoru statora sürtebilir.'],
+        ['Stator paketi', 'İnce silisli saclardan paketlenir, böylece girdap akımı kaybı azalır. Sekiz kutbu vardır; kutup uçlarındaki ince dişler rotor dişleriyle karşılaşır.'],
+        ['Sargılar', 'Emaye bakır bobinler. Sekiz kutup sırayla A ve B fazına aittir. Enerjili sargı kutbunu N ya da S yapar; akım yönü değişince kutup da değişir.'],
+        ['Rotor kabı (N)', 'Dişli çelik kap, 50 diş. Mıknatısın N yüzüne oturur; bütün dişleri N kutbudur.'],
+        ['Kalıcı mıknatıs', 'Eksenel mıknatıslanmış halka. Enerji yokken de rotoru tutar: mil elle çevrilince hissedilen tıkırtı (detent torku) buradan gelir.'],
+        ['Rotor kabı (S)', 'N kabıyla aynıdır ama dişleri yarım diş (3,6°) kaydırılmıştır. İki faz ve 50 diş: 360° ÷ (2 × 2 × 50) = 1,8° adım.'],
+        ['Mil', 'Ø5 mm çelik mil, ucu çoğunlukla D kesimlidir. Kaplin vidası düz yüzeye oturur, mil kaplinde kaymaz.'],
+        ['Arka rulman', 'Milin arka ucunu taşır. Motor hırıltılı ses çıkarıyorsa önce rulmanlardan şüphelen.'],
+        ['Arka kapak', 'Arka rulmanı ve kablo çıkışını taşır. İki kapak stator paketinin iki yanına oturur.'],
+        ['Bağlantı cıvataları', 'Dört uzun cıvata kapakları stator paketiyle birlikte sıkar. Rotoru çıkarmak mıknatısı zayıflatıp torku düşürebilir; üreticiler motoru sökmemeyi önerir.'],
+        ['Kablo', 'Dört tel, iki sargı. Renkler üreticiye göre değişir: aynı sargının iki ucu arasında birkaç ohm ölçülür, farklı sargılar arasında devre açıktır.']
+      ],
+      kamera: { yon: [1, 0.72, 1.55] },
+      /* Çeyrek: sağ üst çeyrek kesilir. Enine: z = 4 mm’den önü kesilir; stator kutupları, sargılar ve N kabının dişleri görünür. */
+      kesitler: [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }, { ad: 'enine', planlar: [[0, 0, -1, 4]] }],
+      yeni: () => ({ adim: 0, aci: 0, calisiyor: false, yon: 1, sure: 0 }),
+      dugmeler: (s) => [['adim', 'Bir adım'], ['calistir', s.calisiyor ? 'Durdur' : 'Çalıştır', s.calisiyor], ['yon', s.yon > 0 ? 'Yön: ileri' : 'Yön: geri']],
+      olay(s, olay) {
+        if (olay === 'adim') { s.calisiyor = false; s.adim += s.yon; }
+        else if (olay === 'calistir') { s.calisiyor = !s.calisiyor; s.sure = 0; }
+        else if (olay === 'yon') s.yon = -s.yon;
+      },
+      tik(s, dt) {
+        let hareket = false;
+        if (s.calisiyor) {
+          s.sure += dt;
+          while (s.sure >= 1 / HIZ) { s.sure -= 1 / HIZ; s.adim += s.yon; }
+          hareket = true;
+        }
+        const hedef = s.adim * ADIM_ACISI;
+        if (s.aci !== hedef) {
+          const fark = hedef - s.aci, adim = dt * 90;
+          s.aci = Math.abs(fark) <= adim ? hedef : s.aci + Math.sign(fark) * adim;
+          hareket = true;
+        }
+        return hareket;
+      },
+      durum(s) {
+        const aci = ((s.adim * ADIM_ACISI) % 360 + 360) % 360;
+        return { metin: `Adım ${s.adim} · ${sayi(aci, 1)}° · ${faz(s.adim)[2]} fazı enerjili.${s.adim === 0 && !s.calisiyor ? ' Rotor bu konumda tutulur.' : ''}` };
+      },
+
+      kur(y) {
+        const T = y.T, TUR = Math.PI * 2, DER = Math.PI / 180;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const KARE = 42.3, PAH = 4.5, CIVATA = 15.5;
+        const kose = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(([a, b]) => [a * CIVATA, b * CIVATA]);
+        const delikli = (sekil, delikler) => { delikler.forEach(([x, yy, r]) => sekil.holes.push(new T.Path().absarc(x, yy, r, 0, TUR, true))); return sekil; };
+        /* r yarıçaplı yayın ara noktaları (uçlar hariç: uç noktalar çağıran tarafça eklenir, tekrar etmez). */
+        const yay = (dizi, r, a0, a1, n) => { for (let i = 1; i < n; i++) { const a = a0 + ((a1 - a0) * i) / n; dizi.push(new T.Vector2(r * Math.cos(a), r * Math.sin(a))); } };
+
+        /* ---- stator: 8 kutup, kutup ucunda 5 diş ---- */
+        const RB = 17.6, RS = 12.3, RI = 10.45, YG = 2.2, UA = 18 * DER, DP = 7.2 * DER, DD = 0.5;
+        const kutupAci = (k) => Math.PI / 2 - k * (Math.PI / 4);   // 1. kutup üstte, numaralar saat yönünde artar
+        const aB = Math.asin(YG / RB), aS = Math.asin(YG / RS);
+        const kutupal = (r, a) => new T.Vector2(r * Math.cos(a), r * Math.sin(a));
+        const bosluk = [];   // statorun iç boşluğu: artan açıyla, kutup kutup dolaşılır
+        for (let k = 0; k < 8; k++) {
+          const c = Math.PI / 2 + k * (Math.PI / 4);
+          const u = [Math.cos(c), Math.sin(c)], v = [-Math.sin(c), Math.cos(c)];
+          const nokta = (r, t) => new T.Vector2(r * u[0] + t * v[0], r * u[1] + t * v[1]);
+          bosluk.push(nokta(Math.sqrt(RB * RB - YG * YG), -YG), nokta(Math.sqrt(RS * RS - YG * YG), -YG));
+          yay(bosluk, RS, c - aS, c - UA, 3);
+          bosluk.push(kutupal(RS, c - UA), kutupal(RI + DD, c - UA));
+          for (let j = -2; j <= 2; j++) {
+            const a = c + j * DP, g = DP * 0.22;
+            for (const [aa, r] of [[a - g, RI + DD], [a - g, RI], [a + g, RI], [a + g, RI + DD]]) bosluk.push(kutupal(r, aa));
+          }
+          bosluk.push(kutupal(RI + DD, c + UA), kutupal(RS, c + UA));
+          yay(bosluk, RS, c + UA, c + aS, 3);
+          bosluk.push(nokta(Math.sqrt(RS * RS - YG * YG), YG), nokta(Math.sqrt(RB * RB - YG * YG), YG));
+          yay(bosluk, RB, c + aB, c + Math.PI / 4 - aB, 6);   // arka demir: sonraki kutba kadar
+        }
+        const statorSekli = delikli(y.pahliKare(KARE, PAH), kose.map(([x, yy]) => [x, yy, 1.7]));
+        statorSekli.holes.push(new T.Path(bosluk));
+        const stator = y.ag(y.cek(statorSekli, 24), 'sac');
+
+        /* ---- sargılar: her kutbun gövdesine bir bobin; her bobin kendi malzemesiyle (faza göre renklenir) ---- */
+        const bobinSekli = new T.Shape();
+        const [bw, bh, br] = [4.6, 14.5, 2];
+        bobinSekli.moveTo(-bw + br, -bh).lineTo(bw - br, -bh).quadraticCurveTo(bw, -bh, bw, -bh + br).lineTo(bw, bh - br).quadraticCurveTo(bw, bh, bw - br, bh)
+          .lineTo(-bw + br, bh).quadraticCurveTo(-bw, bh, -bw, bh - br).lineTo(-bw, -bh + br).quadraticCurveTo(-bw, -bh, -bw + br, -bh);
+        bobinSekli.holes.push(new T.Path().moveTo(-2.25, -12.1).lineTo(-2.25, 12.1).lineTo(2.25, 12.1).lineTo(2.25, -12.1).closePath());
+        const bobinGeo = new T.ExtrudeGeometry(bobinSekli, { depth: 3.8, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.3, bevelSegments: 2, curveSegments: 6 })
+          .rotateX(-Math.PI / 2).translate(0, 12.7, 0);
+        const bakir = y.malzeme('bakir'), renkBakir = bakir.color.clone(), renkN = y.malzeme('kuzey').color.clone(), renkS = y.malzeme('guney').color.clone();
+        const bobinler = [];
+        const sargilar = new T.Group();
+        for (let k = 0; k < 8; k++) {
+          const b = y.ag(bobinGeo, bakir.clone(), { esik: 50 });
+          const g = grup(b);
+          g.rotation.z = kutupAci(k) - Math.PI / 2;
+          sargilar.add(g);
+          bobinler.push(b);
+        }
+
+        /* ---- rotor: iki dişli kap (50 diş), aralarında mıknatıs ---- */
+        const kapSekli = (kayma) => {
+          const n = [], p = TUR / 50;
+          for (let i = 0; i < 50; i++) {
+            const a = i * p + kayma, g = p * 0.21;
+            for (const [aa, r] of [[a - p / 2 + 0.02, 9.6], [a - g, 9.6], [a - g * 0.8, 10.2], [a + g * 0.8, 10.2], [a + g, 9.6]]) n.push(new T.Vector2(r * Math.cos(aa), r * Math.sin(aa)));
+          }
+          return delikli(new T.Shape(n), [[0, 0, 2.55]]);
+        };
+        const rotorN = yer(y.ag(y.cek(kapSekli(0), 10), 'kuzey', { esik: 60 }), 0, 0, 7);
+        const rotorS = yer(y.ag(y.cek(kapSekli(3.6 * DER), 10), 'guney', { esik: 60 }), 0, 0, -7);
+        const miknatis = y.ag(y.halka(2.55, 8.8, 3.9), 'miknatis');
+
+        /* ---- mil: Ø5, ön ucu D kesimli; uçtaki sarı çizgi dönüşü gösterir ---- */
+        const dA = Math.acos(2 / 2.5);   // düz yüzey y = 2’de: 0,5 mm derinlik
+        const dSekli = new T.Shape().moveTo(-1.5, 2).absarc(0, 0, 2.5, Math.PI / 2 + dA, Math.PI / 2 - dA + TUR, false).lineTo(-1.5, 2);
+        const mil = grup(
+          yer(y.ag(y.silindir(2.5, 43), 'celik'), 0, 0, 2.5),
+          yer(y.ag(y.cek(dSekli, 20, { bolum: 32 }), 'celik'), 0, 0, 34),
+          yer(new T.Mesh(new T.BoxGeometry(0.7, 2.2, 0.2), y.malzeme('vurgu')), 0, -1.1, 44.05)
+        );
+
+        /* ---- rulmanlar: dış bilezik, iç bilezik, 8 bilye ---- */
+        const rulman = (z) => {
+          const g = grup(y.ag(y.halka(6.4, 7.95, 4.9), 'celik'), y.ag(y.halka(2.55, 3.9, 4.9), 'celik'));
+          const bilye = new T.SphereGeometry(1.2, 16, 12);
+          for (let i = 0; i < 8; i++) g.add(yer(y.ag(bilye, 'celik', { kenar: false }), 5.15 * Math.cos((i * TUR) / 8), 5.15 * Math.sin((i * TUR) / 8), 0));
+          g.position.z = z;
+          return g;
+        };
+        const onRulman = rulman(17.5), arkaRulman = rulman(-17);
+
+        /* ---- kapaklar ----
+           Birbirine değen parçalar arasında 0,05 mm boşluk vardır: aynı düzlemdeki yüzeyler kesit görünümünde titrer (z-fighting). */
+        const etek = (z) => yer(y.ag(y.cek(delikli(y.pahliKare(KARE, PAH), [[0, 0, 17.8]].concat(kose.map(([x, yy]) => [x, yy, 1.7]))), 2.9), 'aluminyum'), 0, 0, z);
+        const onKapak = grup(
+          etek(13.5),
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, PAH), [[0, 0, 8]].concat(kose.map(([x, yy]) => [x, yy, 1.5]))), 4.9, { pah: 0.4 }), 'aluminyum'), 0, 0, 17.55),
+          yer(y.ag(y.halka(8, 11, 1.95), 'aluminyum'), 0, 0, 21.05)
+        );
+        const arkaKapak = grup(
+          etek(-13.5),
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, PAH), [[0, 0, 8]].concat(kose.map(([x, yy]) => [x, yy, 1.7]))), 4.4), 'aluminyum'), 0, 0, -17.25),
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, PAH), kose.map(([x, yy]) => [x, yy, 1.7])), 1.4, { pah: 0.4 }), 'aluminyum'), 0, 0, -20.25)
+        );
+
+        /* ---- cıvatalar: arkadan geçer, ön kapağa vidalanır ---- */
+        const civatalar = new T.Group();
+        const govdeGeo = y.silindir(1.4, 38, 16), basGeo = y.silindir(2.6, 2, 24);
+        kose.forEach(([x, yy]) => {
+          civatalar.add(yer(y.ag(govdeGeo, 'celik', { esik: 60 }), x, yy, -2));
+          civatalar.add(yer(y.ag(basGeo, 'celik'), x, yy, -22.05));
+        });
+
+        /* ---- kablo: arka kapaktan çıkan dört tel ---- */
+        const kablo = grup(yer(y.ag(new T.BoxGeometry(12, 4, 5), 'plastik'), 0, 23.2, -17.5));
+        [['kabloSiyah', -3.3], ['kabloYesil', -1.1], ['kabloKirmizi', 1.1], ['kabloMavi', 3.3]].forEach(([m, x]) => {
+          kablo.add(y.ag(y.boru([[x, 24.5, -17.5], [x * 1.3, 28, -22], [x * 1.9, 31, -32], [x * 2.6, 33, -44]], 0.65), m, { kenar: false }));
+        });
+
+        const parcalar = [
+          { nesne: onKapak, isaret: [-15, 12, 20.2], patlat: [0, 0, 34] },
+          { nesne: onRulman, isaret: [5.7, 5.7, 0], patlat: [0, 0, 22] },
+          { nesne: stator, isaret: [21.2, -8, 4], patlat: [0, 0, 0] },
+          { nesne: sargilar, isaret: [-3.5, 15, 14], patlat: [0, 0, 0] },
+          { nesne: rotorN, isaret: [-8, 5, 5.05], patlat: [0, 46, 6] },
+          { nesne: miknatis, isaret: [6.2, 6.2, 0], patlat: [0, 46, 0] },
+          { nesne: rotorS, isaret: [-5, 8.8, 5.05], patlat: [0, 46, -6] },
+          { nesne: mil, isaret: [0, 2.05, 40], patlat: [0, 46, 0] },
+          { nesne: arkaRulman, isaret: [5.7, 5.7, 0], patlat: [0, 0, -22] },
+          { nesne: arkaKapak, isaret: [21.2, -8, -17], patlat: [0, 0, -34] },
+          { nesne: civatalar, isaret: [CIVATA + 2.6, CIVATA, -22], patlat: [0, 0, -62] },
+          { nesne: kablo, isaret: [6, 25.1, -17.5], patlat: [0, 0, -34] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+        const donen = [rotorN, miknatis, rotorS, mil];
+
+        return {
+          kok,
+          parcalar,
+          uygula(s) {
+            donen.forEach((n) => { n.rotation.z = -s.aci * DER; });
+            const [f, yon] = faz(s.adim);
+            bobinler.forEach((b, k) => {
+              const bu = (k % 2 === 0 ? 'A' : 'B') === f;
+              const kutup = ((k >> 1) % 2 === 0 ? 1 : -1) * yon;
+              b.material.color.copy(!bu ? renkBakir : kutup > 0 ? renkN : renkS);
+            });
+          }
+        };
+      }
+    }
+  });
+})();
 
 /* ---- kaynak/konular/03-servo-motorlar/konu.js ---- */
 /* Servo motorlar: konu tanımı ve bilgi sayfaları. */
@@ -2278,7 +2563,7 @@ Object.assign(SEMALAR, {
     </svg>`;
   })(),
 
-  surucuServo: `<svg class="sema" viewBox="0 0 318 228" role="img" aria-label="PLC'den servo sürücüye üç komut yolu: darbe/yön, analog ve EtherCAT">
+  surucuServo: `<svg class="sema" viewBox="0 0 318 228" role="img" aria-label="PLC’den servo sürücüye üç komut yolu: darbe/yön, analog ve EtherCAT">
     ${_kutu(8, 28, 62, 172, { f: '--card' })}${_yazi(39, 118, 'PLC', { a: 'middle', w: 600 })}
     ${_kutu(206, 28, 56, 172, { f: '--card' })}${_yazi(234, 118, 'SÜRÜCÜ', { a: 'middle', b: 9, w: 600 })}
     ${_tel('M70 54H206M70 66H206', '--signal', { w: 2 })}
@@ -2844,7 +3129,7 @@ Object.assign(SEMALAR, {
       p += `<circle cx="${x}" cy="${y}" r="3" style="fill:var(${r})"></circle>`;
       p += _kontak(x, 76, { tip: 'NO', u: r }) + _kontak(x2, 76, { tip: 'NO', u: r });
     });
-    return `<svg class="sema" viewBox="0 0 318 250" role="img" aria-label="İleri-geri güç devresi: K2 kontaktörü L1 ile L3'ün yerini değiştirir">
+    return `<svg class="sema" viewBox="0 0 318 250" role="img" aria-label="İleri-geri güç devresi: K2 kontaktörü L1 ile L3’ün yerini değiştirir">
       ${p}
       <path d="M38 88H100M158 88H220" style="stroke:var(--muted)" stroke-width="1.2" stroke-dasharray="4 3" fill="none"></path>
       <path d="M100 88H158" style="stroke:var(--dc-plus)" stroke-width="1.5" stroke-dasharray="2 3" fill="none"></path>
@@ -6275,7 +6560,8 @@ const durum = {
   uyariOnay: DEPO.oku('uyariOnay', false) === true,
   sifirlaOnay: false,
   premiumHedef: null,
-  sim: {}
+  sim: {},
+  model: {}
 };
 if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
 if (!Array.isArray(durum.aramalar)) durum.aramalar = [];
@@ -6311,6 +6597,7 @@ function blokMetni(b) {
     case 'not': ekle(b.metin); break;
     case 'renkler': b.satirlar.forEach((r) => ekle(r[0] + ' ' + r[2])); break;
     case 'sim': ekle('Simülasyon'); if (SIMLER[b.tur]) ekle(SIMLER[b.tur].not); break;
+    case 'model': ekle('3B model'); if (MODELLER[b.tur]) { ekle(MODELLER[b.tur].aciklama); MODELLER[b.tur].parcalar.forEach((x) => ekle(x)); } break;
     case 'adimlar': b.satirlar.forEach((m) => ekle(m)); break;
   }
   return p.join(' · ');
@@ -6493,6 +6780,7 @@ function ciz(t, secenek) {
   else if (KONU[t]) html = konuEkrani(KONU[t]);
   else if (ALT[t]) html = bilgiSayfasi(ALT[t]);
   else html = anaSayfa();
+  modelleriTemizle();
   app.innerHTML = html;
   menuGuncelle();
   aktifBolum = null;
@@ -6513,6 +6801,7 @@ function ciz(t, secenek) {
   ilkCizim = false;
   kaydirmaIzle();
   simSaatiKur();
+  modelleriKur();
 }
 
 function menuGuncelle() {
@@ -6652,6 +6941,7 @@ function blok(b) {
     case 'tablo': return `<div class="tablo">${b.satirlar.map((r) => `<div class="tablo-satir"><span class="tablo-etiket ${esc(r[1] || '')}">${esc(r[0])}</span><span class="tablo-metin">${esc(r[2])}</span></div>`).join('')}</div>`;
     case 'hesap': return hesapBlok(b.tur);
     case 'sim': return simBlok(b.tur);
+    case 'model': return modelBlok(b.tur);
     case 'ariza': return `
       <div class="ariza">
         <div class="ariza-ust"><span class="panel-etiket">Belirti</span><span class="ariza-belirti">${esc(b.belirti)}</span></div>
@@ -7004,6 +7294,491 @@ function bildir(m) {
   b.classList.add('acik');
   clearTimeout(bildirimZamani);
   bildirimZamani = setTimeout(() => b.classList.remove('acik'), 1800);
+}
+
+/* ---- kaynak/uygulama/86-model.js ---- */
+/* ---------- 3B modeller ----------
+   Sayfada { tip: 'model', tur: '<ad>' }. Modeller: konular/<konu>/modeller.js (MODELLER). Rehber: belgeler/model-3b.md
+   Three.js ilk model açılınca bir kez yüklenir ve önbellekte kalır. Çizim yalnızca bir şey değişince yapılır
+   (sürükleme, düğme, animasyon). Sayfadan çıkınca sahne, GPU kaynakları ve dinleyiciler temizlenir. */
+const THREE_YOLU = './varliklar/kutuphane/three-0.186.1/three.min.js';
+let threeSozu = null;
+const threeYukle = () => threeSozu || (threeSozu = import(THREE_YOLU).catch((e) => { threeSozu = null; throw e; }));
+const modelOrnekleri = [];
+
+/* Malzemeler: gerçek malzeme hissi, uygulamanın renkleri. r: belirteç adı verilirse renk temadan okunur. */
+const MALZEMELER = {
+  aluminyum: { renk: 0xc4c9cf, metal: 0.3, puruz: 0.42 },
+  celik: { renk: 0xa3aab1, metal: 0.45, puruz: 0.32 },
+  sac: { renk: 0x646b73, metal: 0.25, puruz: 0.5 },
+  bakir: { renk: 0xc07a3e, metal: 0.35, puruz: 0.38 },
+  miknatis: { renk: 0x4a5058, metal: 0.1, puruz: 0.6 },
+  kuzey: { r: '--dc-plus', metal: 0.1, puruz: 0.55 },
+  guney: { r: '--wire-n', metal: 0.1, puruz: 0.55 },
+  plastik: { renk: 0x2b2f34, metal: 0, puruz: 0.7 },
+  plastikAcik: { renk: 0xe8e4da, metal: 0, puruz: 0.65 },
+  vurgu: { r: '--accent', metal: 0.1, puruz: 0.5 },
+  kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
+  kabloYesil: { renk: 0x3f8a3a, metal: 0, puruz: 0.6 },
+  kabloKirmizi: { renk: 0xb7352a, metal: 0, puruz: 0.6 },
+  kabloMavi: { renk: 0x2c63b0, metal: 0, puruz: 0.6 }
+};
+
+const modelDurum = (tur) => {
+  if (!durum.model[tur]) durum.model[tur] = Object.assign({ patlat: false, kesit: 0, secili: -1 }, MODELLER[tur].yeni ? MODELLER[tur].yeni() : {});
+  return durum.model[tur];
+};
+
+function modelDugmeleri(tur, s) {
+  const M = MODELLER[tur];
+  const d = (M.dugmeler ? M.dugmeler(s) : []).slice();
+  if (M.patlat !== false) d.push(['patlat', s.patlat ? 'Birleştir' : 'Parçala', s.patlat]);
+  const k = modelKesitleri(tur);
+  if (k.length) d.push(['kesit', s.kesit ? `Kesit: ${k[s.kesit - 1].ad}` : 'Kesit', s.kesit > 0]);
+  d.push(['sifirla', 'Görünümü sıfırla']);
+  return d.map(([o, e, b]) => `<button type="button" class="dugme dugme-kucuk" data-model-olay="${o}"${b == null ? '' : ` aria-pressed="${!!b}"`}>${esc(e)}</button>`).join('');
+}
+
+/* Kesit kipleri: düğme sırayla dolaşır (yok → 1 → 2 …). Varsayılan: sağ üst çeyrek kesilir. */
+const modelKesitleri = (tur) => MODELLER[tur].kesitler || [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }];
+
+function modelSecimMetni(tur, s) {
+  const p = MODELLER[tur].parcalar[s.secili];
+  return p ? `<span class="isaret-no" aria-hidden="true">${s.secili + 1}</span><span><span class="isaret-ad">${esc(p[0])}</span><span class="isaret-metin">${esc(p[1])}</span></span>` : '';
+}
+
+function modelBlok(tur) {
+  const M = MODELLER[tur];
+  if (!M) return '';
+  const s = modelDurum(tur), d = M.durum ? M.durum(s) : null;
+  return `
+    <div class="model-blok" data-model-kutu="${tur}" data-durum="yukleniyor">
+      <div class="kart model-kutu">
+        <div class="model-sahne" id="model-${tur}-s" role="img" aria-label="${esc(M.aciklama)}">
+          <p class="model-bilgi" id="model-${tur}-y">3B model yükleniyor…</p>
+          <div class="model-isaretler" id="model-${tur}-i">${M.parcalar.map((p, i) => `<button type="button" class="model-no" tabindex="-1" aria-hidden="true" data-model-parca="${i}" aria-pressed="${s.secili === i}">${i + 1}</button>`).join('')}</div>
+        </div>
+        <div class="model-secim" id="model-${tur}-c" aria-live="polite"${s.secili < 0 ? ' hidden' : ''}>${modelSecimMetni(tur, s)}</div>
+        ${d ? `<div class="sim-durum" id="model-${tur}-d" aria-live="polite">${esc(d.metin)}</div>` : ''}
+        <div class="dugme-satir" id="model-${tur}-b">${modelDugmeleri(tur, s)}</div>
+        <p class="kucuk">${esc(M.not)}</p>
+      </div>
+      <ol class="isaretler model-parcalar">${M.parcalar.map(([ad, m], i) => `
+        <li><button type="button" class="model-parca" data-model-parca="${i}" aria-pressed="${s.secili === i}"><span class="isaret-no" aria-hidden="true">${i + 1}</span><span><span class="isaret-ad"><span class="gizli">${i + 1}. </span>${esc(ad)}</span><span class="isaret-metin">${esc(m)}</span></span></button></li>`).join('')}</ol>
+    </div>`;
+}
+
+function modelleriTemizle() {
+  modelOrnekleri.splice(0).forEach((o) => { o.bitti = true; if (o.temizle) o.temizle(); });
+}
+
+function modelleriKur() {
+  modelleriTemizle();
+  $$('[data-model-kutu]').forEach((kutu) => {
+    const tur = kutu.dataset.modelKutu;
+    if (!MODELLER[tur]) return;
+    const o = { tur, kutu, bitti: false, gorunum: null };
+    modelOrnekleri.push(o);
+    kutu.addEventListener('click', (e) => modelTikla(o, e));
+    threeYukle()
+      .then((T) => { if (!o.bitti) modelBaslat(T, o); }, () => { if (!o.bitti) modelHata(o, 'yukleme'); })
+      .catch((e) => { modelHata(o, 'hata'); console.error('3B model:', o.tur, e); });
+  });
+}
+
+function modelHata(o, neden) {
+  o.kutu.dataset.durum = 'hata';
+  const b = document.getElementById(`model-${o.tur}-y`);
+  if (b) {
+    b.innerHTML = neden === 'webgl' ? 'Bu cihazda 3B çizim açılamadı (WebGL desteklenmiyor). Parçaların listesi aşağıda.'
+      : neden === 'yukleme' ? '3B model yüklenemedi. İnternete bağlanıp <button type="button" class="metin-dugme" data-model-olay="yeniden">yeniden dene</button>.'
+      : '3B model açılamadı. Parçaların listesi aşağıda.';
+  }
+}
+
+/* Durum metni ve düğmeler; yalnızca değiştiyse yeniden yazılır (odak korunur). */
+function modelYaz(o) {
+  const M = MODELLER[o.tur], s = modelDurum(o.tur);
+  const de = document.getElementById(`model-${o.tur}-d`);
+  if (de && M.durum) { const m = M.durum(s).metin; if (de.textContent !== m) de.textContent = m; }
+  const be = document.getElementById(`model-${o.tur}-b`), yeni = modelDugmeleri(o.tur, s);
+  if (be && be.dataset.son !== yeni) {
+    const odak = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.modelOlay : null;
+    be.innerHTML = yeni;
+    be.dataset.son = yeni;
+    if (odak) { const b = be.querySelector(`[data-model-olay="${odak}"]`); if (b) b.focus({ preventScroll: true }); }
+  }
+  const ce = document.getElementById(`model-${o.tur}-c`);
+  if (ce) { ce.hidden = s.secili < 0; ce.innerHTML = modelSecimMetni(o.tur, s); }
+  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili)));
+}
+
+function modelTikla(o, e) {
+  const el = e.target.closest('[data-model-olay],[data-model-parca]');
+  if (!el) return;
+  const M = MODELLER[o.tur], s = modelDurum(o.tur);
+  if (el.dataset.modelParca != null) {
+    const i = Number(el.dataset.modelParca);
+    s.secili = s.secili === i ? -1 : i;
+  } else {
+    const olay = el.dataset.modelOlay;
+    if (olay === 'yeniden') { modelleriKur(); return; }
+    if (olay === 'patlat') s.patlat = !s.patlat;
+    else if (olay === 'kesit') s.kesit = (s.kesit + 1) % (modelKesitleri(o.tur).length + 1);
+    else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
+    else if (M.olay) M.olay(s, olay);
+  }
+  modelYaz(o);
+  if (o.gorunum) o.gorunum.guncelle();
+}
+
+function modelBaslat(T, o) {
+  const M = MODELLER[o.tur], s = modelDurum(o.tur);
+  const sahneEl = document.getElementById(`model-${o.tur}-s`), isaretEl = document.getElementById(`model-${o.tur}-i`);
+  if (!sahneEl) return;
+  let renderer;
+  try {
+    renderer = new T.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+  } catch (e) { modelHata(o, 'webgl'); return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputColorSpace = T.SRGBColorSpace;
+  renderer.toneMapping = T.NoToneMapping;
+  renderer.localClippingEnabled = true;
+  const tuval = renderer.domElement;
+  tuval.className = 'model-tuval';
+  sahneEl.insertBefore(tuval, isaretEl);
+
+  const belirtec = (ad) => getComputedStyle(document.documentElement).getPropertyValue(ad).trim() || '#888888';
+  const sahne = new T.Scene();
+  const kamera = new T.PerspectiveCamera(28, 1, 1, 5000);
+  /* Işık kameraya bağlı: model döndükçe bakılan yüz hep aydınlık kalır. Değerler, dik bakan açık yüz beyaza kaçmayacak kadar düşük. */
+  const isik = new T.DirectionalLight(0xffffff, 1.45);
+  isik.position.set(0.6, 1.1, 1);
+  const dolgu = new T.DirectionalLight(0xffffff, 0.45);
+  dolgu.position.set(-1, -0.4, 0.2);
+  kamera.add(isik, dolgu);
+  sahne.add(kamera, new T.HemisphereLight(0xffffff, 0x9a9fa6, 0.95));
+
+  /* ---- modele verilen yardımcılar ---- */
+  const malzemeler = new Map();
+  const cizgiMalzeme = new T.LineBasicMaterial({ color: belirtec('--ink'), transparent: true, opacity: 0.4 });
+  const y = {
+    T,
+    malzeme(ad) {
+      if (!malzemeler.has(ad)) {
+        const m = MALZEMELER[ad];
+        if (!m) throw new Error('Bilinmeyen malzeme: ' + ad);
+        malzemeler.set(ad, new T.MeshStandardMaterial({ color: m.r ? belirtec(m.r) : m.renk, metalness: m.metal, roughness: m.puruz }));
+      }
+      return malzemeler.get(ad);
+    },
+    /* Ağ: geometri + malzeme adı. kenar: false verilmezse keskin kenarlar ince çizgiyle çizilir (teknik çizim görünümü). */
+    ag(geo, malzeme, sec = {}) {
+      const a = new T.Mesh(geo, typeof malzeme === 'string' ? y.malzeme(malzeme) : malzeme);
+      if (sec.kenar !== false) a.add(new T.LineSegments(new T.EdgesGeometry(geo, sec.esik || 35), cizgiMalzeme));
+      return a;
+    },
+    /* Z ekseni boyunca, z = 0 merkezli geometriler */
+    silindir: (r, u, bolum = 48) => new T.CylinderGeometry(r, r, u, bolum).rotateX(Math.PI / 2),
+    halka(ic, dis, u, bolum = 64) {
+      const sekil = new T.Shape().absarc(0, 0, dis, 0, Math.PI * 2, false);
+      sekil.holes.push(new T.Path().absarc(0, 0, ic, 0, Math.PI * 2, true));
+      return y.cek(sekil, u, { bolum });
+    },
+    /* Şekli z boyunca u kadar çeker, ortalar. pah: kenar yuvarlatma (mm). */
+    cek(sekil, u, sec = {}) {
+      const pah = sec.pah || 0;
+      const g = new T.ExtrudeGeometry(sekil, { depth: u - pah * 2, bevelEnabled: pah > 0, bevelThickness: pah, bevelSize: pah, bevelSegments: 2, curveSegments: sec.bolum || 24 });
+      return g.translate(0, 0, -(u - pah * 2) / 2);
+    },
+    pahliKare(kenar, pah) {
+      const k = kenar / 2, p = pah;
+      return new T.Shape().moveTo(-k + p, -k).lineTo(k - p, -k).lineTo(k, -k + p).lineTo(k, k - p).lineTo(k - p, k).lineTo(-k + p, k).lineTo(-k, k - p).lineTo(-k, -k + p).closePath();
+    },
+    boru(noktalar, r, bolum = 48) {
+      return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar.map((n) => new T.Vector3(...n))), bolum, r, 10, false);
+    }
+  };
+
+  let m;
+  try {
+    m = M.kur(y, s);
+  } catch (e) {
+    renderer.dispose();
+    tuval.remove();
+    throw e;
+  }
+  sahne.add(m.kok);
+
+  /* ---- parçalar: her parça kendi malzeme kopyasını alır (seçim vurgusu ve saydamlık parça başına) ---- */
+  const parcalar = m.parcalar.map((p, i) => {
+    const kopya = new Map();
+    const aglar = [];
+    p.nesne.traverse((n) => {
+      if (n.isMesh || n.isLineSegments) {
+        if (!kopya.has(n.material)) kopya.set(n.material, n.material.clone());
+        n.material = kopya.get(n.material);
+        if (n.isMesh) { n.userData.parca = i; aglar.push(n); }
+      }
+    });
+    return { nesne: p.nesne, taban: p.nesne.position.clone(), patlat: new T.Vector3(...(p.patlat || [0, 0, 0])), isaret: new T.Vector3(...(p.isaret || [0, 0, 0])), aglar, malzemeler: [...kopya.values()] };
+  });
+  const tumMalzemeler = [...new Set(parcalar.flatMap((p) => p.malzemeler))];
+  sahne.traverse((n) => { if ((n.isMesh || n.isLineSegments) && !tumMalzemeler.includes(n.material)) tumMalzemeler.push(n.material); });
+  /* Kesit yüzleri: her ağın arka yüzleri düz renkle çizilir. Kesitten içeri bakınca görünen arka yüzler dolu bir kesit
+     yüzeyi gibi görünür (kapalı ağlarda çalışır). Yalnızca kesit açıkken görünür; renk ve saydamlık ana ağdan kopyalanır. */
+  const kapaklar = [];
+  parcalar.forEach((pr, i) => pr.aglar.forEach((a) => {
+    const k = new T.Mesh(a.geometry, new T.MeshBasicMaterial({ side: T.BackSide }));
+    k.visible = false;
+    k.userData.parca = i;
+    k.userData.ana = a;
+    a.add(k);
+    kapaklar.push(k);
+  }));
+  function kapaklariEsle() {
+    if (!s.kesit) return;
+    kapaklar.forEach((k) => {
+      const a = k.userData.ana.material, km = k.material;
+      km.color.copy(a.color).multiplyScalar(0.82);
+      if (km.transparent !== a.transparent) { km.transparent = a.transparent; km.needsUpdate = true; }
+      km.opacity = a.opacity;
+      km.depthWrite = a.depthWrite;
+    });
+  }
+  const secilebilir = parcalar.flatMap((p) => p.aglar).concat(kapaklar);
+
+  /* ---- kamera: başlangıç yönünden bakınca model (birleşik ve parçalı hâlde) çerçeveye sığar ---- */
+  const yon = new T.Vector3(...(M.kamera && M.kamera.yon ? M.kamera.yon : [1, 0.7, 1.6])).normalize();
+  const bas = { teta: Math.atan2(yon.x, yon.z), fi: Math.acos(yon.y) };
+  const gor = { teta: bas.teta, fi: bas.fi, yakin: 1 };
+  function sigdir(pp) {
+    parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, pp));
+    m.kok.updateMatrixWorld(true);
+    const koseler = [];   // her ağın kendi kutusunun köşeleri: tek büyük kutudan daha sıkı sığdırır
+    m.kok.traverse((n) => {
+      if (!n.isMesh) return;
+      if (!n.geometry.boundingBox) n.geometry.computeBoundingBox();
+      const k = n.geometry.boundingBox;
+      for (const x of [k.min.x, k.max.x]) for (const yy of [k.min.y, k.max.y]) for (const z of [k.min.z, k.max.z]) koseler.push(new T.Vector3(x, yy, z).applyMatrix4(n.matrixWorld));
+    });
+    const kutu = new T.Box3().setFromPoints(koseler), merkez = kutu.getCenter(new T.Vector3());
+    let d = kutu.getBoundingSphere(new T.Sphere()).radius / Math.sin((kamera.fov * Math.PI) / 360);
+    for (let i = 0; i < 4; i++) {
+      kamera.position.copy(yon).multiplyScalar(d).add(merkez);
+      kamera.lookAt(merkez);
+      kamera.updateMatrixWorld();
+      kamera.updateProjectionMatrix();
+      const en = Math.max(...koseler.map((k) => { const v = k.clone().project(kamera); return Math.max(Math.abs(v.x), Math.abs(v.y)); }));
+      d *= en / 0.9;
+    }
+    return { merkez, d };
+  }
+  let cerceve = null;
+  const cerceveHesapla = () => { cerceve = [sigdir(0), sigdir(1)]; patlatUygula(); };
+
+  const kesitPlanlari = modelKesitleri(o.tur).map((k) => k.planlar.map(([a, b, c, d]) => new T.Plane(new T.Vector3(a, b, c), d)));
+  const planlar = () => kesitPlanlari[s.kesit - 1] || [];
+  /* Işın testi kesimi bilmez: kesit açıkken kesilip atılan bölgeye (bütün planların arkası) düşen vuruşlar yok sayılır. */
+  const kesik = (nk) => s.kesit > 0 && planlar().every((pl) => pl.distanceToPoint(nk) < 0);
+  const gorunenVurus = (liste) => liste.find((x) => x.object.visible && x.object.material.opacity > 0.5 && !kesik(x.point));
+  let p = s.patlat ? 1 : 0, kesitUygulanan = null, seciliUygulanan = null;
+
+  function kesitUygula() {
+    if (kesitUygulanan === s.kesit) return;
+    kesitUygulanan = s.kesit;
+    const pl = s.kesit ? planlar() : null;
+    tumMalzemeler.concat(cizgiMalzeme, kapaklar.map((k) => k.material)).forEach((mm) => {
+      mm.clippingPlanes = pl;
+      mm.clipIntersection = true;
+      mm.needsUpdate = true;
+    });
+    kapaklar.forEach((k) => { k.visible = s.kesit > 0; });
+    kapaklariEsle();
+  }
+  const vurgu = new T.Color(belirtec('--accent'));
+  function secimUygula() {
+    if (seciliUygulanan === s.secili) return;
+    seciliUygulanan = s.secili;
+    parcalar.forEach((pr, i) => pr.malzemeler.forEach((mm) => {
+      const secili = i === s.secili, soluk = s.secili >= 0 && !secili, cizgi = mm.isLineBasicMaterial;
+      if (mm.emissive) mm.emissive.copy(vurgu).multiplyScalar(secili ? 0.45 : 0);
+      mm.transparent = cizgi || soluk;
+      mm.opacity = cizgi ? (soluk ? 0.08 : 0.4) : (soluk ? 0.16 : 1);
+      mm.depthWrite = !soluk;
+      mm.needsUpdate = true;
+    }));
+    kapaklariEsle();
+  }
+  function patlatUygula() {
+    const e = p * p * (3 - 2 * p);
+    parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, e));
+  }
+  function kameraYerlestir() {
+    const e = p * p * (3 - 2 * p);
+    const merkez = cerceve[0].merkez.clone().lerp(cerceve[1].merkez, e);
+    const r = (cerceve[0].d + (cerceve[1].d - cerceve[0].d) * e) * gor.yakin;
+    kamera.position.set(Math.sin(gor.fi) * Math.sin(gor.teta), Math.cos(gor.fi), Math.sin(gor.fi) * Math.cos(gor.teta)).multiplyScalar(r).add(merkez);
+    kamera.near = Math.max(0.5, r / 50);
+    kamera.far = r * 4;
+    kamera.updateProjectionMatrix();
+    kamera.lookAt(merkez);
+  }
+
+  /* ---- numaralı işaretler: ekrana izdüşüm; arkada kalanlar soluk ---- */
+  const noEl = $$('.model-no', isaretEl);
+  const isin = new T.Raycaster();
+  let sonOrtulme = 0;
+  function isaretleriYerlestir(w, h, ortulmeHesapla) {
+    const v = new T.Vector3();
+    parcalar.forEach((pr, i) => {
+      const el = noEl[i];
+      if (!el) return;
+      v.copy(pr.isaret);
+      pr.nesne.localToWorld(v);
+      const dunya = v.clone();
+      v.project(kamera);
+      const disarida = v.z > 1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05;
+      el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px)`;
+      el.classList.toggle('gizli-no', disarida);
+      if (ortulmeHesapla) {
+        const yonV = dunya.clone().sub(kamera.position), mesafe = yonV.length();
+        isin.set(kamera.position, yonV.normalize());
+        isin.far = mesafe + 0.01;
+        const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
+        el.classList.toggle('arkada', (!!vurus && vurus.object.userData.parca !== i && vurus.distance < mesafe - mesafe * 0.02) || kesik(dunya));
+      }
+    });
+  }
+
+  /* ---- çizim döngüsü: yalnızca gerektiğinde ---- */
+  let istek = 0, son = 0, gorunur = true, w = 0, h = 0, surukleniyor = false;
+  const iste = () => { if (!istek && !o.bitti) istek = requestAnimationFrame(kare); };
+  function kare(t) {
+    istek = 0;
+    const dt = son ? Math.min(0.05, (t - son) / 1000) : 0.016;
+    son = t;
+    let devam = false;
+    const hedef = s.patlat ? 1 : 0;
+    if (p !== hedef) {
+      p = azHareket() ? hedef : (hedef > p ? Math.min(hedef, p + dt * 2) : Math.max(hedef, p - dt * 2));
+      patlatUygula();
+      devam = true;
+    }
+    if (M.tik && gorunur && !document.hidden && M.tik(s, dt)) {
+      m.uygula(s);
+      kapaklariEsle();
+      modelYaz(o);
+      devam = true;
+    }
+    kesitUygula();
+    secimUygula();
+    kameraYerlestir();
+    renderer.render(sahne, kamera);
+    /* Örtülme ışın testi pahalıdır: sürüklerken yapılmaz, animasyonda en çok 180 ms’de bir, durunca her zaman. */
+    const simdi = performance.now();
+    const ortulme = !surukleniyor && (!devam || simdi - sonOrtulme > 180);
+    if (ortulme) sonOrtulme = simdi;
+    isaretleriYerlestir(w, h, ortulme);
+    if (devam && gorunur) iste();
+    else son = 0;
+  }
+
+  function boyutla() {
+    const nw = sahneEl.clientWidth, nh = sahneEl.clientHeight;
+    if (!nw || !nh || (nw === w && nh === h)) return;
+    w = nw; h = nh;
+    renderer.setSize(w, h, false);
+    kamera.aspect = w / h;
+    cerceveHesapla();
+    iste();
+  }
+
+  /* ---- dokunma ve fare: tek parmak döndürür, iki parmak yakınlaştırır; kısa dokunuş parça seçer ---- */
+  const isaretci = new Map();
+  let dokunus = null, ikiliBas = 0;
+  const sinirla = (x, a, b) => Math.max(a, Math.min(b, x));
+  tuval.addEventListener('pointerdown', (e) => {
+    isaretci.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { tuval.setPointerCapture(e.pointerId); } catch (x) { /* yok say */ }
+    dokunus = isaretci.size === 1 ? { x: e.clientX, y: e.clientY } : null;
+    if (isaretci.size === 2) { const [a, b] = [...isaretci.values()]; ikiliBas = Math.hypot(a.x - b.x, a.y - b.y); }
+    surukleniyor = true;
+  });
+  tuval.addEventListener('pointermove', (e) => {
+    const onceki = isaretci.get(e.pointerId);
+    if (!onceki) return;
+    const yeni = { x: e.clientX, y: e.clientY };
+    isaretci.set(e.pointerId, yeni);
+    if (isaretci.size === 1) {
+      gor.teta -= (yeni.x - onceki.x) * 0.009;
+      gor.fi = sinirla(gor.fi - (yeni.y - onceki.y) * 0.009, 0.12, Math.PI - 0.12);
+      if (dokunus && Math.hypot(yeni.x - dokunus.x, yeni.y - dokunus.y) > 6) dokunus = null;
+    } else if (isaretci.size === 2) {
+      const [a, b] = [...isaretci.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (ikiliBas > 0 && d > 0) gor.yakin = sinirla(gor.yakin * (ikiliBas / d), 0.35, 2.5);
+      ikiliBas = d;
+    }
+    iste();
+  });
+  const birak = (e) => {
+    if (!isaretci.has(e.pointerId)) return;
+    isaretci.delete(e.pointerId);
+    if (e.type === 'pointerup' && dokunus && isaretci.size === 0) {
+      const r = tuval.getBoundingClientRect();
+      isin.far = Infinity;
+      isin.setFromCamera(new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), kamera);
+      const vurus = gorunenVurus(isin.intersectObjects(secilebilir, false));
+      const i = vurus ? vurus.object.userData.parca : -1;
+      s.secili = s.secili === i ? -1 : i;
+      modelYaz(o);
+    }
+    if (!isaretci.size) { surukleniyor = false; dokunus = null; }
+    iste();
+  };
+  tuval.addEventListener('pointerup', birak);
+  tuval.addEventListener('pointercancel', birak);
+  tuval.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey) return;   // düz tekerlek sayfayı kaydırır; Ctrl + tekerlek (ya da izleme dörtgeninde kıstırma) yakınlaştırır
+    e.preventDefault();
+    gor.yakin = sinirla(gor.yakin * Math.exp(e.deltaY * 0.01), 0.35, 2.5);
+    iste();
+  }, { passive: false });
+  tuval.addEventListener('webglcontextlost', (e) => e.preventDefault());
+  tuval.addEventListener('webglcontextrestored', iste);
+
+  const boyutGozlem = new ResizeObserver(boyutla);
+  boyutGozlem.observe(sahneEl);
+  const gorunurGozlem = new IntersectionObserver((g) => { gorunur = g[0].isIntersecting; if (gorunur) iste(); });
+  gorunurGozlem.observe(sahneEl);
+  const koyuSorgu = matchMedia('(prefers-color-scheme: dark)');
+  const temaDegisti = () => { cizgiMalzeme.color.set(belirtec('--ink')); tumMalzemeler.forEach((mm) => { if (mm.isLineBasicMaterial) mm.color.set(belirtec('--ink')); }); iste(); };
+  koyuSorgu.addEventListener('change', temaDegisti);
+
+  o.gorunum = {
+    guncelle() { m.uygula(s); kapaklariEsle(); iste(); },
+    kameraSifirla() { gor.teta = bas.teta; gor.fi = bas.fi; gor.yakin = 1; }
+  };
+  o.temizle = () => {
+    cancelAnimationFrame(istek);
+    boyutGozlem.disconnect();
+    gorunurGozlem.disconnect();
+    koyuSorgu.removeEventListener('change', temaDegisti);
+    sahne.traverse((n) => {
+      if (n.geometry) n.geometry.dispose();
+      if (n.material) [].concat(n.material).forEach((mm) => mm.dispose());
+    });
+    malzemeler.forEach((mm) => mm.dispose());
+    cizgiMalzeme.dispose();
+    renderer.dispose();
+    renderer.forceContextLoss();
+  };
+
+  m.uygula(s);
+  cerceveHesapla();
+  boyutla();
+  o.kutu.dataset.durum = 'hazir';
+  iste();
 }
 
 /* ---- kaynak/uygulama/90-olaylar.js ---- */

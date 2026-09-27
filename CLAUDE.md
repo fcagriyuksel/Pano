@@ -13,6 +13,8 @@ Kaynak `kaynak/` klasöründe konu ve türe göre küçük dosyalara bölünmü�
 - Kullanıcı odaklı, pratik ve şematik ol. Her sayfada görsel olsun: şema, hesaplayıcı, simülasyon.
 - Değerler saha ve standartlarla uyumlu olmalı (IEC/EN, Elektrik İç Tesisleri Yönetmeliği). Emin olmadığın değeri yazma.
 - Proje her zaman düzenli kalmalı: her iş için ne yapılacağı `belgeler/` altında yazılı olmalı. Yeni bir iş türü eklenirse rehberini de yaz; akış değişirse rehberi güncelle.
+- Çalışırken gözüne çarpan eksik bilgiyi, yazım hatasını ve bilgi yanlışlığını, konu dışı olsa bile düzelt. Emin değilsen değiştirme; kullanıcıya sor. Yaptığın düzeltmeleri commit mesajında ve kullanıcıya verdiğin özette ayrıca belirt.
+- Hatalardan ders al, aynı hatayı tekrarlama. Oturumlar arasında hafıza yoktur; ders ancak yazılırsa kalır. Bir hatayı bulup düzelttiğinde nedenini ve önlemini ilgili rehberin “Tuzaklar” bölümüne ya da bu dosyadaki “Genel tuzaklar” listesine ekle. İşe başlarken o listeleri oku.
 
 ## Kullanıcının tercihleri
 
@@ -30,10 +32,10 @@ kaynak/                     ELLE DÜZENLENEN TEK YER
   stil/NN-*.css             stil (01 belirteçler … 99 hareket azaltma)
   govde/NN-*                gövde parçaları: uygulama kabı, erken betik, açılış ekranı, alt menü
   ortak/NN-*.js             genel kapsam: sayi(), kayıtlar, ayarlar (sürüm), metinler, şema araçları
-  konular/NN-konu/          konu başına: konu.js, semalar.js, hesaplar.js, simler.js
-  uygulama/NN-*.js          uygulama kodu (tek IIFE): simgeler, dizin, arama, yönlendirme, ekranlar, bloklar, olaylar
-varliklar/                  sabit dosyalar: yazitipleri/, simgeler/, LISANSLAR.md
-araclar/                    derle.py, kontrol.py, simge_olustur.py
+  konular/NN-konu/          konu başına: konu.js, semalar.js, hesaplar.js, simler.js, modeller.js
+  uygulama/NN-*.js          uygulama kodu (tek IIFE): simgeler, dizin, arama, yönlendirme, ekranlar, bloklar, 3B modeller, olaylar
+varliklar/                  sabit dosyalar: yazitipleri/, simgeler/, kutuphane/ (Three.js), LISANSLAR.md
+araclar/                    derle.py, kontrol.py, simge_olustur.py, three_olustur.py
 test/                       test_icerik.js (tarayıcısız), test_sayfalar.py (Playwright)
 belgeler/                   iş başına rehberler
 index.html, privacy.html, manifest.webmanifest, sw.js   DERLENİR, elle düzenleme
@@ -51,6 +53,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 | Şema | `belgeler/sema.md` |
 | Hesaplayıcı | `belgeler/hesaplayici.md` |
 | Simülasyon | `belgeler/simulasyon.md` |
+| 3B model | `belgeler/model-3b.md` |
 | Renk, yazı tipi, bileşen | `belgeler/gorunum.md` |
 | Simge ve açılış efekti | `belgeler/simge-ve-acilis.md` |
 | Derleme, test, yayın, Play Store notları | `belgeler/yayin.md` |
@@ -80,11 +83,15 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 - Arama, katlama tablosuyla tire türlerini eşitler (`4-20` = `4–20`); katlama tek karakteri tek karakterle değiştirmeli, yoksa vurgulama kayar.
 - Erken betik (`govde/02-erken-betik.js`) seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
 - Uygulama kodu tek IIFE içindedir; `uygulama/` dosyaları aynı kapsamı paylaşır. Sıra önemlidir: bir dosya, kendinden sonra gelen dosyanın sabitini yükleme anında kullanamaz.
+- Konu dosyaları (`konular/`) genel kapsamdadır. Yardımcı sabit gerekiyorsa dosyayı IIFE içine al; yoksa başka konunun aynı adlı sabitiyle çakışır.
+- Şablonlardaki yer tutucuları (`{{STIL}}`, `__SURUM__` …) yorumlarda bile yazma; derleme her geçtiği yere değer yazar. Derleme artık bunu denetler.
+- Ekran görüntüsü betiğinde sürükleme miktarı 0 ise tarayıcı bunu dokunuş sayar; 3B modelde parça seçilir ve görüntü yanıltır.
+- Değişiklikten sonra yalnızca testlere güvenme: şema, açılış ve 3B modelde iki temada ekran görüntüsü al ve bak. Z-fighting, taşma, beyaza kaçan ışık gibi hatalar testte görünmez.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 67 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon.
+Mevcut: 13 konu, 68 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 1 3B model (step motor iç yapısı).
 
-Sıradaki iş: 3B etkileşimli modeller. Önce step motor (iç yapı, adım adım dönme); sonra sürücü klemensleri, servo motor, otomatik sigorta.
+Sıradaki 3B modeller (kullanıcının istediği): step/servo sürücü (klemensler, DIP anahtarları), servo motor (enkoder, fren), otomatik sigorta (bimetal, manyetik bobin, ark hücresi).
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

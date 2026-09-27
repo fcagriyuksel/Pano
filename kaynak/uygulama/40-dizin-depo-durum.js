@@ -32,7 +32,8 @@ const durum = {
   uyariOnay: DEPO.oku('uyariOnay', false) === true,
   sifirlaOnay: false,
   premiumHedef: null,
-  sim: {}
+  sim: {},
+  model: {}
 };
 if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
 if (!Array.isArray(durum.aramalar)) durum.aramalar = [];

@@ -1,5 +1,5 @@
 /* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır.
-   Bu dosya şablondur: derle.py __SURUM__ ve __DOSYALAR__ yerine gerçek değerleri yazar. */
+   Bu dosya şablondur: derle.py sürüm damgasını ve önbelleğe alınacak dosya listesini yerine yazar. */
 const KABUK = 'pano-__SURUM__';
 const DOSYALAR = __DOSYALAR__;
 

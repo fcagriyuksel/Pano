@@ -19,7 +19,7 @@ Object.assign(SEMALAR, {
     </svg>`;
   })(),
 
-  surucuServo: `<svg class="sema" viewBox="0 0 318 228" role="img" aria-label="PLC'den servo sürücüye üç komut yolu: darbe/yön, analog ve EtherCAT">
+  surucuServo: `<svg class="sema" viewBox="0 0 318 228" role="img" aria-label="PLC’den servo sürücüye üç komut yolu: darbe/yön, analog ve EtherCAT">
     ${_kutu(8, 28, 62, 172, { f: '--card' })}${_yazi(39, 118, 'PLC', { a: 'middle', w: 600 })}
     ${_kutu(206, 28, 56, 172, { f: '--card' })}${_yazi(234, 118, 'SÜRÜCÜ', { a: 'middle', b: 9, w: 600 })}
     ${_tel('M70 54H206M70 66H206', '--signal', { w: 2 })}

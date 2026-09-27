@@ -59,6 +59,7 @@ function ciz(t, secenek) {
   else if (KONU[t]) html = konuEkrani(KONU[t]);
   else if (ALT[t]) html = bilgiSayfasi(ALT[t]);
   else html = anaSayfa();
+  modelleriTemizle();
   app.innerHTML = html;
   menuGuncelle();
   aktifBolum = null;
@@ -79,6 +80,7 @@ function ciz(t, secenek) {
   ilkCizim = false;
   kaydirmaIzle();
   simSaatiKur();
+  modelleriKur();
 }
 
 function menuGuncelle() {

@@ -20,3 +20,6 @@ const HESAPLAR = {};
 
 /* Simülasyonlar: ad → { not, yeni, olay, dugmeler, durum, ciz, tik? }. Sayfada { tip: 'sim', tur: '<ad>' }. */
 const SIMLER = {};
+
+/* 3B modeller: ad → { aciklama, not, parcalar, kur, yeni?, olay?, tik?, dugmeler?, durum?, kamera? }. Sayfada { tip: 'model', tur: '<ad>' }. */
+const MODELLER = {};

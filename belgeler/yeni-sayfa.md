@@ -8,6 +8,7 @@ kaynak/konular/02-step-motorlar/
   semalar.js    bu konunun şemaları (SEMALAR)           → sema.md
   hesaplar.js   bu konunun hesaplayıcıları (HESAPLAR)   → hesaplayici.md
   simler.js     bu konunun simülasyonları (SIMLER)      → simulasyon.md
+  modeller.js   bu konunun 3B modelleri (MODELLER)      → model-3b.md
 ```
 
 Yalnızca `konu.js` zorunludur. Öbür dosyalar gerektiğinde açılır; derleme başka dosya adı kabul etmez.
@@ -64,7 +65,7 @@ Object.assign(VERI.sayfalar, {
 ```
 
 - `kisa`, sayfanın üstündeki bölüm çipidir: bir iki kelime.
-- Her sayfada en az bir görsel olmalı: şema, hesaplayıcı ya da simülasyon.
+- Her sayfada en az bir görsel olmalı: şema, hesaplayıcı, simülasyon ya da 3B model.
 
 ### Blok tipleri
 
@@ -77,6 +78,7 @@ Object.assign(VERI.sayfalar, {
 | `aralik` | `baslik, eksen, max, adim, satirlar[{ad, bas, son, metin}], not?` | yatay aralık çubukları |
 | `hesap` | `tur` | → hesaplayici.md |
 | `sim` | `tur` | → simulasyon.md |
+| `model` | `tur` | 3B model; parça listesi ve düğmeler modelden gelir → model-3b.md |
 | `ariza` | `belirti, satirlar[[neden, 'Kontrol: …']]` | |
 | `hatalar` | `hatalar[[hata, '… Doğrusu: …']]` | |
 | `adimlar` | `satirlar[]` | numaralı sıra |

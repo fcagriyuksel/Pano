@@ -9,6 +9,7 @@ function blok(b) {
     case 'tablo': return `<div class="tablo">${b.satirlar.map((r) => `<div class="tablo-satir"><span class="tablo-etiket ${esc(r[1] || '')}">${esc(r[0])}</span><span class="tablo-metin">${esc(r[2])}</span></div>`).join('')}</div>`;
     case 'hesap': return hesapBlok(b.tur);
     case 'sim': return simBlok(b.tur);
+    case 'model': return modelBlok(b.tur);
     case 'ariza': return `
       <div class="ariza">
         <div class="ariza-ust"><span class="panel-etiket">Belirti</span><span class="ariza-belirti">${esc(b.belirti)}</span></div>

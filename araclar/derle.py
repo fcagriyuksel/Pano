@@ -100,7 +100,7 @@ def govde():
 
 def doldur(sablon, degerler):
     for k, v in degerler.items():
-        if f'{{{{{k}}}}}' not in sablon:
+        if sablon.count(f'{{{{{k}}}}}') < 1:
             hata(f'şablonda {{{{{k}}}}} yok')
         sablon = sablon.replace(f'{{{{{k}}}}}', v)
     kalan = re.findall(r'\{\{[A-Z]+\}\}', sablon)
@@ -124,6 +124,9 @@ def derle(cikti, kilit=False):
     font_css = yazitipi_css()
     js = betik(kilit)
     soz_dizimi('betik (birleşik)', js)
+    for yol in sorted(set(re.findall(r"varliklar/[\w./-]+\.(?:js|png|woff2)", js))):
+        if not (KOK / yol).exists():
+            hata(f'betikte geçen dosya yok: {yol}')
     stil = '\n\n'.join(oku(p) for p in sirali(KAYNAK / 'stil', '*.css'))
     index = doldur(oku(KAYNAK / 'sablon.html'), {'SURUM': surum, 'YAZITIPLERI': font_css, 'STIL': stil, 'GOVDE': govde(), 'BETIK': js})
     manifest = json.loads(oku(KAYNAK / 'manifest.webmanifest'))
@@ -132,7 +135,11 @@ def derle(cikti, kilit=False):
             hata(f"manifest simgesi yok: {s['src']}")
     varliklar = sorted('./' + p.relative_to(KOK).as_posix() for p in VARLIK.rglob('*') if p.is_file() and p.suffix in ('.woff2', '.png', '.js'))
     dosyalar = ['./', './index.html', './manifest.webmanifest', './privacy.html'] + varliklar
-    sw = oku(KAYNAK / 'sw.js').replace('__SURUM__', surum).replace('__DOSYALAR__', json.dumps(dosyalar))
+    sw = oku(KAYNAK / 'sw.js')
+    for yer_tutucu in ('__SURUM__', '__DOSYALAR__'):
+        if sw.count(yer_tutucu) != 1:
+            hata(f'kaynak/sw.js içinde {yer_tutucu} tam bir kez geçmeli (yorumlarda da yazma)')
+    sw = sw.replace('__SURUM__', surum).replace('__DOSYALAR__', json.dumps(dosyalar))
     soz_dizimi('sw.js', sw)
     cikti.mkdir(parents=True, exist_ok=True)
     (cikti / 'index.html').write_text(index + '\n', encoding='utf-8')

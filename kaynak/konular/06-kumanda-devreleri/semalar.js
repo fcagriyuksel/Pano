@@ -7,7 +7,7 @@ Object.assign(SEMALAR, {
       p += `<circle cx="${x}" cy="${y}" r="3" style="fill:var(${r})"></circle>`;
       p += _kontak(x, 76, { tip: 'NO', u: r }) + _kontak(x2, 76, { tip: 'NO', u: r });
     });
-    return `<svg class="sema" viewBox="0 0 318 250" role="img" aria-label="İleri-geri güç devresi: K2 kontaktörü L1 ile L3'ün yerini değiştirir">
+    return `<svg class="sema" viewBox="0 0 318 250" role="img" aria-label="İleri-geri güç devresi: K2 kontaktörü L1 ile L3’ün yerini değiştirir">
       ${p}
       <path d="M38 88H100M158 88H220" style="stroke:var(--muted)" stroke-width="1.2" stroke-dasharray="4 3" fill="none"></path>
       <path d="M100 88H158" style="stroke:var(--dc-plus)" stroke-width="1.5" stroke-dasharray="2 3" fill="none"></path>

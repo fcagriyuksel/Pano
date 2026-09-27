@@ -26,6 +26,7 @@ function blokMetni(b) {
     case 'not': ekle(b.metin); break;
     case 'renkler': b.satirlar.forEach((r) => ekle(r[0] + ' ' + r[2])); break;
     case 'sim': ekle('Simülasyon'); if (SIMLER[b.tur]) ekle(SIMLER[b.tur].not); break;
+    case 'model': ekle('3B model'); if (MODELLER[b.tur]) { ekle(MODELLER[b.tur].aciklama); MODELLER[b.tur].parcalar.forEach((x) => ekle(x)); } break;
     case 'adimlar': b.satirlar.forEach((m) => ekle(m)); break;
   }
   return p.join(' · ');

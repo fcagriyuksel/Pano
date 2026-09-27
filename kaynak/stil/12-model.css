@@ -1,0 +1,22 @@
+/* 3B model bloğu (kaynak/uygulama/86-model.js) */
+.model-blok{display:flex;flex-direction:column;gap:12px}
+.model-kutu{gap:14px}
+.model-sahne{position:relative;margin:-16px -16px 0;aspect-ratio:10/9;border-radius:15px 15px 0 0;overflow:hidden;background:radial-gradient(circle at 50% 42%,var(--svg-body) 0%,var(--card) 72%);border-bottom:1px solid var(--line-soft)}
+.model-tuval{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.model-tuval:active{cursor:grabbing}
+.model-bilgi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center;font-size:14px;line-height:1.5;color:var(--muted)}
+.model-blok[data-durum="hazir"] .model-bilgi{display:none}
+.model-isaretler{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.model-blok:not([data-durum="hazir"]) .model-isaretler{display:none}
+.model-no{position:absolute;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;padding:0;border:0;border-radius:12px;background:var(--ink);color:var(--paper);box-shadow:0 0 0 2px var(--card);font-family:var(--f-mono);font-size:12px;font-weight:600;line-height:1;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;transition:opacity .2s}
+.model-no::before{content:'';position:absolute;inset:-10px}
+/* Arkada kalan (ya da kesitte atılan) parçanın numarası gizlenir; seçiliyse soluk görünür. */
+.model-no.arkada{opacity:0;pointer-events:none}
+.model-no.arkada[aria-pressed="true"]{opacity:.55}
+.model-no.gizli-no{visibility:hidden}
+.model-no[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);opacity:1}
+.model-secim{display:flex;gap:12px;padding:12px 14px;border-radius:12px;background:var(--chip)}
+.model-secim[hidden]{display:none}
+.model-secim .isaret-no,.model-parca[aria-pressed="true"] .isaret-no{background:var(--accent);color:var(--on-accent)}
+.model-parcalar li{display:block}
+.model-parca{display:flex;gap:12px;width:100%;padding:4px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:8px}
