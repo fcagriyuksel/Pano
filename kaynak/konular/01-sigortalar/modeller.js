@@ -137,8 +137,7 @@
 
         /* ---- DIN klipsi ve ray ---- */
         const klips = kutu(12, 6, 8, 'plastik', 0, -48.05, 4.3);
-        const rayProfil = [[-17.5, 0], [-12.5, 0], [-12.5, -6.5], [12.5, -6.5], [12.5, 0], [17.5, 0], [17.5, -1], [13.5, -1], [13.5, -7.5], [-13.5, -7.5], [-13.5, -1], [-17.5, -1]];
-        const ray = yer(y.ag(eksenX(new T.ExtrudeGeometry(new T.Shape(rayProfil.map(([yy, z]) => new T.Vector2(-z, yy))), { depth: 70, bevelEnabled: false })), 'aluminyum'), -35, 0, -0.05);
+        const ray = yer(y.ag(y.dinRay(70), 'aluminyum'), -35, 0, -0.05);
 
         const parcalar = [
           { nesne: giris, isaret: [0, 36, 45.7], patlat: [0, 12, 0] },

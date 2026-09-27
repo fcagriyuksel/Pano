@@ -269,6 +269,17 @@ function modelBaslat(T, o) {
       if (rDelik) s.holes.push(new T.Path().absarc(0, 0, rDelik, 0, Math.PI * 2, true));
       return s;
     },
+    /* Köşeleri yuvarlatılmış dikdörtgen şekil (merkezli). */
+    yuvarlakDikdortgen(w, h, r) {
+      const a = w / 2, b = h / 2;
+      return new T.Shape().moveTo(-a + r, -b).lineTo(a - r, -b).quadraticCurveTo(a, -b, a, -b + r).lineTo(a, b - r).quadraticCurveTo(a, b, a - r, b)
+        .lineTo(-a + r, b).quadraticCurveTo(-a, b, -a, b - r).lineTo(-a, -b + r).quadraticCurveTo(-a, -b, -a + r, -b);
+    },
+    /* TS35 × 7,5 DIN ray (EN 60715): x ekseni boyunca uzunluk kadar, x = 0’dan başlar; ray yüzü z = 0, panoya doğru −z. */
+    dinRay(uzunluk) {
+      const p = [[-17.5, 0], [-12.5, 0], [-12.5, -6.5], [12.5, -6.5], [12.5, 0], [17.5, 0], [17.5, -1], [13.5, -1], [13.5, -7.5], [-13.5, -7.5], [-13.5, -1], [-17.5, -1]];
+      return new T.ExtrudeGeometry(new T.Shape(p.map(([yy, z]) => new T.Vector2(-z, yy))), { depth: uzunluk, bevelEnabled: false }).rotateY(Math.PI / 2);
+    },
     /* Sabit bilyalı rulman (z ekseninde, z = 0 merkezli): dış bilezik, iç bilezik, bilyeler. */
     rulman(ic, dis, gen) {
       const t = (dis - ic) * 0.28, rb = (dis - ic - 2 * t) * 0.46, rc = (ic + dis) / 2, n = Math.floor((Math.PI * 2 * rc) / (rb * 2.6));

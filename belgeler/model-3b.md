@@ -79,6 +79,8 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | `y.bobin({ gw, gh, kalinlik, uzanti, r0, derinlik })` | +y’deki kutba sarılı bobin; `rotation.z` ile öbür kutuplara çevrilir |
 | `y.disli({ sayi, rDis, rTaban, rDelik, kayma, oran })` | dişli disk şekli (rotor kabı, enkoder diski) |
 | `y.rulman(ic, dis, genislik)` | sabit bilyalı rulman grubu |
+| `y.yuvarlakDikdortgen(w, h, r)` | köşeleri yuvarlatılmış dikdörtgen şekil (gövde, kapak, kart) |
+| `y.dinRay(uzunluk)` | TS35 × 7,5 DIN ray, x ekseni boyunca; ray yüzü z = 0 |
 
 Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleştir.
 

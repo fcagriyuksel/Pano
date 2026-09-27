@@ -73,11 +73,7 @@
         const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
         const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
         const kutu = (w, h, d, m, x, yy, z, sec) => yer(y.ag(new T.BoxGeometry(w, h, d), m, sec), x, yy, z);
-        const yuvarlakDikdortgen = (w, h, r) => {
-          const a = w / 2, b = h / 2;
-          return new T.Shape().moveTo(-a + r, -b).lineTo(a - r, -b).quadraticCurveTo(a, -b, a, -b + r).lineTo(a, b - r).quadraticCurveTo(a, b, a - r, b)
-            .lineTo(-a + r, b).quadraticCurveTo(-a, b, -a, b - r).lineTo(-a, -b + r).quadraticCurveTo(-a, -b, -a + r, -b);
-        };
+        const yuvarlakDikdortgen = y.yuvarlakDikdortgen;
         const dikdortgenDelik = (x0, y0, x1, y1) => new T.Path().moveTo(x0, y0).lineTo(x0, y1).lineTo(x1, y1).lineTo(x1, y0).closePath();
         /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
 

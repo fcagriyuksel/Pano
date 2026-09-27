@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Tarama, ladder, veri tipleri, zamanlayıcı, PID',
   giris: 'PLC girişleri okur, programı çalıştırır, çıkışları yazar ve bunu milisaniyeler içinde sürekli tekrarlar.',
   altlar: [
+    { id: 'plc-ic-yapi', kod: '3B', ad: 'Kompakt PLC: klemensler (3B model)', alt: 'L+, M, 1M, I0.x, Q0.x · LED’ler · RUN/STOP', sayfa: 'plc-ic-yapi' },
     { id: 'plc-tarama', kod: 'CPU', ad: 'Tarama çevrimi ve I/O', alt: 'Giriş, program, çıkış · çıkış tipleri', sayfa: 'plc-tarama' },
     { id: 'ladder', kod: 'LD', ad: 'Ladder temelleri', alt: 'Kontak, bobin, set/reset · diller', sayfa: 'ladder' },
     { id: 'veri-tipleri', kod: 'INT', ad: 'Veri tipleri ve adresleme', alt: 'BOOL, INT, REAL · word sırası', sayfa: 'veri-tipleri' },
@@ -14,6 +15,41 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'plc-ic-yapi': {
+    baslik: 'Kompakt PLC: klemensler ve iç yapı',
+    giris: 'Kompakt PLC’de CPU, besleme, dijital girişler ve çıkışlar tek gövdededir. Üstte besleme ve girişler, altta çıkışlar bulunur; LED’ler her sinyalin durumunu gösterir.',
+    etiketler: ['3B model', 'DC/DC/DC', 'I0.0 · Q0.0', 'RUN / STOP'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Klemensler ve parçalar', bloklar: [
+        { tip: 'model', tur: 'kompakt-plc' }
+      ]},
+      { id: 'baglanti', kisa: 'Bağlantı', baslik: 'Bağlantı sırası', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enerjiyi kes. Etiketten modelin tipini oku: DC/DC/DC (24 V besleme, transistör çıkış) ya da AC/DC/röle.',
+          'Beslemeyi L+ ve M’ye (AC modelde L1 ve N’ye) bağla; PE’yi baraya bağla.',
+          'Giriş ortak ucunu (1M) sensör tipine göre bağla: PNP’de 0 V, NPN’de +24 V.',
+          'Buton ve sensörleri I girişlerine bağla. Stop butonunu NC bağla; acil stop yalnızca PLC’ye bırakılmaz.',
+          'Çıkış grubunu besle (3L+, 3M). Büyük ya da AC yükleri ara röleyle sür.',
+          'Enerji ver: RUN/STOP LED’ine bak, girişleri tek tek dene ve giriş LED’lerini izle.'
+        ]}
+      ]},
+      { id: 'program', kisa: 'Program', baslik: 'Modeldeki örnek program', bloklar: [
+        { tip: 'formul', formul: 'Q0.0 = (I0.0 + Q0.0) · I0.1',
+          tanimlar: [['I0.0', 'Start butonu (NO)'], ['I0.1', 'Stop butonu (NC): basılı değilken 1'], ['Q0.0', 'Çıkış: motor kontaktörünü süren ara röle'], ['+ · ·', 'VEYA · VE']],
+          kural: 'Stop butonu NC bağlandığı için programda açık kontak (I0.1) kullanılır: butona basılınca ya da kablo kopunca giriş 0 olur, çıkış düşer.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Stop butonunu NO bağlamak', 'Kablo koparsa stop çalışmaz, makine durdurulamaz. Doğrusu: stop butonu NC bağlanır.'],
+          ['Bütün sensörleri PLC’nin sensör beslemesinden beslemek', 'Toplam akım sınırı aşılırsa gerilim düşer, girişler kararsızlaşır. Doğrusu: sınırı aşıyorsa ayrı 24 V güç kaynağı kullan.'],
+          ['Genişleme modülünü enerji varken takmak', 'Bağlantı ve modül zarar görebilir. Doğrusu: enerjiyi kes, modülü tak, sonra donanım yapılandırmasını güncelle.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['24 V DC güç kaynağı', 'Ara röle', 'Programlama kablosu', 'Genişleme modülü'] }
+      ]}
+    ]
+  },
   'plc-tarama': {
     baslik: 'Tarama çevrimi ve I/O',
     giris: 'PLC girişleri okur, programı yukarıdan aşağı çalıştırır, sonuçları çıkışlara yazar ve bunu sürekli tekrarlar. Bir turun süresine tarama süresi denir.',
