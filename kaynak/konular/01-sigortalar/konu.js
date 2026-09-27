@@ -5,6 +5,7 @@ VERI.konular.push({
   giris: 'Hat sigortası cihazı değil, kabloyu korur; cam ve aR sigortalar cihazı korur. Doğru seçim kablo kesitine ve yükün kalkış akımına bağlıdır.',
   filtreler: [ { id: 'asiri', ad: 'Aşırı akım' }, { id: 'kacak', ad: 'Kaçak akım' }, { id: 'elektronik', ad: 'Elektronik' } ],
   altlar: [
+    { id: 'mcb-ic-yapi', kod: '3B', ad: 'Otomatik sigorta: iç yapı (3B)', alt: 'Bimetal, bobin, kontaklar, ark hücresi · aşırı yük ve kısa devre', filtre: 'asiri', sayfa: 'mcb-ic-yapi' },
     { id: 'otomatik-sigorta', kod: 'MCB', ad: 'Otomatik sigorta', alt: 'B, C, D eğrileri · termik ve manyetik açma', filtre: 'asiri', sayfa: 'otomatik-sigorta' },
     { id: 'busonlu-sigorta', kod: 'D', ad: 'Buşonlu sigorta', alt: 'Erimeli telli, vidalı gövde · eski tesisatlar', filtre: 'asiri', sayfa: 'busonlu-sigorta' },
     { id: 'nh-sigorta', kod: 'NH', ad: 'NH bıçaklı sigorta', alt: 'Yüksek akımlı ana dağıtım · gG ve aM', filtre: 'asiri', sayfa: 'nh-sigorta' },
@@ -17,6 +18,47 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'mcb-ic-yapi': {
+    baslik: 'Otomatik sigortanın iç yapısı',
+    giris: 'Otomatik sigortada iki açma mekanizması vardır: aşırı yükte yavaş açan bimetal ve kısa devrede anında açan manyetik bobin. Kontaklar açılınca oluşan ark, ark söndürme hücresinde söner.',
+    etiketler: ['3B model', 'TS EN 60898-1', 'Bimetal', 'Ark söndürme'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'otomatik-sigorta' }
+      ]},
+      { id: 'akim-yolu', kisa: 'Akım yolu', baslik: 'Akımın yolu', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Giriş klemensi (1)',
+          'Manyetik bobin: kısa devre akımı pimi fırlatır.',
+          'Sabit kontak → hareketli kontak',
+          'Örgülü esnek iletken',
+          'Bimetal: aşırı yük akımı onu ısıtıp eğer.',
+          'Çıkış klemensi (2)'
+        ]},
+        { tip: 'not', metin: 'Sıra tipiktir; bazı sigortalarda bimetal girişe daha yakındır. İki mekanizma da aynı mandalı açar; mandal açılınca yaylı mekanizma kontağı hızla ayırır.' }
+      ]},
+      { id: 'acma', kisa: 'Açma', baslik: 'Hangi mekanizma ne zaman açar', bloklar: [
+        { tip: 'tablo', satirlar: [
+          ['1,13 × In', '', 'Anlaşılmış açmama akımı: bu akımda 1 saat içinde (In ≤ 63 A) açmamalı.'],
+          ['1,45 × In', '', 'Anlaşılmış açma akımı: bu akımda 1 saat içinde açmalı. Bimetal açar.'],
+          ['3–5 × In', '', 'B eğrisinde bobin anlık açar.'],
+          ['5–10 × In', '', 'C eğrisinde bobin anlık açar.'],
+          ['10–20 × In', '', 'D eğrisinde bobin anlık açar.']
+        ]},
+        { tip: 'not', metin: 'Değerler TS EN 60898-1’e göredir. Anlık açma aralığının alt sınırında açmaz, üst sınırında mutlaka açar.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Atan sigortayı soğumasını beklemeden tekrar tekrar kurmaya çalışmak', 'Bimetal soğumadan mandal tutmaz; zorlamak mekanizmayı yıpratır. Doğrusu: birkaç dakika bekle, önce aşırı yükün nedenini bul.'],
+          ['Kolu bantla ya da kilitle yukarıda tutarak atmasını engellemeye çalışmak', 'Sigorta serbest açmalıdır, yine atar; ama aşırı yükün nedeni ortada kalır. Doğrusu: yükü azalt ya da hattı böl.'],
+          ['Kısa devreden sonra aynı sigortayı hiç kontrol etmeden kullanmak', 'Büyük kısa devre kontakları ve ark hücresini yıpratır. Doğrusu: klemenslerde ısınma izi, gövdede kararma varsa sigortayı değiştir.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['DIN ray (TS35)', 'Tarak bara', 'Kaçak akım rölesi'] }
+      ]}
+    ]
+  },
   'otomatik-sigorta': {
     baslik: 'Otomatik sigorta (MCB)',
     giris: 'Hattı aşırı yüke ve kısa devreye karşı korur. Attığında değiştirilmez; nedeni giderilip kolu kaldırılarak yeniden kurulur.',

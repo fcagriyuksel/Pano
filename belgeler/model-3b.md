@@ -93,6 +93,7 @@ Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleşti
 ## Tuzaklar
 
 - **Birbirine değen yüzeyler titrer.** Aynı düzlemde ya da aynı yarıçapta çakışan yüzeyler kesit görünümünde çizgili görünür (z-fighting). Değen parçalar arasında en az 0,05 mm boşluk bırak: kapak–stator, mıknatıs–rotor kabı, rulman–yuva, delik–mil.
+- **İçi görünecek gövde dolu olmamalı.** Mekanizmayı saran gövde dolu bir blok olursa kesitte gövdenin iç yüzü mekanizmanın önünü kapatır. Gövdeyi içi boş kabuk yap: yan levha + çevre bandı (bkz. otomatik sigorta modeli).
 - **Kesit yüzleri kapalı ağ ister.** Kesit, ağın arka yüzlerini düz renkle çizerek dolu görünür. Açık yüzeyli ya da iç içe geçen ağlarda kesit bozuk çıkar. `ExtrudeGeometry`, `CylinderGeometry` gibi kapalı geometriler kullan.
 - **Işın testi kesiti ve görünürlüğü bilmez.** Three.js `Raycaster` kırpma düzlemlerini ve `visible = false` nesneleri yok saymaz. Çalışma zamanı bunları `gorunenVurus` ile süzer; yeni bir ışın testi yazarsan aynı süzgeci kullan.
 - **Dönen parçalar kökün doğrudan çocuğu olmalı.** `patlat` kayması parçanın üst nesnesinin koordinatındadır. Dönen bir grubun içindeki parçaya yan kayma verirsen, grup döndükçe kayma yönü de döner. Dönen her parçayı ayrı ayrı döndür (`uygula` içinde `rotation.z`).
