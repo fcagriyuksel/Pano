@@ -62,43 +62,14 @@
         const KARE = 42.3, PAH = 4.5, CIVATA = 15.5;
         const kose = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(([a, b]) => [a * CIVATA, b * CIVATA]);
         const delikli = (sekil, delikler) => { delikler.forEach(([x, yy, r]) => sekil.holes.push(new T.Path().absarc(x, yy, r, 0, TUR, true))); return sekil; };
-        /* r yarıçaplı yayın ara noktaları (uçlar hariç: uç noktalar çağıran tarafça eklenir, tekrar etmez). */
-        const yay = (dizi, r, a0, a1, n) => { for (let i = 1; i < n; i++) { const a = a0 + ((a1 - a0) * i) / n; dizi.push(new T.Vector2(r * Math.cos(a), r * Math.sin(a))); } };
-
         /* ---- stator: 8 kutup, kutup ucunda 5 diş ---- */
-        const RB = 17.6, RS = 12.3, RI = 10.45, YG = 2.2, UA = 18 * DER, DP = 7.2 * DER, DD = 0.5;
         const kutupAci = (k) => Math.PI / 2 - k * (Math.PI / 4);   // 1. kutup üstte, numaralar saat yönünde artar
-        const aB = Math.asin(YG / RB), aS = Math.asin(YG / RS);
-        const kutupal = (r, a) => new T.Vector2(r * Math.cos(a), r * Math.sin(a));
-        const bosluk = [];   // statorun iç boşluğu: artan açıyla, kutup kutup dolaşılır
-        for (let k = 0; k < 8; k++) {
-          const c = Math.PI / 2 + k * (Math.PI / 4);
-          const u = [Math.cos(c), Math.sin(c)], v = [-Math.sin(c), Math.cos(c)];
-          const nokta = (r, t) => new T.Vector2(r * u[0] + t * v[0], r * u[1] + t * v[1]);
-          bosluk.push(nokta(Math.sqrt(RB * RB - YG * YG), -YG), nokta(Math.sqrt(RS * RS - YG * YG), -YG));
-          yay(bosluk, RS, c - aS, c - UA, 3);
-          bosluk.push(kutupal(RS, c - UA), kutupal(RI + DD, c - UA));
-          for (let j = -2; j <= 2; j++) {
-            const a = c + j * DP, g = DP * 0.22;
-            for (const [aa, r] of [[a - g, RI + DD], [a - g, RI], [a + g, RI], [a + g, RI + DD]]) bosluk.push(kutupal(r, aa));
-          }
-          bosluk.push(kutupal(RI + DD, c + UA), kutupal(RS, c + UA));
-          yay(bosluk, RS, c + UA, c + aS, 3);
-          bosluk.push(nokta(Math.sqrt(RS * RS - YG * YG), YG), nokta(Math.sqrt(RB * RB - YG * YG), YG));
-          yay(bosluk, RB, c + aB, c + Math.PI / 4 - aB, 6);   // arka demir: sonraki kutba kadar
-        }
         const statorSekli = delikli(y.pahliKare(KARE, PAH), kose.map(([x, yy]) => [x, yy, 1.7]));
-        statorSekli.holes.push(new T.Path(bosluk));
+        statorSekli.holes.push(y.kutupluBosluk({ n: 8, rArka: 17.6, rUc: 12.3, rIc: 10.45, g: 2.2, uc: 18 * DER, dis: { sayi: 5, adim: 7.2 * DER, derinlik: 0.5, oran: 0.44 } }));
         const stator = y.ag(y.cek(statorSekli, 24), 'sac');
 
         /* ---- sargılar: her kutbun gövdesine bir bobin; her bobin kendi malzemesiyle (faza göre renklenir) ---- */
-        const bobinSekli = new T.Shape();
-        const [bw, bh, br] = [4.6, 14.5, 2];
-        bobinSekli.moveTo(-bw + br, -bh).lineTo(bw - br, -bh).quadraticCurveTo(bw, -bh, bw, -bh + br).lineTo(bw, bh - br).quadraticCurveTo(bw, bh, bw - br, bh)
-          .lineTo(-bw + br, bh).quadraticCurveTo(-bw, bh, -bw, bh - br).lineTo(-bw, -bh + br).quadraticCurveTo(-bw, -bh, -bw + br, -bh);
-        bobinSekli.holes.push(new T.Path().moveTo(-2.25, -12.1).lineTo(-2.25, 12.1).lineTo(2.25, 12.1).lineTo(2.25, -12.1).closePath());
-        const bobinGeo = new T.ExtrudeGeometry(bobinSekli, { depth: 3.8, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.3, bevelSegments: 2, curveSegments: 6 })
-          .rotateX(-Math.PI / 2).translate(0, 12.7, 0);
+        const bobinGeo = y.bobin({ gw: 2.25, gh: 12.1, kalinlik: 2.35, uzanti: 2.4, r0: 12.4, derinlik: 4.4 });
         const bakir = y.malzeme('bakir'), renkBakir = bakir.color.clone(), renkN = y.malzeme('kuzey').color.clone(), renkS = y.malzeme('guney').color.clone();
         const bobinler = [];
         const sargilar = new T.Group();
@@ -111,14 +82,7 @@
         }
 
         /* ---- rotor: iki dişli kap (50 diş), aralarında mıknatıs ---- */
-        const kapSekli = (kayma) => {
-          const n = [], p = TUR / 50;
-          for (let i = 0; i < 50; i++) {
-            const a = i * p + kayma, g = p * 0.21;
-            for (const [aa, r] of [[a - p / 2 + 0.02, 9.6], [a - g, 9.6], [a - g * 0.8, 10.2], [a + g * 0.8, 10.2], [a + g, 9.6]]) n.push(new T.Vector2(r * Math.cos(aa), r * Math.sin(aa)));
-          }
-          return delikli(new T.Shape(n), [[0, 0, 2.55]]);
-        };
+        const kapSekli = (kayma) => y.disli({ sayi: 50, rDis: 10.2, rTaban: 9.6, rDelik: 2.55, kayma });
         const rotorN = yer(y.ag(y.cek(kapSekli(0), 10), 'kuzey', { esik: 60 }), 0, 0, 7);
         const rotorS = yer(y.ag(y.cek(kapSekli(3.6 * DER), 10), 'guney', { esik: 60 }), 0, 0, -7);
         const miknatis = y.ag(y.halka(2.55, 8.8, 3.9), 'miknatis');
@@ -133,13 +97,7 @@
         );
 
         /* ---- rulmanlar: dış bilezik, iç bilezik, 8 bilye ---- */
-        const rulman = (z) => {
-          const g = grup(y.ag(y.halka(6.4, 7.95, 4.9), 'celik'), y.ag(y.halka(2.55, 3.9, 4.9), 'celik'));
-          const bilye = new T.SphereGeometry(1.2, 16, 12);
-          for (let i = 0; i < 8; i++) g.add(yer(y.ag(bilye, 'celik', { kenar: false }), 5.15 * Math.cos((i * TUR) / 8), 5.15 * Math.sin((i * TUR) / 8), 0));
-          g.position.z = z;
-          return g;
-        };
+        const rulman = (z) => { const g = y.rulman(2.55, 7.95, 4.9); g.position.z = z; return g; };
         const onRulman = rulman(17.5), arkaRulman = rulman(-17);
 
         /* ---- kapaklar ----

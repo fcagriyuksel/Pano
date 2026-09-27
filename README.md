@@ -1,6 +1,6 @@
 # PANO
 
-Elektrik-elektronik ve endüstriyel otomasyon bilgi notları: 13 konu ve 68 sayfa. Sayfalarda şemalar, hesaplayıcılar, simülasyonlar, 3B etkileşimli modeller, arıza tabloları ve sık yapılan hatalar yer alır.
+Elektrik-elektronik ve endüstriyel otomasyon bilgi notları: 13 konu ve 69 sayfa. Sayfalarda şemalar, hesaplayıcılar, simülasyonlar, 3B etkileşimli modeller, arıza tabloları ve sık yapılan hatalar yer alır.
 
 - Uygulama: https://fcagriyuksel.github.io/Pano/
 - Telefona kurmak için adresi aç, ardından tarayıcı menüsünden **Ana ekrana ekle**’yi seç. Uygulama internetsiz de çalışır.

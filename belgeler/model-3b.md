@@ -16,6 +16,7 @@ Sayfada `{ tip: 'model', tur: '<ad>' }` bloğuyla kullanılır. Örnek: `kaynak/
 - Tek parmakla sürükleyince döner (dikey kaydırma sayfayı kaydırır), iki parmakla yakınlaşır. Masaüstünde Ctrl + tekerlek yakınlaştırır.
 - Parçaya ya da numarasına dokununca parça vurgulanır, öbürleri saydamlaşır; altta parçanın adı ve açıklaması çıkar.
 - Ortak düğmeler: **Parçala / Birleştir**, **Kesit** (kipler sırayla dolaşır), **Görünümü sıfırla**. Modele özgü düğmeler bunların önüne gelir.
+- Modelde `kamera.patlak` varsa Parçala’ya basınca kamera yumuşakça o yöne döner (uzun modellerde yandan bakış). Kullanıcı sürüklemeye başlarsa dönüş durur.
 - Numaralı parça listesi modelin altındadır ve aranabilir.
 
 ## Model biçimi
@@ -30,7 +31,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
       aciklama: 'Ekran okuyucu için tek cümlelik açıklama.',
       not: 'Modelin altında görünen kullanım notu.',
       parcalar: [['Parça adı', 'Bir iki cümlelik açıklama.'], /* … */],   // sıra = numara
-      kamera: { yon: [1, 0.7, 1.6] },                  // başlangıç bakış yönü (merkezden kameraya)
+      kamera: { yon: [1, 0.7, 1.6], patlak: [1, 0.45, 0.3] },   // bakış yönü (merkezden kameraya); patlak: Parçala’da dönülecek yön (isteğe bağlı)
       kesitler: [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }],   // isteğe bağlı; [] verilirse Kesit düğmesi yok
       patlat: true,                                      // false: Parçala düğmesi yok
       yeni: () => ({ acik: false }),                     // modele özgü durum (isteğe bağlı)
@@ -62,13 +63,17 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | Yardımcı | İş |
 |---|---|
 | `y.T` | Three.js sınıfları (`T.Group`, `T.Shape` …). Yalnızca `three_olustur.py` içindeki `DISA` listesindekiler vardır. |
-| `y.malzeme(ad)` | ortak malzeme: `aluminyum celik sac bakir miknatis kuzey guney plastik plastikAcik vurgu kabloSiyah kabloYesil kabloKirmizi kabloMavi`. `kuzey`, `guney`, `vurgu` renklerini temadan alır. Yenisi `86-model.js` → `MALZEMELER`. |
+| `y.malzeme(ad)` | ortak malzeme: `aluminyum celik sac bakir miknatis kuzey guney plastik plastikAcik balata kart entegre vurgu kabloSiyah kabloYesil kabloKirmizi kabloMavi`. `kuzey`, `guney`, `vurgu` renklerini temadan alır. Yenisi `86-model.js` → `MALZEMELER`. |
 | `y.ag(geo, malzeme, {kenar, esik})` | ağ + ince kenar çizgileri. `kenar: false` çizgisiz (küçük, çok yüzlü parçalar). `esik`: çizgi için en küçük kenar açısı (derece). |
 | `y.cek(sekil, uzunluk, {pah, bolum})` | 2B şekli z ekseni boyunca çeker, z = 0’a ortalar |
 | `y.halka(ic, dis, uzunluk)` | z ekseninde halka (boru) |
 | `y.silindir(r, uzunluk)` | z ekseninde silindir |
 | `y.pahliKare(kenar, pah)` | köşeleri pahlı kare (motor flanşı, pano kesiti …) |
 | `y.boru(noktalar, r)` | noktalardan geçen kablo, hortum |
+| `y.kutupluBosluk({ n, rArka, rUc, rIc, g, uc, bas, dis })` | kutuplu stator boşluğu (şekle delik olarak eklenir); `dis` ile kutup yüzünde ince dişler |
+| `y.bobin({ gw, gh, kalinlik, uzanti, r0, derinlik })` | +y’deki kutba sarılı bobin; `rotation.z` ile öbür kutuplara çevrilir |
+| `y.disli({ sayi, rDis, rTaban, rDelik, kayma, oran })` | dişli disk şekli (rotor kabı, enkoder diski) |
+| `y.rulman(ic, dis, genislik)` | sabit bilyalı rulman grubu |
 
 Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleştir.
 

@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PANO">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609272250">
+<meta name="pano-surum" content="202609272303">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
@@ -473,7 +473,7 @@ const MODELLER = {};
    ===================================================================== */
 const UYGULAMA = {
   ad: 'PANO',
-  surum: '1.4.0',
+  surum: '1.5.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
@@ -1778,43 +1778,14 @@ Object.assign(HESAPLAR, {
         const KARE = 42.3, PAH = 4.5, CIVATA = 15.5;
         const kose = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(([a, b]) => [a * CIVATA, b * CIVATA]);
         const delikli = (sekil, delikler) => { delikler.forEach(([x, yy, r]) => sekil.holes.push(new T.Path().absarc(x, yy, r, 0, TUR, true))); return sekil; };
-        /* r yarıçaplı yayın ara noktaları (uçlar hariç: uç noktalar çağıran tarafça eklenir, tekrar etmez). */
-        const yay = (dizi, r, a0, a1, n) => { for (let i = 1; i < n; i++) { const a = a0 + ((a1 - a0) * i) / n; dizi.push(new T.Vector2(r * Math.cos(a), r * Math.sin(a))); } };
-
         /* ---- stator: 8 kutup, kutup ucunda 5 diş ---- */
-        const RB = 17.6, RS = 12.3, RI = 10.45, YG = 2.2, UA = 18 * DER, DP = 7.2 * DER, DD = 0.5;
         const kutupAci = (k) => Math.PI / 2 - k * (Math.PI / 4);   // 1. kutup üstte, numaralar saat yönünde artar
-        const aB = Math.asin(YG / RB), aS = Math.asin(YG / RS);
-        const kutupal = (r, a) => new T.Vector2(r * Math.cos(a), r * Math.sin(a));
-        const bosluk = [];   // statorun iç boşluğu: artan açıyla, kutup kutup dolaşılır
-        for (let k = 0; k < 8; k++) {
-          const c = Math.PI / 2 + k * (Math.PI / 4);
-          const u = [Math.cos(c), Math.sin(c)], v = [-Math.sin(c), Math.cos(c)];
-          const nokta = (r, t) => new T.Vector2(r * u[0] + t * v[0], r * u[1] + t * v[1]);
-          bosluk.push(nokta(Math.sqrt(RB * RB - YG * YG), -YG), nokta(Math.sqrt(RS * RS - YG * YG), -YG));
-          yay(bosluk, RS, c - aS, c - UA, 3);
-          bosluk.push(kutupal(RS, c - UA), kutupal(RI + DD, c - UA));
-          for (let j = -2; j <= 2; j++) {
-            const a = c + j * DP, g = DP * 0.22;
-            for (const [aa, r] of [[a - g, RI + DD], [a - g, RI], [a + g, RI], [a + g, RI + DD]]) bosluk.push(kutupal(r, aa));
-          }
-          bosluk.push(kutupal(RI + DD, c + UA), kutupal(RS, c + UA));
-          yay(bosluk, RS, c + UA, c + aS, 3);
-          bosluk.push(nokta(Math.sqrt(RS * RS - YG * YG), YG), nokta(Math.sqrt(RB * RB - YG * YG), YG));
-          yay(bosluk, RB, c + aB, c + Math.PI / 4 - aB, 6);   // arka demir: sonraki kutba kadar
-        }
         const statorSekli = delikli(y.pahliKare(KARE, PAH), kose.map(([x, yy]) => [x, yy, 1.7]));
-        statorSekli.holes.push(new T.Path(bosluk));
+        statorSekli.holes.push(y.kutupluBosluk({ n: 8, rArka: 17.6, rUc: 12.3, rIc: 10.45, g: 2.2, uc: 18 * DER, dis: { sayi: 5, adim: 7.2 * DER, derinlik: 0.5, oran: 0.44 } }));
         const stator = y.ag(y.cek(statorSekli, 24), 'sac');
 
         /* ---- sargılar: her kutbun gövdesine bir bobin; her bobin kendi malzemesiyle (faza göre renklenir) ---- */
-        const bobinSekli = new T.Shape();
-        const [bw, bh, br] = [4.6, 14.5, 2];
-        bobinSekli.moveTo(-bw + br, -bh).lineTo(bw - br, -bh).quadraticCurveTo(bw, -bh, bw, -bh + br).lineTo(bw, bh - br).quadraticCurveTo(bw, bh, bw - br, bh)
-          .lineTo(-bw + br, bh).quadraticCurveTo(-bw, bh, -bw, bh - br).lineTo(-bw, -bh + br).quadraticCurveTo(-bw, -bh, -bw + br, -bh);
-        bobinSekli.holes.push(new T.Path().moveTo(-2.25, -12.1).lineTo(-2.25, 12.1).lineTo(2.25, 12.1).lineTo(2.25, -12.1).closePath());
-        const bobinGeo = new T.ExtrudeGeometry(bobinSekli, { depth: 3.8, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.3, bevelSegments: 2, curveSegments: 6 })
-          .rotateX(-Math.PI / 2).translate(0, 12.7, 0);
+        const bobinGeo = y.bobin({ gw: 2.25, gh: 12.1, kalinlik: 2.35, uzanti: 2.4, r0: 12.4, derinlik: 4.4 });
         const bakir = y.malzeme('bakir'), renkBakir = bakir.color.clone(), renkN = y.malzeme('kuzey').color.clone(), renkS = y.malzeme('guney').color.clone();
         const bobinler = [];
         const sargilar = new T.Group();
@@ -1827,14 +1798,7 @@ Object.assign(HESAPLAR, {
         }
 
         /* ---- rotor: iki dişli kap (50 diş), aralarında mıknatıs ---- */
-        const kapSekli = (kayma) => {
-          const n = [], p = TUR / 50;
-          for (let i = 0; i < 50; i++) {
-            const a = i * p + kayma, g = p * 0.21;
-            for (const [aa, r] of [[a - p / 2 + 0.02, 9.6], [a - g, 9.6], [a - g * 0.8, 10.2], [a + g * 0.8, 10.2], [a + g, 9.6]]) n.push(new T.Vector2(r * Math.cos(aa), r * Math.sin(aa)));
-          }
-          return delikli(new T.Shape(n), [[0, 0, 2.55]]);
-        };
+        const kapSekli = (kayma) => y.disli({ sayi: 50, rDis: 10.2, rTaban: 9.6, rDelik: 2.55, kayma });
         const rotorN = yer(y.ag(y.cek(kapSekli(0), 10), 'kuzey', { esik: 60 }), 0, 0, 7);
         const rotorS = yer(y.ag(y.cek(kapSekli(3.6 * DER), 10), 'guney', { esik: 60 }), 0, 0, -7);
         const miknatis = y.ag(y.halka(2.55, 8.8, 3.9), 'miknatis');
@@ -1849,13 +1813,7 @@ Object.assign(HESAPLAR, {
         );
 
         /* ---- rulmanlar: dış bilezik, iç bilezik, 8 bilye ---- */
-        const rulman = (z) => {
-          const g = grup(y.ag(y.halka(6.4, 7.95, 4.9), 'celik'), y.ag(y.halka(2.55, 3.9, 4.9), 'celik'));
-          const bilye = new T.SphereGeometry(1.2, 16, 12);
-          for (let i = 0; i < 8; i++) g.add(yer(y.ag(bilye, 'celik', { kenar: false }), 5.15 * Math.cos((i * TUR) / 8), 5.15 * Math.sin((i * TUR) / 8), 0));
-          g.position.z = z;
-          return g;
-        };
+        const rulman = (z) => { const g = y.rulman(2.55, 7.95, 4.9); g.position.z = z; return g; };
         const onRulman = rulman(17.5), arkaRulman = rulman(-17);
 
         /* ---- kapaklar ----
@@ -1928,6 +1886,7 @@ VERI.konular.push({
   ozet: 'Enkoder, geri besleme, ayar',
   giris: 'Servo motor, enkoderden gelen geri beslemeyle konumunu sürekli ölçer ve hatayı sürücü düzeltir.',
   altlar: [
+    { id: 'servo-ic-yapi', kod: '3B', ad: 'İç yapı (3B model)', alt: 'Stator, mıknatıslı rotor, fren, enkoder · servo ON, konuma git', sayfa: 'servo-ic-yapi' },
     { id: 'servo-enkoder', kod: 'ENC', ad: 'Enkoder türleri', alt: 'Artımsal ve mutlak enkoder, çözünürlük', sayfa: 'servo-enkoder' },
     { id: 'servo-baglanti', kod: 'AC', ad: 'Servo motor ve sürücü bağlantısı', alt: 'Güç, enkoder ve fren kabloları', sayfa: 'servo-baglanti' },
     { id: 'servo-ayar', kod: 'PID', ad: 'Kazanç ayarı (tuning)', alt: 'Konum, hız ve akım döngüleri', sayfa: 'servo-ayar' },
@@ -1937,6 +1896,55 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'servo-ic-yapi': {
+    baslik: 'Servo motorun iç yapısı',
+    giris: 'AC servo motor, mıknatıslı rotorlu bir senkron motordur. Arkasındaki enkoder rotorun konumunu ölçer; sürücü akımı bu konuma göre sargılara dağıtır. Frenli modelde enkoderin önünde yaylı bir tutma freni vardır.',
+    etiketler: ['3B model', '60 mm flanş', '17 bit enkoder', 'Frenli'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'servo-motor' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Servo nasıl döner', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enkoder rotorun açısını sürekli ölçer ve sürücüye gönderir.',
+          'Sürücü akımı bu açıya göre U, V ve W sargılarına dağıtır (komütasyon). Statorda, rotoru 90° elektriksel açıyla önden çeken dönen bir manyetik alan oluşur.',
+          'Mıknatıslı rotor bu alanı izler; tork, akımla orantılıdır.',
+          'Konum döngüsü hedefle ölçülen konumu karşılaştırır, hız ve akım döngüleri hatayı düzeltir.',
+          'Hedefe varınca motor durur ama akım kesilmez: yük itse bile konum akımla tutulur.'
+        ]},
+        { tip: 'formul', formul: 'Darbe/tur = 2ⁿ', tanimlar: [['n', 'enkoder çözünürlüğü (bit)']],
+          ornek: { baslik: '17 bit enkoder', satirlar: [['Darbe/tur', '2¹⁷ = 131.072'], ['1 darbe', '360° ÷ 131.072 ≈ 0,0027°']] } }
+      ]},
+      { id: 'fren', kisa: 'Fren sırası', baslik: 'Servo ON ve fren sırası', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Servo ON: sürücü motoru enerjiler, motor konumu akımla tutmaya başlar.',
+          'Sürücü fren çıkışını verir; 24 V gelince bobin armatürü çeker, fren açılır.',
+          'Fren açılma süresi dolunca hareket komutu kabul edilir.',
+          'Servo OFF: sürücü önce motoru durdurur ve freni kapatır; kapanma süresi dolunca motorun enerjisi kesilir.'
+        ]},
+        { tip: 'not', metin: 'Süreler ve sıra sürücünün parametreleriyle ayarlanır. Ayrıntılı devre ve arızalar: Frenli servo sayfası.' }
+      ]},
+      { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+        { tip: 'ariza', belirti: 'Enkoder alarmı ya da konum atlıyor', satirlar: [
+          ['Enkoder konnektörü gevşek ya da pimi bükük', 'Kontrol: konnektörü çıkar, pimlere bak, kilidiyle birlikte yerine tak.'],
+          ['Kablo ekranı topraklanmamış ya da kablo güç kablosuyla yan yana', 'Kontrol: ekran bağlantısını katalogla karşılaştır, kabloları ayrı kanala al.'],
+          ['Çok turlu enkoderde pil bitmiş', 'Kontrol: pili değiştir, sürücüdeki alarmı sil ve referansı yeniden al.']
+        ]},
+        { tip: 'ariza', belirti: 'Motor ısınıyor', satirlar: [
+          ['Yük ya da ivme motor için fazla', 'Kontrol: sürücüden yük oranını ve etkin (RMS) torku oku, anma torkuyla karşılaştır.'],
+          ['Isı atılamıyor', 'Kontrol: motor flanşının metal bir yüzeye oturduğunu ve gövdenin örtülmediğini doğrula.']
+        ]},
+        { tip: 'hatalar', hatalar: [
+          ['Kaplini mile çekiçle çakmak', 'Darbe rulmana ve enkodere gider; enkoder bozulabilir. Doğrusu: kaplini sıkma vidasıyla ya da çektirmeyle tak.'],
+          ['Motoru kablosundan tutup taşımak', 'Konnektör ve kablo zarar görür, enkoder bağlantısı kopabilir. Doğrusu: motoru gövdesinden taşı.'],
+          ['Enkoder kapağını açıp enkoderi sökmek', 'Enkoder rotora göre fabrikada ayarlanmıştır; sökülünce komütasyon bozulur. Doğrusu: arızalı motoru üreticiye gönder.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Servo sürücü', 'Enkoder kablosu', 'Motor güç kablosu', 'Kaplin', 'Redüktör'] }
+      ]}
+    ]
+  },
   'servo-enkoder': {
     baslik: 'Enkoder türleri',
     giris: 'Enkoder, motor milinin konumunu ölçüp sürücüye bildirir. Konum, hız ve yön bilgisinin hepsi buradan gelir; servo sistemin gözüdür.',
@@ -2324,6 +2332,207 @@ Object.assign(HESAPLAR, {
     not: 'Verim tek kademede yaklaşık %95, iki kademede %92 alındı. Çıkış torku redüktör kataloğundaki sınırı aşmamalı.'
   },
 });
+
+/* ---- kaynak/konular/03-servo-motorlar/modeller.js ---- */
+/* Servo motorlar: 3B modeller. Ölçüler mm; motor ekseni z, mil +z yönünde (öne) çıkar, flanş ön yüzü z = 0. */
+(() => {
+  const ENKODER_BIT = 17, ENKODER_DARBE = 2 ** ENKODER_BIT;   // 131.072 darbe/tur
+  const KUTUP_CIFTI = 5;                                        // 10 kutuplu rotor
+  /* 12 oluk / 10 kutup toplu sargı düzeni: diş başına faz ve sarım yönü (A a b B C c a A B b c C). */
+  const DUZEN = [['U', 1], ['U', -1], ['V', -1], ['V', 1], ['W', 1], ['W', -1], ['U', -1], ['U', 1], ['V', 1], ['V', -1], ['W', -1], ['W', 1]];
+  const FAZ_ACI = { U: 0, V: (-2 * Math.PI) / 3, W: (2 * Math.PI) / 3 };
+  const HIZ = 120;   // gösterim hızı, derece/sn
+  const derece = (a) => sayi(((a % 360) + 360) % 360, 1);
+
+  Object.assign(MODELLER, {
+    'servo-motor': {
+      aciklama: 'Frenli AC servo motorun 3B modeli: flanş, gövde, stator ve sargılar, mıknatıslı rotor, rulmanlar, fren, enkoder ve konnektörler.',
+      not: 'Sürükleyerek döndür, iki parmakla yakınlaştır. Servo ON olunca fren açılır; “+90° git” ile rotor konuma gider, enkoder sayısı değişir. Dönerken sargılar U, V, W akımına göre kırmızı (N) ve mavi (S) renklenir.',
+      parcalar: [
+        ['Mil ve kama', 'Ø14 mm mil, 5 mm kama (60 mm flanşlı 400 W sınıfında tipik). Kaplin ya da kasnak kamayla bağlanır. Mile çekiçle vurma: darbe rulmana ve enkodere gider.'],
+        ['Ön flanş', '60 mm kare; Ø50 mm merkezleme çıkıntısı ve Ø70 mm çember üzerinde dört Ø5,5 mm delik (tipik). Motorun ısısı flanştan makineye de atılır.'],
+        ['Ön rulman', 'Sabit bilyalı rulman. Kasnak ya da dişli kullanılıyorsa katalogdaki izin verilen radyal ve eksenel yüke dikkat et.'],
+        ['Gövde', 'Alüminyum gövde statoru taşır ve ısısını dışarı verir. Katalogdaki sürekli tork, motor belirli ölçüde bir alüminyum plakaya bağlıyken verilir; motoru yalıtıp örtme.'],
+        ['Stator ve sargılar', 'Silisli sac paket ve üç faz sargı (U, V, W). Bu örnekte 12 dişe sarılmış toplu sargı var; oluk sayısı üreticiye göre değişir.'],
+        ['Rotor ve mıknatıslar', 'Çelik göbek üzerinde neodimyum mıknatıslar, 10 kutup (örnek). Aşırı sıcaklık ya da aşırı akım mıknatısı kalıcı olarak zayıflatabilir.'],
+        ['Arka rulman', 'Milin arka ucunu taşır. Rulman sesi ve titreşimi enkoder okumasını da bozabilir.'],
+        ['Fren (bobin, yay, armatür)', 'Yaylı tutma freni. Enerjisizken yaylar armatürü balataya bastırır, mil kilitlenir. 24 V DC verilince bobin armatürü çeker, fren açılır.'],
+        ['Fren diski (balata)', 'Mille birlikte döner. Tutma freni içindir: hareketli yükü durdurmak için kullanılırsa balata aşınır, tutma torku düşer.'],
+        ['Enkoder diski', 'Mille birlikte döner. Optik enkoderde ışık diskteki ince yarıklardan geçer; manyetik enkoderler de yaygındır.'],
+        ['Enkoder kartı', 'Diskteki izi okuyup konumu sürücüye sayısal olarak gönderir. 17 bit: 131.072 darbe/tur. Tek turlu mutlak enkoder tur içindeki konumu enerji kesilince de bilir; tur sayımı için çoğunlukla pil gerekir.'],
+        ['Enkoder kapağı', 'Enkoderi toz ve darbeden korur. Enkoder fabrikada rotora göre ayarlanır; kapağı açma.'],
+        ['Güç konnektörü', 'U, V, W ve PE; frenli motorda fren uçları da. U-V-W sırası sürücüdekiyle aynı olmalı: yanlış sırada motor kontrolden çıkar ya da sürücü alarm verir.'],
+        ['Enkoder konnektörü', 'Ekranlı kablo kullanılır; ekranı katalogdaki gibi topraklanır. Enkoder kablosunu güç kablosuyla yan yana uzun mesafe taşıma.']
+      ],
+      kamera: { yon: [1, 0.72, 1.45], patlak: [1, 0.45, 0.3] },
+      kesitler: [{ ad: 'çeyrek', planlar: [[-1, 0, 0, 0], [0, -1, 0, 0]] }, { ad: 'enine', planlar: [[0, 0, -1, -30]] }],
+      yeni: () => ({ servo: false, fren: 0, aci: 0, hedef: 0, surekli: false }),
+      dugmeler: (s) => [
+        ['servo', s.servo ? 'Servo OFF' : 'Servo ON', s.servo],
+        ['git', '+90° git'],
+        ['surekli', s.surekli ? 'Durdur' : 'Sürekli dön', s.surekli]
+      ],
+      olay(s, olay) {
+        if (olay === 'servo') { s.servo = !s.servo; if (!s.servo) { s.surekli = false; s.hedef = s.aci; } }
+        else if (olay === 'git' && s.servo) { s.surekli = false; s.hedef = Math.round(s.aci / 90) * 90 + 90; }
+        else if (olay === 'surekli' && s.servo) { s.surekli = !s.surekli; if (!s.surekli) s.hedef = s.aci; }
+        s.uyari = !s.servo && (olay === 'git' || olay === 'surekli');
+      },
+      tik(s, dt) {
+        let hareket = false;
+        const fren = s.servo ? 1 : 0;   // 1: armatür çekili, fren açık
+        if (s.fren !== fren) { s.fren = fren > s.fren ? Math.min(1, s.fren + dt * 4) : Math.max(0, s.fren - dt * 4); hareket = true; }
+        if (s.servo && s.fren === 1) {
+          if (s.surekli) { s.aci += HIZ * dt; s.hedef = s.aci; hareket = true; }
+          else if (s.aci !== s.hedef) {
+            const fark = s.hedef - s.aci, adim = Math.max(8, Math.min(HIZ * 1.5, Math.abs(fark) * 4)) * dt;
+            s.aci = Math.abs(fark) <= adim ? s.hedef : s.aci + Math.sign(fark) * adim;
+            hareket = true;
+          }
+        }
+        return hareket;
+      },
+      durum(s) {
+        const sayim = sayi(Math.round(((((s.aci % 360) + 360) % 360) / 360) * ENKODER_DARBE) % ENKODER_DARBE, 0);
+        const konum = `Konum ${derece(s.aci)}° · enkoder ${sayim} / ${sayi(ENKODER_DARBE)}`;
+        if (s.uyari) return { metin: 'Önce Servo ON: sürücü motoru enerjilemeden fren açılmaz ve motor dönmez.', uyari: true };
+        if (!s.servo) return { metin: s.fren > 0 ? 'Servo kapanıyor: fren bobininin enerjisi kesildi, yaylar freni kapatıyor.' : `Servo OFF. Fren kapalı: yaylar balatayı sıkıştırır, mil kilitli. ${konum}.` };
+        if (s.fren < 1) return { metin: 'Servo ON: sürücü fren bobinine 24 V verdi, armatür çekiliyor; fren açılınca hareket başlar.' };
+        if (s.surekli) return { metin: `${konum} · sürekli dönüyor.` };
+        return { metin: `${konum} · ${s.aci === s.hedef ? 'konum tutuluyor (fren açık, motor akımla tutuyor).' : 'hedefe gidiyor.'}` };
+      },
+
+      kur(y) {
+        const T = y.T, TUR = Math.PI * 2, DER = Math.PI / 180;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const delikli = (sekil, delikler) => { delikler.forEach(([x, yy, r]) => sekil.holes.push(new T.Path().absarc(x, yy, r, 0, TUR, true))); return sekil; };
+        const KARE = 60, DEL = 24.75;   // Ø70 çember üzerindeki delikler: 35 / √2
+        const flansDelik = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(([a, b]) => [a * DEL, b * DEL, 2.75]);
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- ön flanş ve merkezleme ---- */
+        const onFlans = grup(
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, 5), [[0, 0, 16]].concat(flansDelik)), 8, { pah: 0.5 }), 'aluminyum'), 0, 0, -4),
+          yer(y.ag(y.halka(16, 25, 2.95, 72), 'aluminyum'), 0, 0, 1.525)
+        );
+        const onRulman = yer(y.rulman(7.05, 15.95, 6.9), 0, 0, -4);
+
+        /* ---- gövde: kare boru + arka yatak duvarı ---- */
+        const govde = grup(
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, 8), [[0, 0, 26]]), 49.95), 'aluminyum'), 0, 0, -33.025),
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, 8), [[0, 0, 13]]), 5.95), 'aluminyum'), 0, 0, -61.025)
+        );
+        const arkaRulman = yer(y.rulman(7.05, 12.95, 5.9), 0, 0, -61);
+
+        /* ---- stator: 12 diş, toplu sargı ---- */
+        const statorSekli = new T.Shape().absarc(0, 0, 25.95, 0, TUR, false);
+        statorSekli.holes.push(y.kutupluBosluk({ n: 12, rArka: 21, rUc: 16.3, rIc: 15.2, g: 2, uc: 13 * DER }));
+        const statorPaket = yer(y.ag(y.cek(statorSekli, 36, { bolum: 72 }), 'sac'), 0, 0, -33);
+        const bobinGeo = y.bobin({ gw: 2.05, gh: 18.05, kalinlik: 1.6, uzanti: 2.3, r0: 16.45, derinlik: 3.8 });
+        const bakir = y.malzeme('bakir'), renkBakir = bakir.color.clone(), renkN = y.malzeme('kuzey').color.clone(), renkS = y.malzeme('guney').color.clone();
+        const bobinler = [];
+        const stator = grup(statorPaket);
+        for (let k = 0; k < 12; k++) {
+          const b = y.ag(bobinGeo, bakir.clone(), { esik: 50 });
+          const g = yer(grup(b), 0, 0, -33);
+          g.rotation.z = k * (TUR / 12);
+          stator.add(g);
+          bobinler.push(b);
+        }
+
+        /* ---- rotor: çelik göbek + 10 yüzey mıknatısı ---- */
+        const rotor = yer(grup(y.ag(y.halka(7.05, 12, 36), 'celik')), 0, 0, -33);
+        const mSekli = new T.Shape().absarc(0, 0, 14.55, -17 * DER, 17 * DER, false).absarc(0, 0, 12.05, 17 * DER, -17 * DER, true);
+        const mGeo = y.cek(mSekli, 35.9, { bolum: 12 });
+        for (let j = 0; j < 10; j++) {
+          const m = y.ag(mGeo, j % 2 ? 'guney' : 'kuzey', { esik: 50 });
+          m.rotation.z = j * 36 * DER;
+          rotor.add(m);
+        }
+
+        /* ---- mil ve kama ---- */
+        const kx = 2.5, ky = Math.sqrt(7.05 * 7.05 - kx * kx), ka = Math.atan2(ky, kx);
+        const kamaSekli = new T.Shape().moveTo(-kx, ky).lineTo(-kx, 9.2).lineTo(kx, 9.2).lineTo(kx, ky).absarc(0, 0, 7.05, ka, Math.PI - ka, false);
+        const mil = grup(
+          yer(y.ag(y.silindir(7, 116), 'celik'), 0, 0, -28),
+          yer(y.ag(y.cek(kamaSekli, 20, { bolum: 8 }), 'celik'), 0, 0, 16),
+          yer(new T.Mesh(new T.BoxGeometry(1, 5, 0.2), y.malzeme('vurgu')), 0, -3.2, 30.1)
+        );
+
+        /* ---- fren: bobin gövdesi (arkaya açık oluk), bobin, armatür, karşı plaka ---- */
+        const armatur = y.ag(y.halka(12, 24, 1.95), 'celik');
+        const fren = grup(
+          yer(y.ag(y.halka(12, 15.45, 7), 'celik'), 0, 0, -67.6),
+          yer(y.ag(y.halka(21.55, 24, 7), 'celik'), 0, 0, -67.6),
+          yer(y.ag(y.halka(15.5, 21.5, 1.2), 'celik'), 0, 0, -64.7),
+          yer(y.ag(y.halka(15.55, 21.45, 5.6), 'bakir'), 0, 0, -68.15),
+          armatur,
+          yer(y.ag(y.halka(10, 24, 1.55), 'celik'), 0, 0, -78.325)
+        );
+        const frenDiski = grup(yer(y.ag(y.halka(9.2, 21.5, 3.05), 'balata'), 0, 0, -75.925), yer(y.ag(y.halka(7.05, 9.15, 3.05), 'celik'), 0, 0, -75.925));
+
+        /* ---- enkoder: yarıklı disk, kart, kapak ---- */
+        const enkoderDiski = grup(
+          yer(y.ag(y.cek(y.disli({ sayi: 90, rDis: 16, rTaban: 15, rDelik: 9.05, oran: 0.5 }), 0.8, { bolum: 90 }), 'celik', { kenar: false }), 0, 0, -81.2),
+          yer(y.ag(y.halka(7.05, 9, 2.4), 'celik'), 0, 0, -80.3)
+        );
+        const kart = grup(yer(y.ag(y.halka(10, 24, 1.6), 'kart'), 0, 0, -85));
+        kart.add(yer(y.ag(new T.BoxGeometry(7, 5, 2.4), 'entegre'), 0, 15.5, -82.95));
+        [[-10, -12, 6], [9, -13, 4], [-16, 4, 3]].forEach(([x, yy, a]) => kart.add(yer(y.ag(new T.BoxGeometry(a, a, 1), 'entegre'), x, yy, -86.35)));
+        const kapak = grup(
+          yer(y.ag(y.cek(delikli(y.pahliKare(KARE, 8), [[0, 0, 26]]), 31.9), 'aluminyum'), 0, 0, -80),
+          yer(y.ag(y.cek(y.pahliKare(KARE, 8), 3, { pah: 0.5 }), 'aluminyum'), 0, 0, -97.5)
+        );
+
+        /* ---- konnektörler ve kablo çıkışları ---- */
+        const konnektor = (z, r, kablo) => grup(
+          yer(y.ag(new T.BoxGeometry(r * 2 + 2, 4, r * 2 + 2), 'plastik'), 0, 32.05, z),
+          yer(y.ag(new T.CylinderGeometry(r, r, 11, 32), 'plastik'), 0, 39.6, z),
+          yer(y.ag(y.halka(r + 0.05, r + 1.2, 3, 32).rotateX(Math.PI / 2), 'celik'), 0, 41, z),
+          y.ag(y.boru([[0, 45, z], [0, 50, z - 8], [0, 53, z - 24], [0, 54, z - 44]], kablo), 'kabloSiyah', { kenar: false })
+        );
+        const guc = konnektor(-42, 7, 3.2), enkoderK = konnektor(-88, 5.5, 2.4);
+
+        const parcalar = [
+          { nesne: mil, isaret: [0, 9.25, 16], patlat: [0, 72, 0] },
+          { nesne: onFlans, isaret: [-20, 20, 0.05], patlat: [0, 0, 46] },
+          { nesne: onRulman, isaret: [10.2, 10.2, 3.5], patlat: [0, 0, 30] },
+          { nesne: govde, isaret: [30.05, -10, -30], patlat: [0, -72, 0] },
+          { nesne: stator, isaret: [18.35, 18.35, -20], patlat: [0, 0, 0] },
+          { nesne: rotor, isaret: [10.3, 10.3, 12], patlat: [0, 72, 0] },
+          { nesne: arkaRulman, isaret: [9.1, 9.1, 0], patlat: [0, 0, -22] },
+          { nesne: fren, isaret: [16.9, 16.9, -67.6], patlat: [0, 0, -34] },
+          { nesne: frenDiski, isaret: [15.2, 15.2, -75.9], patlat: [0, 72, 0] },
+          { nesne: enkoderDiski, isaret: [11.3, 11.3, -81.2], patlat: [0, 72, 0] },
+          { nesne: kart, isaret: [0, 18.05, -83], patlat: [0, 0, -56] },
+          { nesne: kapak, isaret: [30.05, -10, -84], patlat: [0, 0, -80] },
+          { nesne: guc, isaret: [7.05, 39, -42], patlat: [0, -72, 0] },
+          { nesne: enkoderK, isaret: [5.55, 39, -88], patlat: [0, 0, -80] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+        const donen = [mil, rotor, frenDiski, enkoderDiski];
+
+        return {
+          kok,
+          parcalar,
+          uygula(s) {
+            donen.forEach((n) => { n.rotation.z = -s.aci * DER; });
+            armatur.position.z = -73.4 + 1.2 * s.fren;   // fren kapalı: -73,4 (balataya basar); açık: -72,2 (bobine çekili)
+            const enerjili = s.servo && s.fren === 1;
+            const te = -s.aci * DER * KUTUP_CIFTI + Math.PI / 2;   // elektriksel açı: akım rotoru 90° önden çeker
+            bobinler.forEach((b, k) => {
+              if (!enerjili) { b.material.color.copy(renkBakir); return; }
+              const [faz, yon] = DUZEN[k], i = Math.cos(te + FAZ_ACI[faz]) * yon;
+              b.material.color.copy(renkBakir).lerp(i > 0 ? renkN : renkS, Math.min(1, Math.abs(i) * 1.1));
+            });
+          }
+        };
+      }
+    }
+  });
+})();
 
 /* ---- kaynak/konular/04-suruculer/konu.js ---- */
 /* Sürücüler: konu tanımı ve bilgi sayfaları. */
@@ -7317,6 +7526,9 @@ const MALZEMELER = {
   guney: { r: '--wire-n', metal: 0.1, puruz: 0.55 },
   plastik: { renk: 0x2b2f34, metal: 0, puruz: 0.7 },
   plastikAcik: { renk: 0xe8e4da, metal: 0, puruz: 0.65 },
+  balata: { renk: 0x8c7b66, metal: 0, puruz: 0.85 },
+  kart: { renk: 0x2f6b4a, metal: 0.05, puruz: 0.6 },
+  entegre: { renk: 0x1c1f22, metal: 0.1, puruz: 0.5 },
   vurgu: { r: '--accent', metal: 0.1, puruz: 0.5 },
   kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
   kabloYesil: { renk: 0x3f8a3a, metal: 0, puruz: 0.6 },
@@ -7423,7 +7635,7 @@ function modelTikla(o, e) {
   } else {
     const olay = el.dataset.modelOlay;
     if (olay === 'yeniden') { modelleriKur(); return; }
-    if (olay === 'patlat') s.patlat = !s.patlat;
+    if (olay === 'patlat') { s.patlat = !s.patlat; if (o.gorunum) o.gorunum.patlatildi(); }
     else if (olay === 'kesit') s.kesit = (s.kesit + 1) % (modelKesitleri(o.tur).length + 1);
     else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
     else if (M.olay) M.olay(s, olay);
@@ -7497,6 +7709,68 @@ function modelBaslat(T, o) {
     },
     boru(noktalar, r, bolum = 48) {
       return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar.map((n) => new T.Vector3(...n))), bolum, r, 10, false);
+    },
+    /* Kutuplu stator boşluğu (şeklin deliği olarak kullanılır). n kutup, 1. kutup bas açısında, sonrakiler artan açıyla.
+       rArka: arka demir, rUc: kutup ucunun sırtı, rIc: delik (hava aralığı) yarıçapı, g: kutup gövdesinin yarı genişliği,
+       uc: kutup ucunun yarı açısı (rad). dis: { sayi, adim (rad), derinlik, oran } kutup yüzündeki ince dişler (isteğe bağlı). */
+    kutupluBosluk({ n, rArka, rUc, rIc, g, uc, bas = Math.PI / 2, dis = null }) {
+      const V = (r, a) => new T.Vector2(r * Math.cos(a), r * Math.sin(a));
+      const yay = (d, r, a0, a1, k) => { for (let i = 1; i < k; i++) d.push(V(r, a0 + ((a1 - a0) * i) / k)); };   // uçlar hariç
+      const aB = Math.asin(g / rArka), aS = Math.asin(g / rUc), adim = (Math.PI * 2) / n, rY = rIc + (dis ? dis.derinlik : 0);
+      const d = [];
+      for (let k = 0; k < n; k++) {
+        const c = bas + k * adim, u = [Math.cos(c), Math.sin(c)], v = [-Math.sin(c), Math.cos(c)];
+        const N = (r, t) => new T.Vector2(r * u[0] + t * v[0], r * u[1] + t * v[1]);
+        d.push(N(Math.sqrt(rArka * rArka - g * g), -g), N(Math.sqrt(rUc * rUc - g * g), -g));
+        yay(d, rUc, c - aS, c - uc, 3);
+        d.push(V(rUc, c - uc), V(rY, c - uc));
+        if (dis) {
+          const h = (dis.adim * dis.oran) / 2;
+          for (let j = 0; j < dis.sayi; j++) {
+            const a = c + (j - (dis.sayi - 1) / 2) * dis.adim;
+            d.push(V(rY, a - h), V(rIc, a - h), V(rIc, a + h), V(rY, a + h));
+          }
+        } else yay(d, rIc, c - uc, c + uc, 8);
+        d.push(V(rY, c + uc), V(rUc, c + uc));
+        yay(d, rUc, c + uc, c + aS, 3);
+        d.push(N(Math.sqrt(rUc * rUc - g * g), g), N(Math.sqrt(rArka * rArka - g * g), g));
+        yay(d, rArka, c + aB, c + adim - aB, 6);
+      }
+      return new T.Path(d);
+    },
+    /* Kutup gövdesine sarılı bobin, +y yönündeki kutup için; z ekseni boyunca uzanır. gw, gh: gövde deliğinin yarı
+       genişliği ve yarı boyu, kalinlik: tel sargısının kalınlığı, uzanti: gövdeden taşan uç, r0 ve derinlik: radyal konum. */
+    bobin({ gw, gh, kalinlik, uzanti, r0, derinlik, pah = 0.3 }) {
+      const bw = gw + kalinlik, bh = gh + uzanti, br = Math.min(2, kalinlik);
+      const s = new T.Shape().moveTo(-bw + br, -bh).lineTo(bw - br, -bh).quadraticCurveTo(bw, -bh, bw, -bh + br).lineTo(bw, bh - br).quadraticCurveTo(bw, bh, bw - br, bh)
+        .lineTo(-bw + br, bh).quadraticCurveTo(-bw, bh, -bw, bh - br).lineTo(-bw, -bh + br).quadraticCurveTo(-bw, -bh, -bw + br, -bh);
+      s.holes.push(new T.Path().moveTo(-gw, -gh).lineTo(-gw, gh).lineTo(gw, gh).lineTo(gw, -gh).closePath());
+      return new T.ExtrudeGeometry(s, { depth: derinlik - 2 * pah, bevelEnabled: pah > 0, bevelThickness: pah, bevelSize: pah, bevelSegments: 2, curveSegments: 6 })
+        .rotateX(-Math.PI / 2).translate(0, r0 + pah, 0);
+    },
+    /* Dişli disk şekli: diş üstü rDis, diş dibi rTaban, ortada rDelik. oran: diş tabanının adıma oranı. kayma: açı (rad). */
+    disli({ sayi, rDis, rTaban, rDelik = 0, kayma = 0, oran = 0.42 }) {
+      const n = [], p = (Math.PI * 2) / sayi, h = (p * oran) / 2;
+      for (let i = 0; i < sayi; i++) {
+        const a = i * p + kayma;
+        for (const [aa, r] of [[a - p / 2, rTaban], [a - h, rTaban], [a - h * 0.8, rDis], [a + h * 0.8, rDis], [a + h, rTaban]]) n.push(new T.Vector2(r * Math.cos(aa), r * Math.sin(aa)));
+      }
+      const s = new T.Shape(n);
+      if (rDelik) s.holes.push(new T.Path().absarc(0, 0, rDelik, 0, Math.PI * 2, true));
+      return s;
+    },
+    /* Sabit bilyalı rulman (z ekseninde, z = 0 merkezli): dış bilezik, iç bilezik, bilyeler. */
+    rulman(ic, dis, gen) {
+      const t = (dis - ic) * 0.28, rb = (dis - ic - 2 * t) * 0.46, rc = (ic + dis) / 2, n = Math.floor((Math.PI * 2 * rc) / (rb * 2.6));
+      const g = new T.Group();
+      g.add(y.ag(y.halka(dis - t, dis, gen), 'celik'), y.ag(y.halka(ic, ic + t, gen), 'celik'));
+      const bilye = new T.SphereGeometry(rb, 14, 10);
+      for (let i = 0; i < n; i++) {
+        const b = y.ag(bilye, 'celik', { kenar: false });
+        b.position.set(rc * Math.cos((i * Math.PI * 2) / n), rc * Math.sin((i * Math.PI * 2) / n), 0);
+        g.add(b);
+      }
+      return g;
     }
   };
 
@@ -7550,9 +7824,18 @@ function modelBaslat(T, o) {
 
   /* ---- kamera: başlangıç yönünden bakınca model (birleşik ve parçalı hâlde) çerçeveye sığar ---- */
   const yon = new T.Vector3(...(M.kamera && M.kamera.yon ? M.kamera.yon : [1, 0.7, 1.6])).normalize();
-  const bas = { teta: Math.atan2(yon.x, yon.z), fi: Math.acos(yon.y) };
+  /* kamera.patlak: parçalı görünümde kameranın döneceği yön (uzun modellerde yandan bakış). */
+  const yonPatlak = M.kamera && M.kamera.patlak ? new T.Vector3(...M.kamera.patlak).normalize() : yon;
+  const acilar = (v) => ({ teta: Math.atan2(v.x, v.z), fi: Math.acos(v.y) });
+  const bas = acilar(yon);
   const gor = { teta: bas.teta, fi: bas.fi, yakin: 1 };
-  function sigdir(pp) {
+  let kameraHedef = null;
+  function kameraYonel(v) {
+    const h = acilar(v);
+    h.teta += Math.round((gor.teta - h.teta) / (Math.PI * 2)) * Math.PI * 2;   // en kısa yoldan dön
+    kameraHedef = h;
+  }
+  function sigdir(pp, bakis) {
     parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, pp));
     m.kok.updateMatrixWorld(true);
     const koseler = [];   // her ağın kendi kutusunun köşeleri: tek büyük kutudan daha sıkı sığdırır
@@ -7565,7 +7848,7 @@ function modelBaslat(T, o) {
     const kutu = new T.Box3().setFromPoints(koseler), merkez = kutu.getCenter(new T.Vector3());
     let d = kutu.getBoundingSphere(new T.Sphere()).radius / Math.sin((kamera.fov * Math.PI) / 360);
     for (let i = 0; i < 4; i++) {
-      kamera.position.copy(yon).multiplyScalar(d).add(merkez);
+      kamera.position.copy(bakis).multiplyScalar(d).add(merkez);
       kamera.lookAt(merkez);
       kamera.updateMatrixWorld();
       kamera.updateProjectionMatrix();
@@ -7575,7 +7858,7 @@ function modelBaslat(T, o) {
     return { merkez, d };
   }
   let cerceve = null;
-  const cerceveHesapla = () => { cerceve = [sigdir(0), sigdir(1)]; patlatUygula(); };
+  const cerceveHesapla = () => { cerceve = [sigdir(0, yon), sigdir(1, yonPatlak)]; patlatUygula(); };
 
   const kesitPlanlari = modelKesitleri(o.tur).map((k) => k.planlar.map(([a, b, c, d]) => new T.Plane(new T.Vector3(a, b, c), d)));
   const planlar = () => kesitPlanlari[s.kesit - 1] || [];
@@ -7665,6 +7948,13 @@ function modelBaslat(T, o) {
       patlatUygula();
       devam = true;
     }
+    if (kameraHedef) {
+      const k = azHareket() ? 1 : 1 - Math.exp(-dt * 5);
+      gor.teta += (kameraHedef.teta - gor.teta) * k;
+      gor.fi += (kameraHedef.fi - gor.fi) * k;
+      if (Math.abs(kameraHedef.teta - gor.teta) + Math.abs(kameraHedef.fi - gor.fi) < 0.002) { gor.teta = kameraHedef.teta; gor.fi = kameraHedef.fi; kameraHedef = null; }
+      else devam = true;
+    }
     if (M.tik && gorunur && !document.hidden && M.tik(s, dt)) {
       m.uygula(s);
       kapaklariEsle();
@@ -7702,6 +7992,7 @@ function modelBaslat(T, o) {
     isaretci.set(e.pointerId, { x: e.clientX, y: e.clientY });
     try { tuval.setPointerCapture(e.pointerId); } catch (x) { /* yok say */ }
     dokunus = isaretci.size === 1 ? { x: e.clientX, y: e.clientY } : null;
+    kameraHedef = null;
     if (isaretci.size === 2) { const [a, b] = [...isaretci.values()]; ikiliBas = Math.hypot(a.x - b.x, a.y - b.y); }
     surukleniyor = true;
   });
@@ -7757,7 +8048,8 @@ function modelBaslat(T, o) {
 
   o.gorunum = {
     guncelle() { m.uygula(s); kapaklariEsle(); iste(); },
-    kameraSifirla() { gor.teta = bas.teta; gor.fi = bas.fi; gor.yakin = 1; }
+    kameraSifirla() { kameraHedef = null; gor.teta = bas.teta; gor.fi = bas.fi; gor.yakin = 1; },
+    patlatildi() { if (yonPatlak !== yon) kameraYonel(s.patlat ? yonPatlak : yon); }
   };
   o.temizle = () => {
     cancelAnimationFrame(istek);

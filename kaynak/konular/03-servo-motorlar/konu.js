@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Enkoder, geri besleme, ayar',
   giris: 'Servo motor, enkoderden gelen geri beslemeyle konumunu sürekli ölçer ve hatayı sürücü düzeltir.',
   altlar: [
+    { id: 'servo-ic-yapi', kod: '3B', ad: 'İç yapı (3B model)', alt: 'Stator, mıknatıslı rotor, fren, enkoder · servo ON, konuma git', sayfa: 'servo-ic-yapi' },
     { id: 'servo-enkoder', kod: 'ENC', ad: 'Enkoder türleri', alt: 'Artımsal ve mutlak enkoder, çözünürlük', sayfa: 'servo-enkoder' },
     { id: 'servo-baglanti', kod: 'AC', ad: 'Servo motor ve sürücü bağlantısı', alt: 'Güç, enkoder ve fren kabloları', sayfa: 'servo-baglanti' },
     { id: 'servo-ayar', kod: 'PID', ad: 'Kazanç ayarı (tuning)', alt: 'Konum, hız ve akım döngüleri', sayfa: 'servo-ayar' },
@@ -13,6 +14,55 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'servo-ic-yapi': {
+    baslik: 'Servo motorun iç yapısı',
+    giris: 'AC servo motor, mıknatıslı rotorlu bir senkron motordur. Arkasındaki enkoder rotorun konumunu ölçer; sürücü akımı bu konuma göre sargılara dağıtır. Frenli modelde enkoderin önünde yaylı bir tutma freni vardır.',
+    etiketler: ['3B model', '60 mm flanş', '17 bit enkoder', 'Frenli'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'servo-motor' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Servo nasıl döner', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Enkoder rotorun açısını sürekli ölçer ve sürücüye gönderir.',
+          'Sürücü akımı bu açıya göre U, V ve W sargılarına dağıtır (komütasyon). Statorda, rotoru 90° elektriksel açıyla önden çeken dönen bir manyetik alan oluşur.',
+          'Mıknatıslı rotor bu alanı izler; tork, akımla orantılıdır.',
+          'Konum döngüsü hedefle ölçülen konumu karşılaştırır, hız ve akım döngüleri hatayı düzeltir.',
+          'Hedefe varınca motor durur ama akım kesilmez: yük itse bile konum akımla tutulur.'
+        ]},
+        { tip: 'formul', formul: 'Darbe/tur = 2ⁿ', tanimlar: [['n', 'enkoder çözünürlüğü (bit)']],
+          ornek: { baslik: '17 bit enkoder', satirlar: [['Darbe/tur', '2¹⁷ = 131.072'], ['1 darbe', '360° ÷ 131.072 ≈ 0,0027°']] } }
+      ]},
+      { id: 'fren', kisa: 'Fren sırası', baslik: 'Servo ON ve fren sırası', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Servo ON: sürücü motoru enerjiler, motor konumu akımla tutmaya başlar.',
+          'Sürücü fren çıkışını verir; 24 V gelince bobin armatürü çeker, fren açılır.',
+          'Fren açılma süresi dolunca hareket komutu kabul edilir.',
+          'Servo OFF: sürücü önce motoru durdurur ve freni kapatır; kapanma süresi dolunca motorun enerjisi kesilir.'
+        ]},
+        { tip: 'not', metin: 'Süreler ve sıra sürücünün parametreleriyle ayarlanır. Ayrıntılı devre ve arızalar: Frenli servo sayfası.' }
+      ]},
+      { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+        { tip: 'ariza', belirti: 'Enkoder alarmı ya da konum atlıyor', satirlar: [
+          ['Enkoder konnektörü gevşek ya da pimi bükük', 'Kontrol: konnektörü çıkar, pimlere bak, kilidiyle birlikte yerine tak.'],
+          ['Kablo ekranı topraklanmamış ya da kablo güç kablosuyla yan yana', 'Kontrol: ekran bağlantısını katalogla karşılaştır, kabloları ayrı kanala al.'],
+          ['Çok turlu enkoderde pil bitmiş', 'Kontrol: pili değiştir, sürücüdeki alarmı sil ve referansı yeniden al.']
+        ]},
+        { tip: 'ariza', belirti: 'Motor ısınıyor', satirlar: [
+          ['Yük ya da ivme motor için fazla', 'Kontrol: sürücüden yük oranını ve etkin (RMS) torku oku, anma torkuyla karşılaştır.'],
+          ['Isı atılamıyor', 'Kontrol: motor flanşının metal bir yüzeye oturduğunu ve gövdenin örtülmediğini doğrula.']
+        ]},
+        { tip: 'hatalar', hatalar: [
+          ['Kaplini mile çekiçle çakmak', 'Darbe rulmana ve enkodere gider; enkoder bozulabilir. Doğrusu: kaplini sıkma vidasıyla ya da çektirmeyle tak.'],
+          ['Motoru kablosundan tutup taşımak', 'Konnektör ve kablo zarar görür, enkoder bağlantısı kopabilir. Doğrusu: motoru gövdesinden taşı.'],
+          ['Enkoder kapağını açıp enkoderi sökmek', 'Enkoder rotora göre fabrikada ayarlanmıştır; sökülünce komütasyon bozulur. Doğrusu: arızalı motoru üreticiye gönder.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Servo sürücü', 'Enkoder kablosu', 'Motor güç kablosu', 'Kaplin', 'Redüktör'] }
+      ]}
+    ]
+  },
   'servo-enkoder': {
     baslik: 'Enkoder türleri',
     giris: 'Enkoder, motor milinin konumunu ölçüp sürücüye bildirir. Konum, hız ve yön bilgisinin hepsi buradan gelir; servo sistemin gözüdür.',

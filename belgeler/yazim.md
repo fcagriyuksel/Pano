@@ -18,7 +18,8 @@ Uygulamanın dili Türkçedir. Kısa, doğrudan, yapmacık olmayan cümleler kul
 
 ## Blok kalıpları
 
-- Arıza satırı “Kontrol:” ile başlar ve eylemle sürer: `Kontrol: sargı direncini ölç.`
+- Arıza satırının ilk sütunu bir neden ise metin “Kontrol:” ile başlar ve eylemle sürer: `['Bir faz yok', 'Kontrol: üç faz gerilimini ölç.']`
+- İlk sütun bir gözlem ise (ne zaman, nasıl oluyor) metin “Olası neden: … Kontrol: …” biçimindedir: `['Kurar kurmaz atıyor', 'Olası neden: kısa devre. Kontrol: yükleri ayır, izolasyon direncini ölç.']`
 - Hata kartı “Doğrusu:” ile biter: `Kabloyu sigortaya göre seçmek. Doğrusu: sigortayı kabloya göre seç.`
 - Şema işaretleri: kısa ad + bir iki cümle.
 

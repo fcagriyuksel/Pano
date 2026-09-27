@@ -18,6 +18,9 @@ const MALZEMELER = {
   guney: { r: '--wire-n', metal: 0.1, puruz: 0.55 },
   plastik: { renk: 0x2b2f34, metal: 0, puruz: 0.7 },
   plastikAcik: { renk: 0xe8e4da, metal: 0, puruz: 0.65 },
+  balata: { renk: 0x8c7b66, metal: 0, puruz: 0.85 },
+  kart: { renk: 0x2f6b4a, metal: 0.05, puruz: 0.6 },
+  entegre: { renk: 0x1c1f22, metal: 0.1, puruz: 0.5 },
   vurgu: { r: '--accent', metal: 0.1, puruz: 0.5 },
   kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
   kabloYesil: { renk: 0x3f8a3a, metal: 0, puruz: 0.6 },
@@ -124,7 +127,7 @@ function modelTikla(o, e) {
   } else {
     const olay = el.dataset.modelOlay;
     if (olay === 'yeniden') { modelleriKur(); return; }
-    if (olay === 'patlat') s.patlat = !s.patlat;
+    if (olay === 'patlat') { s.patlat = !s.patlat; if (o.gorunum) o.gorunum.patlatildi(); }
     else if (olay === 'kesit') s.kesit = (s.kesit + 1) % (modelKesitleri(o.tur).length + 1);
     else if (olay === 'sifirla') { s.patlat = false; s.kesit = 0; s.secili = -1; if (o.gorunum) o.gorunum.kameraSifirla(); }
     else if (M.olay) M.olay(s, olay);
@@ -198,6 +201,68 @@ function modelBaslat(T, o) {
     },
     boru(noktalar, r, bolum = 48) {
       return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar.map((n) => new T.Vector3(...n))), bolum, r, 10, false);
+    },
+    /* Kutuplu stator boşluğu (şeklin deliği olarak kullanılır). n kutup, 1. kutup bas açısında, sonrakiler artan açıyla.
+       rArka: arka demir, rUc: kutup ucunun sırtı, rIc: delik (hava aralığı) yarıçapı, g: kutup gövdesinin yarı genişliği,
+       uc: kutup ucunun yarı açısı (rad). dis: { sayi, adim (rad), derinlik, oran } kutup yüzündeki ince dişler (isteğe bağlı). */
+    kutupluBosluk({ n, rArka, rUc, rIc, g, uc, bas = Math.PI / 2, dis = null }) {
+      const V = (r, a) => new T.Vector2(r * Math.cos(a), r * Math.sin(a));
+      const yay = (d, r, a0, a1, k) => { for (let i = 1; i < k; i++) d.push(V(r, a0 + ((a1 - a0) * i) / k)); };   // uçlar hariç
+      const aB = Math.asin(g / rArka), aS = Math.asin(g / rUc), adim = (Math.PI * 2) / n, rY = rIc + (dis ? dis.derinlik : 0);
+      const d = [];
+      for (let k = 0; k < n; k++) {
+        const c = bas + k * adim, u = [Math.cos(c), Math.sin(c)], v = [-Math.sin(c), Math.cos(c)];
+        const N = (r, t) => new T.Vector2(r * u[0] + t * v[0], r * u[1] + t * v[1]);
+        d.push(N(Math.sqrt(rArka * rArka - g * g), -g), N(Math.sqrt(rUc * rUc - g * g), -g));
+        yay(d, rUc, c - aS, c - uc, 3);
+        d.push(V(rUc, c - uc), V(rY, c - uc));
+        if (dis) {
+          const h = (dis.adim * dis.oran) / 2;
+          for (let j = 0; j < dis.sayi; j++) {
+            const a = c + (j - (dis.sayi - 1) / 2) * dis.adim;
+            d.push(V(rY, a - h), V(rIc, a - h), V(rIc, a + h), V(rY, a + h));
+          }
+        } else yay(d, rIc, c - uc, c + uc, 8);
+        d.push(V(rY, c + uc), V(rUc, c + uc));
+        yay(d, rUc, c + uc, c + aS, 3);
+        d.push(N(Math.sqrt(rUc * rUc - g * g), g), N(Math.sqrt(rArka * rArka - g * g), g));
+        yay(d, rArka, c + aB, c + adim - aB, 6);
+      }
+      return new T.Path(d);
+    },
+    /* Kutup gövdesine sarılı bobin, +y yönündeki kutup için; z ekseni boyunca uzanır. gw, gh: gövde deliğinin yarı
+       genişliği ve yarı boyu, kalinlik: tel sargısının kalınlığı, uzanti: gövdeden taşan uç, r0 ve derinlik: radyal konum. */
+    bobin({ gw, gh, kalinlik, uzanti, r0, derinlik, pah = 0.3 }) {
+      const bw = gw + kalinlik, bh = gh + uzanti, br = Math.min(2, kalinlik);
+      const s = new T.Shape().moveTo(-bw + br, -bh).lineTo(bw - br, -bh).quadraticCurveTo(bw, -bh, bw, -bh + br).lineTo(bw, bh - br).quadraticCurveTo(bw, bh, bw - br, bh)
+        .lineTo(-bw + br, bh).quadraticCurveTo(-bw, bh, -bw, bh - br).lineTo(-bw, -bh + br).quadraticCurveTo(-bw, -bh, -bw + br, -bh);
+      s.holes.push(new T.Path().moveTo(-gw, -gh).lineTo(-gw, gh).lineTo(gw, gh).lineTo(gw, -gh).closePath());
+      return new T.ExtrudeGeometry(s, { depth: derinlik - 2 * pah, bevelEnabled: pah > 0, bevelThickness: pah, bevelSize: pah, bevelSegments: 2, curveSegments: 6 })
+        .rotateX(-Math.PI / 2).translate(0, r0 + pah, 0);
+    },
+    /* Dişli disk şekli: diş üstü rDis, diş dibi rTaban, ortada rDelik. oran: diş tabanının adıma oranı. kayma: açı (rad). */
+    disli({ sayi, rDis, rTaban, rDelik = 0, kayma = 0, oran = 0.42 }) {
+      const n = [], p = (Math.PI * 2) / sayi, h = (p * oran) / 2;
+      for (let i = 0; i < sayi; i++) {
+        const a = i * p + kayma;
+        for (const [aa, r] of [[a - p / 2, rTaban], [a - h, rTaban], [a - h * 0.8, rDis], [a + h * 0.8, rDis], [a + h, rTaban]]) n.push(new T.Vector2(r * Math.cos(aa), r * Math.sin(aa)));
+      }
+      const s = new T.Shape(n);
+      if (rDelik) s.holes.push(new T.Path().absarc(0, 0, rDelik, 0, Math.PI * 2, true));
+      return s;
+    },
+    /* Sabit bilyalı rulman (z ekseninde, z = 0 merkezli): dış bilezik, iç bilezik, bilyeler. */
+    rulman(ic, dis, gen) {
+      const t = (dis - ic) * 0.28, rb = (dis - ic - 2 * t) * 0.46, rc = (ic + dis) / 2, n = Math.floor((Math.PI * 2 * rc) / (rb * 2.6));
+      const g = new T.Group();
+      g.add(y.ag(y.halka(dis - t, dis, gen), 'celik'), y.ag(y.halka(ic, ic + t, gen), 'celik'));
+      const bilye = new T.SphereGeometry(rb, 14, 10);
+      for (let i = 0; i < n; i++) {
+        const b = y.ag(bilye, 'celik', { kenar: false });
+        b.position.set(rc * Math.cos((i * Math.PI * 2) / n), rc * Math.sin((i * Math.PI * 2) / n), 0);
+        g.add(b);
+      }
+      return g;
     }
   };
 
@@ -251,9 +316,18 @@ function modelBaslat(T, o) {
 
   /* ---- kamera: başlangıç yönünden bakınca model (birleşik ve parçalı hâlde) çerçeveye sığar ---- */
   const yon = new T.Vector3(...(M.kamera && M.kamera.yon ? M.kamera.yon : [1, 0.7, 1.6])).normalize();
-  const bas = { teta: Math.atan2(yon.x, yon.z), fi: Math.acos(yon.y) };
+  /* kamera.patlak: parçalı görünümde kameranın döneceği yön (uzun modellerde yandan bakış). */
+  const yonPatlak = M.kamera && M.kamera.patlak ? new T.Vector3(...M.kamera.patlak).normalize() : yon;
+  const acilar = (v) => ({ teta: Math.atan2(v.x, v.z), fi: Math.acos(v.y) });
+  const bas = acilar(yon);
   const gor = { teta: bas.teta, fi: bas.fi, yakin: 1 };
-  function sigdir(pp) {
+  let kameraHedef = null;
+  function kameraYonel(v) {
+    const h = acilar(v);
+    h.teta += Math.round((gor.teta - h.teta) / (Math.PI * 2)) * Math.PI * 2;   // en kısa yoldan dön
+    kameraHedef = h;
+  }
+  function sigdir(pp, bakis) {
     parcalar.forEach((pr) => pr.nesne.position.copy(pr.taban).addScaledVector(pr.patlat, pp));
     m.kok.updateMatrixWorld(true);
     const koseler = [];   // her ağın kendi kutusunun köşeleri: tek büyük kutudan daha sıkı sığdırır
@@ -266,7 +340,7 @@ function modelBaslat(T, o) {
     const kutu = new T.Box3().setFromPoints(koseler), merkez = kutu.getCenter(new T.Vector3());
     let d = kutu.getBoundingSphere(new T.Sphere()).radius / Math.sin((kamera.fov * Math.PI) / 360);
     for (let i = 0; i < 4; i++) {
-      kamera.position.copy(yon).multiplyScalar(d).add(merkez);
+      kamera.position.copy(bakis).multiplyScalar(d).add(merkez);
       kamera.lookAt(merkez);
       kamera.updateMatrixWorld();
       kamera.updateProjectionMatrix();
@@ -276,7 +350,7 @@ function modelBaslat(T, o) {
     return { merkez, d };
   }
   let cerceve = null;
-  const cerceveHesapla = () => { cerceve = [sigdir(0), sigdir(1)]; patlatUygula(); };
+  const cerceveHesapla = () => { cerceve = [sigdir(0, yon), sigdir(1, yonPatlak)]; patlatUygula(); };
 
   const kesitPlanlari = modelKesitleri(o.tur).map((k) => k.planlar.map(([a, b, c, d]) => new T.Plane(new T.Vector3(a, b, c), d)));
   const planlar = () => kesitPlanlari[s.kesit - 1] || [];
@@ -366,6 +440,13 @@ function modelBaslat(T, o) {
       patlatUygula();
       devam = true;
     }
+    if (kameraHedef) {
+      const k = azHareket() ? 1 : 1 - Math.exp(-dt * 5);
+      gor.teta += (kameraHedef.teta - gor.teta) * k;
+      gor.fi += (kameraHedef.fi - gor.fi) * k;
+      if (Math.abs(kameraHedef.teta - gor.teta) + Math.abs(kameraHedef.fi - gor.fi) < 0.002) { gor.teta = kameraHedef.teta; gor.fi = kameraHedef.fi; kameraHedef = null; }
+      else devam = true;
+    }
     if (M.tik && gorunur && !document.hidden && M.tik(s, dt)) {
       m.uygula(s);
       kapaklariEsle();
@@ -403,6 +484,7 @@ function modelBaslat(T, o) {
     isaretci.set(e.pointerId, { x: e.clientX, y: e.clientY });
     try { tuval.setPointerCapture(e.pointerId); } catch (x) { /* yok say */ }
     dokunus = isaretci.size === 1 ? { x: e.clientX, y: e.clientY } : null;
+    kameraHedef = null;
     if (isaretci.size === 2) { const [a, b] = [...isaretci.values()]; ikiliBas = Math.hypot(a.x - b.x, a.y - b.y); }
     surukleniyor = true;
   });
@@ -458,7 +540,8 @@ function modelBaslat(T, o) {
 
   o.gorunum = {
     guncelle() { m.uygula(s); kapaklariEsle(); iste(); },
-    kameraSifirla() { gor.teta = bas.teta; gor.fi = bas.fi; gor.yakin = 1; }
+    kameraSifirla() { kameraHedef = null; gor.teta = bas.teta; gor.fi = bas.fi; gor.yakin = 1; },
+    patlatildi() { if (yonPatlak !== yon) kameraYonel(s.patlat ? yonPatlak : yon); }
   };
   o.temizle = () => {
     cancelAnimationFrame(istek);
