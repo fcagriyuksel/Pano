@@ -1,0 +1,1712 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Elektrik-elektronik konularında şemalı, hesaplı ve arıza odaklı bilgi notları.">
+<meta name="theme-color" content="#F3F1EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141619" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PANO">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="pano-surum" content="202609270854">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>PANO Bilgi Notları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F3F1EA; --card:#FFFDF8; --ink:#1B1E21; --ink-2:#3A3F44; --muted:#50565C;
+  --line:#DAD5C8; --line-soft:#E4E0D5; --chip:#E9E5DA;
+  --accent:#F2B01E; --on-accent:#1B1E21; --signal:#1D5FB8;
+  --panel:#1B1E21; --panel-ink:#F3F1EA; --panel-muted:#C9C5BA; --panel-track:#3A3F44;
+  --danger-bg:#F8E4DE; --danger-line:#E7B9AD; --danger-ink:#7F2414;
+  --mark:#FBE3A6; --focus:#1D5FB8;
+  --wire-l:#7A4A22; --wire-l2:#1B1E21; --wire-l3:#8A8F94; --wire-n:#1D5FB8; --wire-pe:#4E8A2A; --wire-pe2:#E0C21A; --dc-plus:#A8321F;
+  --rail:#D3CEC1; --svg-body:#FFFFFF; --hatch:#8A8F94;
+  --f-display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --nav-h:68px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#141619; --card:#1D2024; --ink:#ECE8DF; --ink-2:#C9C5BB; --muted:#A7A398;
+    --line:#343940; --line-soft:#2A2E34; --chip:#2A2E34;
+    --signal:#7AAAF2; --panel:#262A30; --panel-ink:#F3F1EA; --panel-muted:#C3BFB5; --panel-track:#454B52;
+    --danger-bg:#3A201B; --danger-line:#6B3328; --danger-ink:#F2A996;
+    --mark:#6B5410; --focus:#7AAAF2;
+    --wire-l:#C58B55; --wire-l2:#646B73; --wire-l3:#B3B7BC; --wire-n:#7AAAF2; --wire-pe:#6DB043; --dc-plus:#E07A64;
+    --rail:#3A3F45; --svg-body:#2A2E34; --hatch:#7D838A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#141619; --card:#1D2024; --ink:#ECE8DF; --ink-2:#C9C5BB; --muted:#A7A398;
+  --line:#343940; --line-soft:#2A2E34; --chip:#2A2E34;
+  --signal:#7AAAF2; --panel:#262A30; --panel-ink:#F3F1EA; --panel-muted:#C3BFB5; --panel-track:#454B52;
+  --danger-bg:#3A201B; --danger-line:#6B3328; --danger-ink:#F2A996;
+  --mark:#6B5410; --focus:#7AAAF2;
+  --wire-l:#C58B55; --wire-l2:#646B73; --wire-l3:#B3B7BC; --wire-n:#7AAAF2; --wire-pe:#6DB043; --dc-plus:#E07A64;
+  --rail:#3A3F45; --svg-body:#2A2E34; --hatch:#7D838A;
+}
+
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+a{color:var(--signal)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:8px}
+h1,h2,h3{text-wrap:balance}
+.mono{font-family:var(--f-mono)}
+.ust{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.app{max-width:480px;margin:0 auto;padding-inline:20px;padding-block:16px calc(var(--nav-h) + 32px);display:flex;flex-direction:column;gap:20px;min-height:100%}
+
+/* Marka */
+.marka{display:flex;align-items:center;gap:12px;padding-top:8px}
+.marka-plaka{width:12px;height:40px;border-radius:3px;background:var(--accent);flex-shrink:0}
+.marka-ad{margin:0;font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1;letter-spacing:.09em}
+.marka-alt{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+/* Arama kutusu (ana sayfa) */
+.arama-dugme{display:flex;align-items:center;gap:10px;height:50px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--muted);font-size:15px;text-align:left;cursor:pointer;width:100%}
+.arama-dugme svg{color:var(--ink);flex-shrink:0}
+
+/* Koyu panel (kaldığın yer) */
+.panel{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:16px;background:var(--panel);color:var(--panel-ink);border:0;text-align:left;cursor:pointer;width:100%}
+.panel-ust{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.panel-etiket{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.panel-sayac{font-family:var(--f-mono);font-size:12px;color:var(--panel-muted);font-variant-numeric:tabular-nums}
+.panel-baslik{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.05}
+.panel-alt{font-size:13px;color:var(--panel-muted);margin-top:6px}
+.ilerleme{display:grid;gap:4px}
+.ilerleme span{height:4px;border-radius:2px;background:var(--panel-track)}
+.ilerleme span.dolu{background:var(--accent)}
+
+/* Bölüm başlıkları */
+.satir-baslik{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.h2{margin:0;font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.1}
+
+/* Konu kartları */
+.konu-izgara{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.konu-kart{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;cursor:pointer;min-height:168px}
+.konu-kart:hover{border-color:var(--ink)}
+.konu-kart-ust{display:flex;justify-content:space-between;align-items:flex-start;color:var(--ink)}
+.konu-kart-ad{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.1}
+.konu-kart-ozet{font-size:13px;line-height:1.35;color:var(--muted)}
+.konu-kart-durum{margin-top:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Üst çubuk (alt ekranlar) */
+.ust-cubuk{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin-inline:-20px;padding:8px 20px 10px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid transparent}
+.ust-cubuk.golgeli{border-bottom-color:var(--line)}
+.ust-satir{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.geri{display:flex;align-items:center;gap:4px;height:44px;padding:0 12px 0 4px;margin-left:-4px;border:0;background:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink)}
+.ikon-dugme{width:44px;height:44px;flex-shrink:0;border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.ikon-dugme[aria-pressed="true"] .yerimi{fill:var(--accent)}
+
+/* Çipler */
+.cipler{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-20px;padding-inline:20px;padding-bottom:2px}
+.cipler::-webkit-scrollbar{display:none}
+.cip{flex-shrink:0;height:36px;padding:0 13px;display:flex;align-items:center;border-radius:18px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.cip[aria-pressed="true"],.cip.etkin{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.cip-kutu{display:flex;flex-wrap:wrap;gap:8px}
+.parca{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:13px;cursor:pointer;color:var(--ink);text-align:left}
+.parca:hover{border-color:var(--ink)}
+
+/* Başlık bloğu */
+.baslik-blok{display:flex;flex-direction:column;gap:10px}
+.h1{margin:0;font-family:var(--f-display);font-size:38px;font-weight:700;line-height:1.02}
+.giris{margin:0;font-size:15px;line-height:1.55;color:var(--ink-2)}
+.etiketler{display:flex;flex-wrap:wrap;gap:6px}
+.etiket{padding:4px 10px;border-radius:6px;background:var(--chip);font-family:var(--f-mono);font-size:12px;color:var(--ink)}
+
+/* Liste satırları */
+.liste{display:flex;flex-direction:column;gap:8px}
+.satir{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;width:100%;color:var(--ink)}
+button.satir{cursor:pointer}
+button.satir:hover{border-color:var(--ink)}
+.kod{width:52px;height:52px;flex-shrink:0;border-radius:10px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12.5px;font-weight:600;color:var(--ink);text-align:center;line-height:1.1;padding:2px}
+.kod.hazir{background:var(--accent);color:var(--on-accent)}
+.satir-metin{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.satir-ad{font-size:16px;font-weight:600;line-height:1.3}
+.satir-alt{font-size:13px;line-height:1.4;color:var(--muted)}
+.rozet{flex-shrink:0;padding:3px 8px;border-radius:6px;border:1px dashed var(--line);font-family:var(--f-mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+.satir .ok{flex-shrink:0;color:var(--ink)}
+
+/* Bilgi sayfası bölümleri */
+.bolumler{display:flex;flex-direction:column;gap:40px;padding-top:8px}
+.konu-no{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.gizli{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.blok-grup{display:flex;flex-direction:column;gap:12px}
+.bolum{display:flex;flex-direction:column;gap:14px;scroll-margin-top:120px}
+.bolum-baslik{display:flex;align-items:baseline;gap:10px}
+.bolum-no{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.bolum-ad{margin:0;font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.1}
+.kart{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card);display:flex;flex-direction:column;gap:12px}
+.sema{display:block;width:100%;height:auto}
+.sema text{font-family:var(--f-mono)}
+.lejant{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2)}
+.lejant span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:3px;border-radius:2px}
+.sw-l{background:var(--wire-l)} .sw-l2{background:var(--wire-l2)} .sw-l3{background:var(--wire-l3)} .sw-kacak{background:repeating-linear-gradient(90deg,var(--dc-plus) 0 4px,transparent 4px 7px)} .sw-n{background:var(--wire-n)} .sw-sig{background:var(--signal)} .sw-dc{background:var(--dc-plus)} .sw-ink{background:var(--ink)}
+.sw-pe{background:repeating-linear-gradient(90deg,var(--wire-pe) 0 6px,var(--wire-pe2) 6px 12px)}
+.sw-opt{background:repeating-linear-gradient(90deg,var(--signal) 0 5px,transparent 5px 9px)}
+
+.isaretler{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.isaretler li{display:flex;gap:12px}
+.isaret-no{width:24px;height:24px;flex-shrink:0;border-radius:12px;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12px;font-weight:600}
+.isaret-ad{font-size:15px;font-weight:600;display:block}
+.isaret-metin{display:block;font-size:14px;line-height:1.5;color:var(--ink-2)}
+.not{margin:0;padding:12px 14px;border-radius:12px;background:var(--chip);font-size:13px;line-height:1.5;color:var(--ink)}
+
+.ikili{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mini-kart{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+.mini-kart svg{color:var(--ink)}
+.mini-ad{font-size:15px;font-weight:600;line-height:1.3}
+.mini-etiket{align-self:flex-start;padding:2px 8px;border-radius:6px;background:var(--chip);font-family:var(--f-mono);font-size:11px}
+.mini-metin{font-size:13px;line-height:1.5;color:var(--ink-2)}
+
+.aralik-alt{font-family:var(--f-mono);font-size:11px;color:var(--muted);align-self:flex-end}
+.aralik-liste{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.aralik-liste div{display:flex;gap:10px}
+.aralik-kod{width:70px;flex-shrink:0;font-family:var(--f-mono);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.kucuk{margin:0;font-size:12px;line-height:1.5;color:var(--muted)}
+
+.formul{padding:14px;border-radius:12px;background:var(--panel);color:var(--panel-ink);text-align:center;font-family:var(--f-mono);font-size:24px;font-weight:600;letter-spacing:.04em}
+.tanimlar{display:flex;flex-direction:column;gap:8px}
+.tanim{display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--ink-2)}
+.tanim b{width:30px;flex-shrink:0;font-family:var(--f-mono);font-weight:600;color:var(--ink)}
+.ornek{padding:14px;border-radius:12px;background:var(--paper);display:flex;flex-direction:column;gap:10px}
+.ornek-satir{font-size:14px;line-height:1.5}
+.ornek-satir b{font-family:var(--f-mono);font-weight:600}
+.kural{margin:0;font-size:14px;font-weight:600;line-height:1.5}
+
+.tablo{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.tablo-satir{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line-soft)}
+.tablo-satir:last-child{border-bottom:0}
+.tablo-etiket{width:92px;flex-shrink:0;font-family:var(--f-mono);font-size:13px;font-weight:600}
+.tablo-etiket.sig{color:var(--signal)} .tablo-etiket.dc{color:var(--dc-plus)}
+.tablo-metin{font-size:13px;line-height:1.5}
+
+.ariza{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.ariza-ust{padding:14px 16px;background:var(--panel);color:var(--panel-ink);display:flex;flex-direction:column;gap:4px}
+.ariza-ust .panel-etiket{font-size:11px}
+.ariza-belirti{font-size:17px;font-weight:600}
+.ariza-satir{padding:12px 16px;border-bottom:1px solid var(--line-soft);display:flex;flex-direction:column;gap:4px}
+.ariza-satir:last-child{border-bottom:0}
+.ariza-ad{font-size:14px;font-weight:600}
+.ariza-metin{font-size:13px;line-height:1.5;color:var(--ink-2)}
+
+.hata{padding:14px 16px;border:1px solid var(--danger-line);border-radius:14px;background:var(--danger-bg);display:flex;gap:12px}
+.hata svg{flex-shrink:0;margin-top:1px;color:var(--danger-ink)}
+.hata-ad{font-size:15px;font-weight:600;color:var(--danger-ink);display:block;margin-bottom:4px}
+.hata-metin{font-size:13px;line-height:1.5;color:var(--ink)}
+
+/* Renk kodu ve adımlar */
+.renk-izgara{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.renk{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid var(--line);border-radius:12px;background:var(--card);text-align:center}
+.renk-nokta{width:24px;height:24px;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28),0 0 0 1px var(--line)}
+.renk-akim{font-family:var(--f-mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.renk-ad{font-size:12px;color:var(--muted);line-height:1.2}
+.sira-liste{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.sira-liste li{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line-soft);font-size:14px;line-height:1.5}
+.sira-liste li:last-child{border-bottom:0}
+.sira-no{width:22px;flex-shrink:0;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Hesaplayıcı */
+.hesap-grup{border:0;margin:0;padding:0;min-width:0}
+.hesap-grup legend{font-size:13px;font-weight:600;padding:0;margin-bottom:8px}
+.secenekler{display:flex;gap:6px}
+.secenek{flex:1 1 0;min-width:0;height:44px;padding:0 4px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-family:var(--f-mono);font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+.secenek[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.sonuc{padding:14px;border-radius:14px;background:var(--panel);color:var(--panel-ink);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
+.sonuc div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sonuc-ad{font-size:12px;color:var(--panel-muted)}
+.sonuc-deger{font-family:var(--f-mono);font-size:21px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.adimlar{display:flex;flex-direction:column;gap:6px;font-family:var(--f-mono);font-size:13px;line-height:1.4;font-variant-numeric:tabular-nums}
+
+/* Sonraki */
+.sonraki{padding:16px;border-radius:14px;background:var(--panel);color:var(--panel-ink);display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;width:100%;text-align:left}
+button.sonraki{cursor:pointer}
+.sonraki-ad{font-size:16px;font-weight:600}
+.sonraki .rozet{border-color:var(--panel-track);color:var(--panel-muted)}
+
+/* Arama ekranı */
+.arama-satir{display:flex;align-items:center;gap:10px}
+.arama-alan{flex-grow:1;display:flex;align-items:center;gap:10px;height:50px;padding:0 14px;border:2px solid var(--ink);border-radius:12px;background:var(--card)}
+.arama-alan input{flex-grow:1;min-width:0;height:100%;border:0;outline:none;background:transparent;font:inherit;font-size:16px;color:var(--ink)}
+.arama-alan input::placeholder{color:var(--muted)}
+.metin-dugme{height:44px;padding:0 4px;border:0;background:none;color:var(--signal);font-size:15px;font-weight:500;cursor:pointer}
+.sonuc-kart{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;width:100%;color:var(--ink)}
+button.sonuc-kart{cursor:pointer}
+button.sonuc-kart:hover{border-color:var(--ink)}
+.sonuc-yol{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.bulgu-ad{font-size:16px;font-weight:600}
+.sonuc-parca{font-size:13px;line-height:1.5;color:var(--ink-2)}
+mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
+.bos{padding:28px 20px;border:1px dashed var(--line);border-radius:16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5;display:flex;flex-direction:column;align-items:center;gap:10px}
+.bos svg{color:var(--muted)}
+
+/* Alt menü */
+.alt-menu{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(10px + env(safe-area-inset-bottom,0px))}
+.alt-menu-ic{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.menu-oge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;border:0;background:none;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer}
+.menu-ikon{width:60px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center}
+.menu-oge[aria-current="page"]{color:var(--ink);font-weight:600}
+.menu-oge[aria-current="page"] .menu-ikon{background:var(--accent);color:var(--on-accent)}
+.sayi{font-family:var(--f-mono);font-size:10px;margin-left:2px}
+
+.bildirim{position:fixed;left:50%;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;padding:10px 16px;border-radius:12px;background:var(--panel);color:var(--panel-ink);font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s}
+.bildirim.acik{opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app" id="uygulama" lang="tr"></div>
+
+<nav class="alt-menu" aria-label="Ana menü" lang="tr">
+  <div class="alt-menu-ic">
+    <button type="button" class="menu-oge" data-git="ana" data-menu="konular">
+      <span class="menu-ikon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></span>
+      <span>Konular</span>
+    </button>
+    <button type="button" class="menu-oge" data-git="ara" data-menu="ara">
+      <span class="menu-ikon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg></span>
+      <span>Ara</span>
+    </button>
+    <button type="button" class="menu-oge" data-git="kaydedilenler" data-menu="kaydedilenler">
+      <span class="menu-ikon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"></path></svg></span>
+      <span>Kaydedilenler</span>
+    </button>
+  </div>
+</nav>
+
+<div class="bildirim" id="bildirim" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   PANO — İÇERİK
+   Yeni konu, alt başlık veya bilgi sayfası eklemek için yalnızca bu
+   bölümü düzenle. Bir alt başlığa "sayfa" eklenince uygulamada açılır;
+   "sayfa" yoksa listede "Hazırlanıyor" olarak görünür.
+   ===================================================================== */
+const VERI = {
+  konular: [
+    {
+      id: 'sigortalar', ad: 'Sigortalar', ikon: 'sigorta',
+      ozet: 'MCB, buşon, NH, kaçak akım',
+      giris: 'Sigorta cihazı değil, kabloyu korur. Doğru seçim kablo kesitine ve yükün kalkış akımına bağlıdır.',
+      filtreler: [ { id: 'asiri', ad: 'Aşırı akım' }, { id: 'kacak', ad: 'Kaçak akım' }, { id: 'elektronik', ad: 'Elektronik' } ],
+      altlar: [
+        { id: 'otomatik-sigorta', kod: 'MCB', ad: 'Otomatik sigorta', alt: 'B, C, D eğrileri · termik ve manyetik açma', filtre: 'asiri', sayfa: 'otomatik-sigorta' },
+        { id: 'busonlu-sigorta', kod: 'D', ad: 'Buşonlu sigorta', alt: 'Erimeli telli, vidalı gövde · eski tesisatlar', filtre: 'asiri', sayfa: 'busonlu-sigorta' },
+        { id: 'nh-sigorta', kod: 'NH', ad: 'NH bıçaklı sigorta', alt: 'Yüksek akımlı ana dağıtım · gG ve aM', filtre: 'asiri', sayfa: 'nh-sigorta' },
+        { id: 'motor-koruma-salteri', kod: 'MPCB', ad: 'Motor koruma şalteri', alt: 'Ayarlı termik ve manyetik koruma · motor devreleri', filtre: 'asiri', sayfa: 'motor-koruma-salteri' },
+        { id: 'kacak-akim-rolesi', kod: 'RCD', ad: 'Kaçak akım rölesi', alt: '30 mA hayat koruması · 300 mA yangın koruması', filtre: 'kacak', sayfa: 'kacak-akim-rolesi' },
+        { id: 'cam-sigorta', kod: '5×20', ad: 'Cam sigorta', alt: 'Elektronik kartlar · hızlı (F) ve gecikmeli (T)', filtre: 'elektronik', sayfa: 'cam-sigorta' },
+        { id: 'yari-iletken-sigorta', kod: 'aR', ad: 'Yarı iletken sigorta', alt: 'Sürücü ve doğrultucu koruması · çok hızlı', filtre: 'elektronik', sayfa: 'yari-iletken-sigorta' }
+      ]
+    },
+    {
+      id: 'step-motorlar', ad: 'Step motorlar', ikon: 'step',
+      ozet: 'Adım açısı, mikroadım, bağlantı',
+      giris: 'Step motor her darbede sabit bir açı döner. Geri besleme yoktur; konumu, gönderilen darbe sayısından bilinir.',
+      altlar: [
+        { id: 'step-calisma-prensibi', kod: '1,8°', ad: 'Çalışma prensibi', alt: 'Adım açısı, tam ve yarım adım, tutma torku' },
+        { id: 'step-nema', kod: 'NEMA', ad: 'Gövde boyutları (NEMA)', alt: 'NEMA 17, 23, 34 · flanş ve mil ölçüleri' },
+        { id: 'step-surucu-baglantisi', kod: 'PUL', ad: 'Step motor ve sürücü bağlantısı', alt: 'PLC → sürücü → motor · darbe hesabı', sayfa: 'step-surucu-baglantisi' },
+        { id: 'step-mikroadim', kod: '1/16', ad: 'Mikroadım ve rezonans', alt: 'Daha düzgün hareket, titreşimden kaçınma' },
+        { id: 'step-tork-hiz', kod: 'N·m', ad: 'Tork–hız eğrisi', alt: 'Hız arttıkça tork neden düşer' }
+      ]
+    },
+    {
+      id: 'servo-motorlar', ad: 'Servo motorlar', ikon: 'servo',
+      ozet: 'Enkoder, geri besleme, ayar',
+      giris: 'Servo motor, enkoderden gelen geri beslemeyle konumunu sürekli ölçer ve hatayı sürücü düzeltir.',
+      altlar: [
+        { id: 'servo-enkoder', kod: 'ENC', ad: 'Enkoder türleri', alt: 'Artımsal ve mutlak enkoder, çözünürlük' },
+        { id: 'servo-baglanti', kod: 'AC', ad: 'Servo motor ve sürücü bağlantısı', alt: 'Güç, enkoder ve fren kabloları' },
+        { id: 'servo-ayar', kod: 'PID', ad: 'Kazanç ayarı (tuning)', alt: 'Konum, hız ve akım döngüleri' },
+        { id: 'servo-fren', kod: 'BRK', ad: 'Frenli servo', alt: 'Düşey eksende fren kontrolü' },
+        { id: 'servo-reduktor', kod: 'RED', ad: 'Servo ve redüktör montajı', alt: 'Servo ile yük arasında kaplin veya flanş' }
+      ]
+    },
+    {
+      id: 'suruculer', ad: 'Sürücüler', ikon: 'surucu',
+      ozet: 'Step, servo ve hız sürücüleri',
+      giris: 'Sürücü, kontrol sinyalini motorun ihtiyaç duyduğu akım ve gerilime çeviren güç katıdır.',
+      altlar: [
+        { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP switch' },
+        { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork' },
+        { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler' },
+        { id: 'surucu-io', kod: 'I/O', ad: 'Sürücü giriş–çıkışları', alt: 'Dijital girişler, alarm ve hazır çıkışları' }
+      ]
+    }
+  ],
+
+  /* Bilgi sayfaları. Blok tipleri: sema, kartlar, aralik, formul, tablo, hesap, ariza, hatalar, parcalar, not */
+  sayfalar: {
+    'otomatik-sigorta': {
+      baslik: 'Otomatik sigorta (MCB)',
+      giris: 'Hattı aşırı yüke ve kısa devreye karşı korur. Attığında değiştirilmez; nedeni giderilip kolu kaldırılarak yeniden kurulur.',
+      etiketler: ['TS EN 60898-1', 'Alçak gerilim', 'DIN ray'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Bağlantı şeması', bloklar: [
+          { tip: 'sema', svg: 'mcb',
+            lejant: [['l', 'L · kahverengi (faz)'], ['n', 'N · mavi (nötr)'], ['pe', 'PE · sarı-yeşil (toprak)']],
+            isaretler: [
+              ['Giriş klemensi (1)', 'Faz buraya gelir. Genel uygulama: besleme üstten, yük alttan.'],
+              ['Çıkış klemensi (2)', 'Korunan hat buradan yüke gider.'],
+              ['Kol', 'Sigorta atınca aşağı düşer. Nedeni bulmadan tekrar kaldırma.'],
+              ['DIN ray', '35 mm ray (TS35). Sigorta arkasındaki klipsle raya takılır.']
+            ],
+            not: 'Şema 1 kutuplu (1P) sigorta içindir; nötr kesilmez. 1P+N ve 2P modellerde faz ve nötr birlikte kesilir.' }
+        ]},
+        { id: 'mekanizma', kisa: 'Mekanizma', baslik: 'İçerideki iki mekanizma', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'termik', baslik: 'Termik (bimetal)', etiket: 'Aşırı yük', metin: 'Bimetal ısınıp eğilir ve mandalı açar. Yavaştır; akım büyüdükçe daha çabuk açar.' },
+            { ikon: 'manyetik', baslik: 'Manyetik (bobin)', etiket: 'Kısa devre', metin: 'Büyük akım bobinde güçlü alan oluşturur, pim mandalı anında açar. Milisaniyeler içinde keser.' }
+          ]}
+        ]},
+        { id: 'egriler', kisa: 'Eğriler', baslik: 'Açma eğrileri: B, C, D', bloklar: [
+          { tip: 'aralik', baslik: 'Anlık (manyetik) açma aralığı', eksen: 'Anma akımının katı (× In)', max: 20, adim: 5,
+            satirlar: [
+              { ad: 'B', bas: 3, son: 5, metin: 'Uzun kablolu hatlar, rezistif yükler (ısıtıcı, akkor aydınlatma)' },
+              { ad: 'C', bas: 5, son: 10, metin: 'Genel kullanım: priz, aydınlatma, küçük motorlar' },
+              { ad: 'D', bas: 10, son: 20, metin: 'Kalkış akımı yüksek yükler: trafo, büyük motor, kompresör' }
+            ],
+            not: 'Alt sınırın altında anlık açmaz, üst sınırın üstünde mutlaka anlık açar. Aradaki bölgede açabilir.' }
+        ]},
+        { id: 'secim', kisa: 'Seçim', baslik: 'Seçim', bloklar: [
+          { tip: 'formul', formul: 'Ib ≤ In ≤ Iz',
+            tanimlar: [['Ib', 'Hattın çektiği akım (hesap değeri)'], ['In', 'Sigortanın anma akımı'], ['Iz', 'Kablonun akım taşıma kapasitesi (döşeme şekline göre tablodan)']],
+            ornek: { baslik: 'Örnek · 2.500 W ısıtıcı, 230 V', satirlar: [
+              ['Ib', '= 2.500 ÷ 230 ≈ 10,9 A'],
+              ['In', '= 16 A (B16 veya C16). 10 A yetmez, çünkü 10,9 A > 10 A.'],
+              ['Iz', '≥ 16 A olmalı → tipik olarak 2,5 mm² bakır. Döşeme şeklini tablodan doğrula.']
+            ]},
+            kural: 'Kural: sigorta, kablonun taşıyabileceğinden büyük olamaz.' }
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sigorta sık sık atıyor', satirlar: [
+            ['Kurar kurmaz atıyor', 'Olası neden: kısa devre veya toprak teması. Kontrol: yükleri ayır, yalıtım direncini ölç.'],
+            ['Belli bir cihaz çalışınca atıyor', 'Olası neden: kalkış akımı eğriyi aşıyor. Kontrol: eğri tipi (B → C) ve cihazın kendisi.'],
+            ['Bir süre çalışıp atıyor', 'Olası neden: aşırı yük, termik açma. Kontrol: hattaki toplam gücü hesapla.'],
+            ['Klemens çevresi ısınmış', 'Olası neden: gevşek bağlantı; ısı termik mekanizmayı erken açtırır. Kontrol: enerjiyi kes, klemensi sık, hasarlıysa değiştir.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Kompresör hattına B tipi takmak', 'Motor kalkışta anma akımının 5–8 katını çeker; bu B eğrisinin anlık açma bölgesine girebilir. Doğrusu: C veya D tipi; motor devresinde motor koruma şalteri.'],
+            ['Atan sigortayı büyütmek', 'In ≤ Iz kuralı bozulabilir; kablo aşırı yükte ısınır, yalıtımı yaşlanır. Doğrusu: önce atma nedenini bul.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['DIN ray (TS35)', 'Tarak bara', 'Kaçak akım rölesi', 'Yardımcı kontak', 'Kablo yüksüğü', 'Ray klemensi'] }
+        ]}
+      ]
+    },
+
+    'step-surucu-baglantisi': {
+      baslik: 'Step motor ve sürücü bağlantısı',
+      giris: 'PLC darbe gönderir, sürücü her darbeyi sargı akımına çevirir, motor her darbede bir adım döner. Hızı darbe frekansı, gidilen yolu darbe sayısı belirler.',
+      etiketler: ['Hibrit, 2 fazlı', '1,8° / adım', 'Açık çevrim'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Bağlantı şeması', bloklar: [
+          { tip: 'sema', svg: 'step',
+            lejant: [['sig', 'Sinyal'], ['dc', 'DC +'], ['ink', 'DC − / sargı'], ['opt', 'İsteğe bağlı']],
+            isaretler: [
+              ['Sinyal hattı', "PLC'nin transistör çıkışlarından darbe (Y0), yön (Y1) ve isteğe bağlı enable (Y2)."],
+              ['Besleme', 'Sürücünün DC girişi. Gerilim aralığı sürücü etiketinde yazar; + ve − ters bağlanmaz.'],
+              ['Motor sargıları', 'Bir sargının iki ucu aynı çifte gider: A+ / A− ya da B+ / B−.']
+            ],
+            not: 'Sinyal bağlantısı (NPN/PNP, ortak anot/katot) PLC çıkış tipine göre değişir. Sürücü kataloğundaki örnek şemayı esas al.' }
+        ]},
+        { id: 'klemensler', kisa: 'Klemensler', baslik: 'Klemensler', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['PUL+ / PUL−', 'sig', 'Darbe girişi. Her darbe bir adım ya da mikroadım.'],
+            ['DIR+ / DIR−', 'sig', 'Yön girişi. Seviye değişince dönüş yönü değişir.'],
+            ['ENA+ / ENA−', 'sig', 'Etkinleştirme. Çoğu sürücüde aktifken motor serbest kalır; kataloğa bak.'],
+            ['A+ / A−', '', '1. sargı (A fazı).'],
+            ['B+ / B−', '', '2. sargı (B fazı).'],
+            ['V+ / GND', 'dc', 'DC besleme. Sürücü etiketindeki aralıkta olmalı.']
+          ]}
+        ]},
+        { id: 'hesap', kisa: 'Hesap', baslik: 'Hesap: darbe, yol, hız', bloklar: [
+          { tip: 'hesap', tur: 'step' }
+        ]},
+        { id: 'mekanik', kisa: 'Mekanik', baslik: 'Mekanik parçalar', bloklar: [
+          { tip: 'sema', svg: 'mekanik',
+            isaretler: [
+              ['Kaplin', 'Motor milini vidaya bağlar, küçük eksen kaçıklığını tolere eder. Çeneli ve körüklü tipleri yaygın.'],
+              ['Sabit uç yatağı (BK)', 'Açısal temaslı rulmanlarla eksenel yükü taşır.'],
+              ['Bilyalı vida', 'Dönmeyi doğrusal harekete çevirir. Hatve: bir turda alınan yol.'],
+              ['Somun ve tabla', 'Yükü taşır; tabla lineer ray üzerinde kayar.'],
+              ['Serbest uç yatağı (BF)', 'Vidayı yalnızca radyal destekler, ısıl uzamaya izin verir.']
+            ],
+            not: 'Alternatifler: trapez mil daha ucuzdur ama sürtünmesi yüksektir. Sonsuz vida redüktörü yüksek tork ve düşük hız verir.' }
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Motor titriyor ama dönmüyor', satirlar: [
+            ['Sargı çifti yanlış eşleşmiş', 'Kontrol: ölçü aletiyle direnç ölç. Aynı sargının iki ucu birkaç ohm gösterir, farklı sargılar açık devre.'],
+            ['Darbe frekansı yüksek başlıyor', 'Kontrol: hızlanma rampası ekle, düşük hızda başlat.'],
+            ['Sürücü akımı düşük ayarlı', "Kontrol: DIP switch'i motorun anma akımına göre ayarla."],
+            ['Mekanik sıkışma', 'Kontrol: kaplini ayır, motoru boşta dene.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Röle çıkışlı PLC ile darbe vermek', 'Röle bu hızda anahtarlanamaz. Doğrusu: transistör çıkışlı (darbe çıkışı olan) PLC.'],
+            ['5 V girişe doğrudan 24 V vermek', 'Optokuplör girişi zarar görebilir. Doğrusu: seri direnç ya da 24 V uyumlu giriş; değer kataloğda yazar.'],
+            ['Enerji varken motor soketini sökmek', 'Sargıda biriken enerji sürücüye zarar verebilir. Doğrusu: önce beslemeyi kes.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Kaplin', 'Bilyalı vida', 'BK / BF yatak', 'Lineer ray', 'Trapez mil', 'Sonsuz vida redüktörü', 'Endüktif sensör'] }
+        ]}
+      ]
+    },
+
+    'busonlu-sigorta': {
+      baslik: 'Buşonlu sigorta (D tipi)',
+      giris: 'Vidalı kapak içine takılan, erime telli sigorta. Attığında buşon değiştirilir. Eski konut ve atölye panolarında hâlâ yaygındır.',
+      etiketler: ['DIAZED', 'gG', '500 V AC'],
+      bolumler: [
+        { id: 'yapi', kisa: 'Yapı', baslik: 'Yapısı ve bağlantısı', bloklar: [
+          { tip: 'sema', svg: 'buson',
+            lejant: [['l', 'Faz (L)']],
+            isaretler: [
+              ['Kapak (başlık)', 'Buşonu tabana bastırır. Camından buşonun göstergesi görünür.'],
+              ['Buşon', 'Kum dolu seramik gövde ve erime teli. Tel eriyince üstteki renkli gösterge düşer.'],
+              ['Ayar vidası', 'Çapı anma akımına göre değişir; daha büyük buşonun takılmasını engeller. Rengi buşonun göstergesiyle aynıdır.'],
+              ['Taban (gövde)', 'Besleme orta kontağa, yük dişli kısma bağlanır. Böylece buşon çıkınca dişli kısım gerilimsiz kalır.']
+            ],
+            not: 'Daha küçük ve yeni nesli D0 (NEOZED) olarak bilinir; çalışma mantığı aynıdır.' }
+        ]},
+        { id: 'akim', kisa: 'Renk kodu', baslik: 'Anma akımı ve renk kodu', bloklar: [
+          { tip: 'renkler', satirlar: [
+            ['2 A', '#E89AB0', 'Pembe'], ['4 A', '#7A4A22', 'Kahverengi'], ['6 A', '#3E8E3A', 'Yeşil'],
+            ['10 A', '#C0392B', 'Kırmızı'], ['16 A', '#9AA0A6', 'Gri'], ['20 A', '#2E6FD1', 'Mavi'],
+            ['25 A', '#E8C21A', 'Sarı'], ['35 A', '#16181B', 'Siyah'], ['50 A', '#FFFFFF', 'Beyaz'],
+            ['63 A', '#B87333', 'Bakır'], ['80 A', '#C7CCD1', 'Gümüş'], ['100 A', '#C0392B', 'Kırmızı']
+          ]},
+          { tip: 'tablo', satirlar: [
+            ['DII · E27', '', '2–25 A. En yaygın boyut; konut ve priz hatları.'],
+            ['DIII · E33', '', '32–63 A. Ana girişler, büyük hatlar.'],
+            ['DIV · R1¼"', '', '80–100 A. Daha seyrek kullanılır.']
+          ]},
+          { tip: 'not', metin: 'Renk, buşonun göstergesinde ve ayar vidasında aynıdır. Göstergeye bakarak takılı buşonun değerini sökmeden okursun.' }
+        ]},
+        { id: 'degistirme', kisa: 'Değiştirme', baslik: 'Buşon değiştirme', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Mümkünse hattı üstteki şalterden ayır, yükleri kapat.',
+            'Kapağı saat yönünün tersine çevirerek çıkar, buşonu kapaktan al.',
+            'Göstergesi düşmüşse buşon atmıştır. Yenisi aynı akımda (aynı renk) olmalı.',
+            'Buşonu kapağa yerleştir, kapağı sonuna kadar sık.',
+            'Buşon tekrar atarsa değiştirmeye devam etme; önce nedeni bul.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Yeni buşon taktım ama hat enerjisiz', satirlar: [
+            ['Kapak tam sıkılmamış', 'Kontrol: kapağı sonuna kadar çevir.'],
+            ['Ayar vidası gevşek ya da oksitli', 'Kontrol: enerjiyi kes, ayar vidasını sık, oksidi temizle.'],
+            ['Buşon arızalı ya da yanlış boyut', 'Kontrol: göstergeye bak, ölçü aletiyle buşonun sürekliliğini ölç.'],
+            ['Hat başka bir yerden kesik', 'Kontrol: buşon çıkışında gerilimi ölç; varsa arıza hattın devamındadır.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Buşonu tel sararak yamamak', 'Koruma tamamen kalkar; kısa devrede kablo yanar, yangın çıkabilir. Doğrusu: aynı değerde yeni buşon.'],
+            ['Ayar vidasını söküp büyük buşon takmak', 'Kablo, taşıyabileceğinden büyük akımda korunmaz. Doğrusu: ayar vidası hattın kesitine göre kalır.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Buşon kapağı', 'Ayar vidası', 'Buşon tabanı', 'D0 (NEOZED)', 'Kaçak akım rölesi'] }
+        ]}
+      ]
+    },
+
+    'nh-sigorta': {
+      baslik: 'NH bıçaklı sigorta',
+      giris: 'Yüksek akımlı ana dağıtımda ve motor çıkışlarında kullanılan, bıçak kontaklı sigorta. Kesme kapasitesi yüksektir; takıp çıkarmak için NH pensesi gerekir.',
+      etiketler: ['IEC 60269-2', 'gG / aM', '400–690 V AC'],
+      bolumler: [
+        { id: 'yapi', kisa: 'Yapı', baslik: 'Yapısı', bloklar: [
+          { tip: 'sema', svg: 'nh',
+            isaretler: [
+              ['Bıçak kontak', 'Tabandaki yaylı klipslere oturur. Temas yüzeyi temiz ve sıkı olmalı.'],
+              ['Tutma kulakları', 'NH pensesi buradan kavrar. Sigorta elle tutulmaz.'],
+              ['Gösterge', 'Sigorta atınca dışarı çıkar ya da renk değiştirir.'],
+              ['Taban klipsi', 'Bıçağı sıkar. Gevşek klips ısınır ve bıçağı karartır.']
+            ],
+            not: 'Gövdedeki yazı: boyut (ör. NH00), karakteristik (gG ya da aM), anma akımı ve gerilim.' }
+        ]},
+        { id: 'boyutlar', kisa: 'Boyutlar', baslik: 'Boyutlar', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['NH000', '', 'gG en fazla 100 A. Küçük dağıtım ve motor çıkışları.'],
+            ['NH00', '', 'gG en fazla 160 A.'],
+            ['NH1', '', 'gG en fazla 250 A; bazı üreticilerde daha yüksek.'],
+            ['NH2', '', 'gG en fazla 400 A; bazı üreticilerde daha yüksek.'],
+            ['NH3', '', 'gG en fazla 630 A.'],
+            ['NH4a', '', 'gG en fazla 1250 A. Trafo çıkışları.']
+          ]},
+          { tip: 'not', metin: 'Üst sınırlar üreticiye göre değişir; taban ve sigorta aynı boyutta olmalı.' }
+        ]},
+        { id: 'karakteristik', kisa: 'gG / aM', baslik: 'gG ve aM farkı', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'kablo', baslik: 'gG', etiket: 'Tam aralık', metin: 'Aşırı yükte de kısa devrede de açar. Kablo ve genel dağıtım koruması.' },
+            { ikon: 'motor', baslik: 'aM', etiket: 'Kısmi aralık', metin: 'Yalnızca kısa devrede açar, motor kalkışına dayanır. Aşırı yük için termik röle gerekir.' }
+          ]}
+        ]},
+        { id: 'degistirme', kisa: 'Değiştirme', baslik: 'Güvenli değiştirme', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Yükü kaldır: çıkıştaki şalteri ya da motoru kapat. NH sigorta yük altında çekilmez; ark oluşur.',
+            'Mümkünse üst taraftan enerjiyi kes. Kesilemiyorsa klipslerin gerilim altında olduğunu unutma.',
+            'Yüz siperliği ve yalıtkan eldiven kullan.',
+            'NH pensesini tutma kulaklarına tam oturt, sigortayı düz çek.',
+            'Aynı boyut, karakteristik ve akımda sigorta tak. Klipslerin sıkı oturduğunu kontrol et.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Motor uğultulu dönüyor, zorlanıyor (bir faz yok)', satirlar: [
+            ['Bir NH sigorta atmış', 'Kontrol: göstergelere bak; sigorta çıkışlarında fazlar arası gerilimi ölç.'],
+            ['Klips gevşek, bıçak kararmış', 'Kontrol: enerjiyi kes, klipsi ve kararmış sigortayı değiştir.'],
+            ['Kalkışta hep aynı sigorta atıyor', 'Kontrol: motor çıkışında düşük değerli gG olabilir; aM ya da uygun değerli gG seç.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Pensesiz, elle ya da kargaburunla çekmek', 'Bıçaklar gerilim altında olabilir; ark yüzü ve eli yakar. Doğrusu: NH pensesi ve kişisel koruyucu donanım.'],
+            ['Üç fazdan yalnız atanı değiştirmek', 'Diğer ikisi aynı arıza akımını görüp yıpranmış olabilir. Doğrusu: motor çıkışlarında üçünü birlikte değiştir.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['NH pensesi', 'NH sigorta tabanı', 'Sigortalı yük ayırıcı', 'Termik röle', 'Bara'] }
+        ]}
+      ]
+    },
+
+    'motor-koruma-salteri': {
+      baslik: 'Motor koruma şalteri (MPCB)',
+      giris: 'Motoru aşırı yüke, kısa devreye ve çoğu modelde faz kaybına karşı korur. Akımı motorun etiket değerine ayarlanır; elle açıp kapatılabilir.',
+      etiketler: ['IEC 60947-4-1', 'Sınıf 10', '3 kutuplu'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Bağlantı şeması', bloklar: [
+          { tip: 'sema', svg: 'mpcb',
+            lejant: [['l', 'L1 · kahverengi'], ['l2', 'L2 · siyah'], ['l3', 'L3 · gri'], ['pe', 'PE · sarı-yeşil']],
+            isaretler: [
+              ['Giriş klemensleri (1-3-5)', 'Şebekeden gelen üç faz.'],
+              ['Akım ayar düğmesi', 'Motor etiketindeki anma akımına ayarlanır. Termik koruma bu değere göre çalışır.'],
+              ['Çıkış klemensleri (2-4-6)', 'Kontaktöre ya da doğrudan motora gider.'],
+              ['Yardımcı kontak', 'Şalter atınca PLC girişine ya da ikaz lambasına bilgi verir.']
+            ],
+            not: 'Uzaktan çalıştırma gerekiyorsa şalterin çıkışına kontaktör eklenir; şalter koruma, kontaktör anahtarlama yapar.' }
+        ]},
+        { id: 'koruma', kisa: 'Koruma', baslik: 'Koruma türleri', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'termik', baslik: 'Termik', etiket: 'Aşırı yük', metin: 'Ayar akımının üstünde, akım büyüdükçe daha çabuk açar. Sınıf 10: 7,2 × ayar akımında en geç 10 saniyede açar.' },
+            { ikon: 'manyetik', baslik: 'Manyetik', etiket: 'Kısa devre', metin: 'Kısa devrede anında açar. Açma değeri sabittir; çoğu modelde aralık üst sınırının yaklaşık 13 katı.' }
+          ]},
+          { tip: 'not', metin: 'Çoğu model faz kaybını da algılar: bir faz kesilince diğer iki fazın akımı artar ve şalter açar.' }
+        ]},
+        { id: 'ayar', kisa: 'Ayar', baslik: 'Akım ayarı', bloklar: [
+          { tip: 'formul', formul: 'Ayar = motor etiket akımı',
+            tanimlar: [['Etiket', 'Motorun bağlandığı gerilime karşılık gelen akım (ör. 400 V satırı).'], ['Aralık', 'Ayar değeri şalterin ayar aralığının içinde, tercihen ortasında olmalı.']],
+            ornek: { baslik: 'Örnek · 2,2 kW motor, 400 V', satirlar: [
+              ['Etiket', '400 V için 4,8 A (örnek değer; motor etiketinden oku)'],
+              ['Şalter', '4–6,3 A aralıklı model'],
+              ['Ayar', '4,8 A']
+            ]},
+            kural: 'Ayarı motor akımının üstüne çıkarmak, motoru aşırı yükte korumasız bırakır.' }
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Motor koruma şalteri sık atıyor', satirlar: [
+            ['Çalıştırır çalıştırmaz atıyor', 'Olası neden: kısa devre ya da sıkışmış rotor. Kontrol: sargıları ve yalıtımı ölç, mili elle çevir.'],
+            ['Bir süre çalışıp atıyor', 'Olası neden: aşırı yük ya da düşük ayar. Kontrol: pens ampermetreyle faz akımlarını ölç, ayarı etiketle karşılaştır.'],
+            ['Faz akımlarından biri sıfır', 'Olası neden: faz kaybı. Kontrol: giriş gerilimlerini, sigortaları ve kontaktör kontaklarını ölç.'],
+            ['Sıcak günlerde ya da kapalı panoda atıyor', 'Olası neden: ortam sıcaklığı. Kontrol: pano havalandırmasını ve şalterlerin arasındaki boşluğu kontrol et.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Atmasın diye ayarı en üste çevirmek', 'Motor aşırı yükte korunmaz, sargı yanar. Doğrusu: ayar etiket akımında kalır, nedeni bulunur.'],
+            ['Tek fazlı motoru tek kutuptan geçirmek', 'Diğer kutuplar akımsız kaldığı için şalter faz kaybı sanıp atabilir. Doğrusu: üreticinin şemasındaki gibi üç kutbu seri bağla.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Kontaktör', 'Yardımcı kontak', 'Termik röle', 'Pens ampermetre', 'Bara adaptörü'] }
+        ]}
+      ]
+    },
+
+    'kacak-akim-rolesi': {
+      baslik: 'Kaçak akım rölesi (RCD)',
+      giris: 'Faz ile nötr arasındaki akım farkını ölçer. Akımın bir kısmı toprağa kaçıyorsa, örneğin bir insan üzerinden, hattı milisaniyeler içinde keser.',
+      etiketler: ['30 mA / 300 mA', 'AC · A · F · B', 'Test butonu'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Bağlantı şeması', bloklar: [
+          { tip: 'sema', svg: 'rcd',
+            lejant: [['l', 'L · faz'], ['n', 'N · nötr'], ['pe', 'PE · toprak'], ['kacak', 'Kaçak akım yolu']],
+            isaretler: [
+              ['Faz ve nötr birlikte geçer', 'Normalde giden ve dönen akım eşittir, fark sıfırdır.'],
+              ['Toroid (akım trafosu)', 'Akımın bir kısmı toprağa kaçarsa fark oluşur, bobinde gerilim doğar ve röle açar.'],
+              ['Test butonu', 'İçeride yapay bir kaçak oluşturur. Basınca röle atmalı.'],
+              ['PE röleden geçmez', 'Toprak hattı doğrudan cihaz gövdesine gider.']
+            ] }
+        ]},
+        { id: 'calisma', kisa: 'Çalışma', baslik: 'Nasıl çalışır', bloklar: [
+          { tip: 'formul', formul: 'IΔ = I(L) − I(N)',
+            tanimlar: [
+              ['IΔn', 'Anma kaçak akımı: 30 mA hayat koruması, 300 mA yangın koruması.'],
+              ['Süre', 'Genel tip röle, IΔn akımında en fazla 300 ms içinde açar.'],
+              ['S tipi', 'Seçici (gecikmeli). Ana girişte kullanılır; alttaki 30 mA röle önce açsın diye.']
+            ],
+            kural: 'Kaçak akım rölesi aşırı akıma karşı korumaz; hatta ayrıca sigorta gerekir. İkisi bir aradaysa RCBO denir.' }
+        ]},
+        { id: 'turler', kisa: 'Türler', baslik: 'Türler: AC, A, F, B', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['AC', '', 'Yalnızca sinüs biçimli AC kaçak. Rezistif yükler: ısıtıcı, akkor lamba.'],
+            ['A', '', 'AC ve darbeli DC kaçak. Elektronik cihazlar, LED sürücüler, indüksiyon ocak.'],
+            ['F', '', 'A tipine ek olarak karışık frekanslı kaçak. Tek fazlı frekans konvertörlü cihazlar: klima, çamaşır makinesi.'],
+            ['B', '', 'F tipine ek olarak düz DC kaçak. Üç fazlı sürücüler, UPS, güneş invertörü, bazı araç şarj istasyonları.']
+          ]}
+        ]},
+        { id: 'test', kisa: 'Test', baslik: 'Test', bloklar: [
+          { tip: 'adimlar', satirlar: [
+            'Test butonuna bas: röle hemen atmalı.',
+            'Atmazsa röle arızalıdır; değiştir.',
+            'Buton yalnızca mekanizmayı dener. Açma akımı ve süresi RCD test cihazıyla ölçülür.',
+            'Butonu düzenli olarak dene; kılavuzlar en az altı ayda bir önerir.'
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Kaçak akım rölesi sık atıyor', satirlar: [
+            ['Kurar kurmaz atıyor', 'Olası neden: nötr-toprak teması ya da ciddi yalıtım hatası. Kontrol: devreleri tek tek ayırarak bul, yalıtım direncini ölç.'],
+            ['Belli bir cihaz çalışınca atıyor', 'Olası neden: cihazda kaçak (termosifon, fırın rezistansı). Kontrol: cihazı ayırıp röleyi yeniden kur.'],
+            ['Yağmurda ya da nemde atıyor', 'Olası neden: nemli buat, dış mekân prizi. Kontrol: buatları aç, IP sınıfına bak.'],
+            ['Yük arttıkça rastgele atıyor', 'Olası neden: çok sayıda elektronik cihazın toplam kaçağı. Kontrol: devreleri birden fazla röleye böl.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['Nötrü başka devrenin nötrüyle birleştirmek', 'Giden ve dönen akım farklı görünür; röle sürekli atar. Doğrusu: her rölenin nötrü yalnızca kendi devresine gider.'],
+            ['PE hattını röleden geçirmek', 'Kaçan akım toroidden geri döner, fark ölçülemez; koruma çalışmaz. Doğrusu: PE doğrudan toprak barasına.'],
+            ['Sürücü hattında AC tipi kullanmak', 'DC kaçağı algılayamaz. Doğrusu: sürücü kataloğunun önerdiği tip, üç fazlı sürücülerde genellikle B.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Otomatik sigorta (MCB)', 'RCBO', 'Nötr barası', 'Toprak barası', 'RCD test cihazı'] }
+        ]}
+      ]
+    },
+
+    'cam-sigorta': {
+      baslik: 'Cam sigorta (5×20 mm)',
+      giris: 'Elektronik kartlarda, güç kaynaklarında ve cihaz girişlerinde kullanılan küçük sigorta. Üzerindeki kısa yazı, hızını, akımını ve kesme kapasitesini söyler.',
+      etiketler: ['IEC 60127', '5×20 mm', 'F / T'],
+      bolumler: [
+        { id: 'etiket', kisa: 'Etiket', baslik: 'Etiketi okumak', bloklar: [
+          { tip: 'sema', svg: 'cam',
+            isaretler: [
+              ['Hız harfi', 'T: gecikmeli. Açılıştaki kısa akım darbesine dayanır.'],
+              ['Anma akımı', '2 A.'],
+              ['Kesme kapasitesi', 'L: düşük (cam gövde). H: yüksek (seramik, kum dolu).'],
+              ['Anma gerilimi', '250 V.']
+            ],
+            not: 'Yazı çoğunlukla uç kapağa kazınmıştır. Okunmuyorsa kart üzerindeki baskıya ya da cihaz etiketine bak.' }
+        ]},
+        { id: 'hiz', kisa: 'Hız', baslik: 'Hız sınıfları', bloklar: [
+          { tip: 'tablo', satirlar: [
+            ['FF', '', 'Çok hızlı. Yarı iletkenler, ölçü aleti girişleri.'],
+            ['F', '', 'Hızlı. Açılış darbesi olmayan hassas devreler.'],
+            ['M', '', 'Orta hızlı.'],
+            ['T', '', 'Gecikmeli. Trafo, motor, kondansatörlü güç kaynağı girişleri.'],
+            ['TT', '', 'Çok gecikmeli. Büyük açılış darbesi olan yükler.']
+          ]}
+        ]},
+        { id: 'govde', kisa: 'Cam / seramik', baslik: 'Cam mı, seramik mi?', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'cam', baslik: 'Cam', etiket: 'L · düşük', metin: 'İçi görünür; tele bakarak teşhis yapılır. Kısa devre akımı düşük devrelerde.' },
+            { ikon: 'seramik', baslik: 'Seramik', etiket: 'H · yüksek', metin: 'İçi kum dolu, görünmez. Şebekeye doğrudan bağlı girişlerde tercih edilir.' }
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Teşhis ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sigorta atmış, cihaz çalışmıyor', satirlar: [
+            ['Cam kararmış, içi metal buharıyla kaplı', 'Olası neden: büyük kısa devre. Kontrol: yeni sigortadan önce köprü diyot, MOSFET, kondansatör gibi parçaları ölç.'],
+            ['Tel ortadan temiz kopmuş', 'Olası neden: aşırı akım ya da yaşlanma. Kontrol: aynı değerle değiştir; tekrar atarsa yük akımını ölç.'],
+            ['Sağlam görünüyor ama ölçü aleti açık devre gösteriyor', 'Olası neden: uç kapak teması kopmuş. Kontrol: sigortayı değiştir.'],
+            ['Yeni sigorta açar açmaz atıyor', 'Olası neden: arkadaki kısa devre sürüyor. Kontrol: cihazı enerjilemeden arızayı bul.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['T yerine F takmak ya da tersi', 'F takılırsa açılış darbesinde atar; T takılırsa hassas devre geç korunur. Doğrusu: harf, akım ve gerilim aynı olmalı.'],
+            ['Tel, folyo ya da büyük değerle köprülemek', 'Kısa devrede kart ve kablo yanar. Doğrusu: arızayı bulup aynı değeri tak.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Sigorta yuvası', 'Panel tipi sigorta tutucu', 'Ölçü aleti (süreklilik)', 'PTC sigorta', 'Köprü diyot'] }
+        ]}
+      ]
+    },
+
+    'yari-iletken-sigorta': {
+      baslik: 'Yarı iletken sigorta (aR)',
+      giris: 'Diyot, tristör ve IGBT gibi yarı iletkenleri kısa devreye karşı korur. Normal sigortadan çok daha hızlı açar ve geçen enerjiyi sınırlar.',
+      etiketler: ['IEC 60269-4', 'aR · gR · gS', 'I²t'],
+      bolumler: [
+        { id: 'sema', kisa: 'Şema', baslik: 'Sürücü girişinde kullanım', bloklar: [
+          { tip: 'sema', svg: 'ar',
+            lejant: [['l', 'L1'], ['l2', 'L2'], ['l3', 'L3'], ['dc', 'DC +']],
+            isaretler: [
+              ['aR sigortalar', 'Her fazda bir tane. Kısa devrede çok hızlı keser ve yarı iletkene ulaşan enerjiyi (I²t) sınırlar.'],
+              ['Doğrultucu', 'Diyotlar ya da tristörler. Korunan parça budur.'],
+              ['DC bara', 'Kondansatörler. Burada kısa devre olursa aR sigortalar atar.'],
+              ['Sinyal kontağı', 'Sigorta atınca mikro switch konum değiştirir; sürücüyü durdurur ya da alarm verir.']
+            ] }
+        ]},
+        { id: 'neden', kisa: 'Neden', baslik: 'Neden ayrı sigorta?', bloklar: [
+          { tip: 'kartlar', kartlar: [
+            { ikon: 'kablo', baslik: 'gG', etiket: 'Kablo koruması', metin: 'Yarı iletken için yavaştır; sigorta açmadan diyot ya da tristör yanar.' },
+            { ikon: 'yariiletken', baslik: 'aR', etiket: 'Yarı iletken koruması', metin: 'Çok hızlıdır, geçen enerjiyi sınırlar. Yalnızca kısa devrede açar.' }
+          ]}
+        ]},
+        { id: 'secim', kisa: 'Seçim', baslik: 'Seçim', bloklar: [
+          { tip: 'formul', formul: 'I²t sigorta < I²t yarı iletken',
+            tanimlar: [
+              ['I²t', 'Arıza sırasında geçen enerjinin ölçüsü (A²s). Sigortanın açma I²t değeri, yarı iletkenin dayanabileceğinden küçük olmalı.'],
+              ['Un', 'Anma gerilimi. DC barada kullanılıyorsa DC değerine bak.'],
+              ['In', 'Anma akımı. Yük akımına ve ortam sıcaklığına göre seçilir.']
+            ],
+            kural: 'Pratikte: sürücü ya da yumuşak yolverici kataloğunda önerilen sigorta tipini ve değerini kullan.' },
+          { tip: 'tablo', satirlar: [
+            ['aR', '', 'Kısmi aralık: yalnızca kısa devre. Aşırı yük için ayrıca koruma gerekir.'],
+            ['gR', '', 'Tam aralık: aşırı yük ve kısa devre, yarı iletken hızında.'],
+            ['gS', '', 'Tam aralık: gR gibi hızlıdır, kabloyu da korur; kaybı daha düşüktür.']
+          ]}
+        ]},
+        { id: 'ariza', kisa: 'Arıza', baslik: 'Arıza ve sık yapılan hatalar', bloklar: [
+          { tip: 'ariza', belirti: 'Sürücü girişindeki aR sigorta attı', satirlar: [
+            ['Doğrultucu diyot kısa devre', 'Kontrol: yeni sigortadan önce giriş klemensleri ile DC bara arasında diyot testi yap.'],
+            ['DC bara kondansatörü arızalı', 'Kontrol: şişmiş ya da akmış kondansatöre bak, kısa devre ölç.'],
+            ['Fren direnci ya da fren transistörü kısa devre', 'Kontrol: direnç değerini ve transistörü ölç.'],
+            ['Şebekede kısa devre ya da ani gerilim yükselmesi', 'Kontrol: giriş kablolarını, parafudru ve filtreyi kontrol et.']
+          ]},
+          { tip: 'hatalar', hatalar: [
+            ['aR yerine gG takmak', 'Sigorta açana kadar diyot ya da tristör yanar. Doğrusu: katalogdaki aR tipi.'],
+            ['aR sigortayı aşırı yük koruması sanmak', 'aR yalnızca kısa devrede açar. Doğrusu: kablo için hat girişinde ayrıca uygun koruma.']
+          ]}
+        ]},
+        { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+          { tip: 'parcalar', parcalar: ['Frekans konvertörü (VFD)', 'Yumuşak yolverici', 'Doğrultucu köprü', 'Sigorta tabanı', 'Mikro switch'] }
+        ]}
+      ]
+    }
+  }
+};
+
+/* Şemalar: renkler temaya göre CSS sınıflarından gelir. */
+const SEMALAR = {
+  mcb: `<svg class="sema" viewBox="0 0 318 292" role="img" aria-label="Tek kutuplu otomatik sigortanın priz hattına bağlantı şeması">
+    <text x="80" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l)">L</text>
+    <text x="220" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-n)">N</text>
+    <text x="268" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-pe)">PE</text>
+    <rect x="14" y="128" width="160" height="14" rx="2" style="fill:var(--rail)"></rect>
+    <path d="M80 22V88" stroke-width="3" fill="none" style="stroke:var(--wire-l)"></path>
+    <path d="M220 22V222" stroke-width="3" fill="none" style="stroke:var(--wire-n)"></path>
+    <path d="M268 22V222" stroke-width="3" fill="none" style="stroke:var(--wire-pe)"></path>
+    <path d="M268 22V222" stroke-width="3" stroke-dasharray="6 6" fill="none" style="stroke:var(--wire-pe2)"></path>
+    <rect x="48" y="78" width="64" height="112" rx="6" stroke-width="1.5" style="fill:var(--svg-body);stroke:var(--ink)"></rect>
+    <circle cx="80" cy="94" r="6" stroke-width="1.5" style="fill:var(--svg-body);stroke:var(--ink)"></circle>
+    <path d="M76 94h8M80 90v8" stroke-width="1.2" fill="none" style="stroke:var(--ink)"></path>
+    <rect x="72" y="112" width="16" height="30" rx="3" style="fill:var(--ink)"></rect>
+    <text x="80" y="160" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--ink)">C16</text>
+    <circle cx="80" cy="174" r="6" stroke-width="1.5" style="fill:var(--svg-body);stroke:var(--ink)"></circle>
+    <path d="M76 174h8M80 170v8" stroke-width="1.2" fill="none" style="stroke:var(--ink)"></path>
+    <path d="M80 180V250H180" stroke-width="3" stroke-linejoin="round" fill="none" style="stroke:var(--wire-l)"></path>
+    <rect x="180" y="222" width="110" height="56" rx="6" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <text x="244" y="246" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--ink)">Yük</text>
+    <text x="244" y="264" text-anchor="middle" font-size="11" style="fill:var(--muted)">priz hattı</text>
+    <path d="M36 94H73M36 174H73M133 110L90 122M150 156V142" stroke-width="1" stroke-dasharray="2 2" fill="none" style="stroke:var(--ink)"></path>
+    <circle cx="26" cy="94" r="10" style="fill:var(--ink)"></circle><text x="26" y="98" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="26" cy="174" r="10" style="fill:var(--ink)"></circle><text x="26" y="178" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="142" cy="106" r="10" style="fill:var(--ink)"></circle><text x="142" y="110" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="150" cy="166" r="10" style="fill:var(--ink)"></circle><text x="150" y="170" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  step: `<svg class="sema" viewBox="0 0 318 312" role="img" aria-label="PLC, step sürücü, DC güç kaynağı ve iki sargılı step motor arasındaki bağlantı şeması">
+    <rect x="6" y="16" width="92" height="130" rx="6" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <text x="52" y="36" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--ink)">PLC</text>
+    <text x="88" y="66" text-anchor="end" font-size="11" style="fill:var(--ink)">Y0</text>
+    <text x="88" y="96" text-anchor="end" font-size="11" style="fill:var(--ink)">Y1</text>
+    <text x="88" y="126" text-anchor="end" font-size="11" style="fill:var(--ink)">Y2</text>
+    <rect x="150" y="16" width="86" height="286" rx="6" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <text x="193" y="36" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--ink)">SÜRÜCÜ</text>
+    <text x="158" y="66" font-size="11" style="fill:var(--ink)">PUL</text>
+    <text x="158" y="96" font-size="11" style="fill:var(--ink)">DIR</text>
+    <text x="158" y="126" font-size="11" style="fill:var(--ink)">ENA</text>
+    <text x="158" y="250" font-size="11" style="fill:var(--ink)">V+</text>
+    <text x="158" y="280" font-size="11" style="fill:var(--ink)">GND</text>
+    <text x="228" y="66" text-anchor="end" font-size="11" style="fill:var(--ink)">A+</text>
+    <text x="228" y="96" text-anchor="end" font-size="11" style="fill:var(--ink)">A−</text>
+    <text x="228" y="180" text-anchor="end" font-size="11" style="fill:var(--ink)">B+</text>
+    <text x="228" y="210" text-anchor="end" font-size="11" style="fill:var(--ink)">B−</text>
+    <rect x="6" y="222" width="92" height="80" rx="6" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <text x="46" y="258" text-anchor="middle" font-size="11" style="fill:var(--ink)">DC güç</text>
+    <text x="46" y="274" text-anchor="middle" font-size="11" style="fill:var(--ink)">kaynağı</text>
+    <text x="90" y="250" text-anchor="end" font-size="12" font-weight="600" style="fill:var(--dc-plus)">+</text>
+    <text x="90" y="280" text-anchor="end" font-size="12" font-weight="600" style="fill:var(--ink)">−</text>
+    <path d="M98 62H150M98 92H150" stroke-width="2" fill="none" style="stroke:var(--signal)"></path>
+    <path d="M98 122H150" stroke-width="2" stroke-dasharray="5 4" fill="none" style="stroke:var(--signal)"></path>
+    <path d="M98 246H150" stroke-width="2.5" fill="none" style="stroke:var(--dc-plus)"></path>
+    <path d="M98 276H150" stroke-width="2.5" fill="none" style="stroke:var(--ink)"></path>
+    <rect x="258" y="40" width="54" height="190" rx="10" stroke-width="1.5" style="fill:var(--paper);stroke:var(--ink)"></rect>
+    <text x="285" y="250" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--ink)">MOTOR</text>
+    <path d="M236 62H280M236 92H280M236 176H280M236 206H280" stroke-width="2" fill="none" style="stroke:var(--ink)"></path>
+    <path d="M280 62c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5M280 176c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5c9 0 9 7.5 0 7.5" stroke-width="2" fill="none" style="stroke:var(--ink)"></path>
+    <text x="302" y="81" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--ink)">A</text>
+    <text x="302" y="195" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--ink)">B</text>
+    <g style="fill:var(--ink)">
+      <circle cx="98" cy="62" r="3.5"></circle><circle cx="98" cy="92" r="3.5"></circle><circle cx="98" cy="122" r="3.5"></circle>
+      <circle cx="98" cy="246" r="3.5"></circle><circle cx="98" cy="276" r="3.5"></circle>
+      <circle cx="150" cy="62" r="3.5"></circle><circle cx="150" cy="92" r="3.5"></circle><circle cx="150" cy="122" r="3.5"></circle>
+      <circle cx="150" cy="246" r="3.5"></circle><circle cx="150" cy="276" r="3.5"></circle>
+      <circle cx="236" cy="62" r="3.5"></circle><circle cx="236" cy="92" r="3.5"></circle><circle cx="236" cy="176" r="3.5"></circle><circle cx="236" cy="206" r="3.5"></circle>
+    </g>
+    <circle cx="124" cy="40" r="10" style="fill:var(--ink)"></circle><text x="124" y="44" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="124" cy="222" r="10" style="fill:var(--ink)"></circle><text x="124" y="226" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="247" cy="134" r="10" style="fill:var(--ink)"></circle><text x="247" y="138" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+  </svg>`,
+
+  mekanik: `<svg class="sema" viewBox="0 0 318 120" role="img" aria-label="Motor, kaplin, sabit uç yatağı, bilyalı vida, somun ve tabla, serbest uç yatağından oluşan eksen">
+    <rect x="6" y="34" width="48" height="48" rx="4" style="fill:var(--ink)"></rect>
+    <path d="M54 58H70" stroke-width="3" fill="none" style="stroke:var(--ink)"></path>
+    <rect x="70" y="48" width="28" height="20" rx="3" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <path d="M76 48v20M82 48v20M88 48v20M94 48v20" stroke-width="1" fill="none" style="stroke:var(--ink)"></path>
+    <rect x="100" y="38" width="22" height="40" rx="2" stroke-width="1.5" style="fill:var(--chip);stroke:var(--ink)"></rect>
+    <rect x="122" y="54" width="168" height="8" stroke-width="1.2" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <path d="M126 62l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8m4 8l4-8" stroke-width="1" fill="none" style="stroke:var(--hatch)"></path>
+    <rect x="168" y="30" width="68" height="10" rx="2" stroke-width="1.2" style="fill:var(--chip);stroke:var(--ink)"></rect>
+    <rect x="182" y="42" width="40" height="32" rx="3" stroke-width="1.5" style="fill:var(--card);stroke:var(--ink)"></rect>
+    <rect x="290" y="42" width="20" height="32" rx="2" stroke-width="1.5" style="fill:var(--chip);stroke:var(--ink)"></rect>
+    <text x="30" y="108" text-anchor="middle" font-size="11" style="fill:var(--muted)">Motor</text>
+    <path d="M84 68V95M111 78V95M150 62V95M202 74V95M300 74V95" stroke-width="1" stroke-dasharray="2 2" fill="none" style="stroke:var(--ink)"></path>
+    <circle cx="84" cy="104" r="9" style="fill:var(--ink)"></circle><text x="84" y="108" text-anchor="middle" font-size="10" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="111" cy="104" r="9" style="fill:var(--ink)"></circle><text x="111" y="108" text-anchor="middle" font-size="10" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="150" cy="104" r="9" style="fill:var(--ink)"></circle><text x="150" y="108" text-anchor="middle" font-size="10" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="202" cy="104" r="9" style="fill:var(--ink)"></circle><text x="202" y="108" text-anchor="middle" font-size="10" font-weight="600" style="fill:var(--paper)">4</text>
+    <circle cx="300" cy="104" r="9" style="fill:var(--ink)"></circle><text x="300" y="108" text-anchor="middle" font-size="10" font-weight="600" style="fill:var(--paper)">5</text>
+  </svg>`,
+
+  buson: `<svg class="sema" viewBox="0 0 318 300" role="img" aria-label="Buşonlu sigortanın parçaları: kapak, buşon, ayar vidası ve taban; besleme orta kontağa, yük dişli kısma bağlı">
+    <path d="M150 60V226" style="stroke:var(--line)" stroke-width="1.5" stroke-dasharray="4 4" fill="none"></path>
+    <rect x="112" y="12" width="76" height="40" rx="10" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <ellipse cx="150" cy="24" rx="16" ry="5" style="fill:var(--card);stroke:var(--ink)" stroke-width="1"></ellipse>
+    <rect x="122" y="52" width="56" height="16" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <path d="M126 68l6-16m6 16l6-16m6 16l6-16m6 16l6-16" style="stroke:var(--hatch)" stroke-width="1" fill="none"></path>
+    <rect x="130" y="92" width="40" height="70" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="134" y="86" width="32" height="8" rx="2" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <circle cx="150" cy="84" r="6" style="fill:#9AA0A6;stroke:var(--ink)" stroke-width="1"></circle>
+    <text x="150" y="131" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--ink)">16 A</text>
+    <rect x="145" y="162" width="10" height="9" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <rect x="132" y="190" width="36" height="20" rx="3" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <rect x="132" y="190" width="36" height="5" rx="2" style="fill:#9AA0A6"></rect>
+    <path d="M144 195V210M156 195V210" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <rect x="96" y="226" width="108" height="58" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="122" y="226" width="56" height="26" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <path d="M126 252l6-26m6 26l6-26m6 26l6-26m6 26l6-26" style="stroke:var(--hatch)" stroke-width="1" fill="none"></path>
+    <rect x="145" y="252" width="10" height="8" style="fill:var(--ink)"></rect>
+    <path d="M116 272H150V260M184 272H172V252" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="3 2" fill="none"></path>
+    <path d="M10 272H104M196 272H308" style="stroke:var(--wire-l)" stroke-width="3" fill="none"></path>
+    <circle cx="110" cy="272" r="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <circle cx="190" cy="272" r="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <text x="40" y="263" text-anchor="middle" font-size="11" style="fill:var(--muted)">Besleme</text>
+    <text x="282" y="263" text-anchor="middle" font-size="11" style="fill:var(--muted)">Yük</text>
+    <path d="M189 32H228M171 127H228M169 200H228M205 240H228" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="238" cy="32" r="10" style="fill:var(--ink)"></circle><text x="238" y="36" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="238" cy="127" r="10" style="fill:var(--ink)"></circle><text x="238" y="131" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="238" cy="200" r="10" style="fill:var(--ink)"></circle><text x="238" y="204" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="238" cy="240" r="10" style="fill:var(--ink)"></circle><text x="238" y="244" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  nh: `<svg class="sema" viewBox="0 0 318 250" role="img" aria-label="NH bıçaklı sigortanın tabandaki yaylı klipslere oturmuş yan görünüşü">
+    <rect x="20" y="170" width="278" height="36" rx="4" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="44" y="118" width="32" height="52" rx="3" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="242" y="118" width="32" height="52" rx="3" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="52" y="122" width="40" height="10" style="fill:var(--hatch);stroke:var(--ink)" stroke-width="1"></rect>
+    <rect x="226" y="122" width="40" height="10" style="fill:var(--hatch);stroke:var(--ink)" stroke-width="1"></rect>
+    <rect x="90" y="76" width="138" height="86" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="86" y="80" width="8" height="78" rx="2" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1"></rect>
+    <rect x="224" y="80" width="8" height="78" rx="2" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1"></rect>
+    <rect x="92" y="60" width="16" height="16" rx="2" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <rect x="210" y="60" width="16" height="16" rx="2" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <circle cx="100" cy="68" r="3" style="fill:var(--card)"></circle>
+    <circle cx="218" cy="68" r="3" style="fill:var(--card)"></circle>
+    <rect x="150" y="68" width="18" height="8" rx="2" style="fill:var(--dc-plus)"></rect>
+    <text x="159" y="112" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--ink)">NH00</text>
+    <text x="159" y="130" text-anchor="middle" font-size="11" style="fill:var(--ink)">gG 125 A</text>
+    <text x="159" y="146" text-anchor="middle" font-size="10" style="fill:var(--muted)">500 V</text>
+    <path d="M60 206V244M258 206V244" style="stroke:var(--wire-l)" stroke-width="3" fill="none"></path>
+    <text x="68" y="236" font-size="11" style="fill:var(--muted)">Besleme</text>
+    <text x="250" y="236" text-anchor="end" font-size="11" style="fill:var(--muted)">Yük</text>
+    <path d="M32 106L56 122M98 40V60M183 38L164 68M288 108L272 120" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="24" cy="96" r="10" style="fill:var(--ink)"></circle><text x="24" y="100" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="98" cy="30" r="10" style="fill:var(--ink)"></circle><text x="98" y="34" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="190" cy="30" r="10" style="fill:var(--ink)"></circle><text x="190" y="34" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="296" cy="100" r="10" style="fill:var(--ink)"></circle><text x="296" y="104" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  mpcb: `<svg class="sema" viewBox="0 0 318 300" role="img" aria-label="Üç fazlı motorun motor koruma şalteri üzerinden bağlantı şeması">
+    <text x="110" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l)">L1</text>
+    <text x="150" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l2)">L2</text>
+    <text x="190" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l3)">L3</text>
+    <text x="40" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-pe)">PE</text>
+    <path d="M110 22V70" style="stroke:var(--wire-l)" stroke-width="3" fill="none"></path>
+    <path d="M150 22V70" style="stroke:var(--wire-l2)" stroke-width="3" fill="none"></path>
+    <path d="M190 22V70" style="stroke:var(--wire-l3)" stroke-width="3" fill="none"></path>
+    <rect x="90" y="70" width="120" height="80" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <text x="110" y="85" text-anchor="middle" font-size="9" style="fill:var(--muted)">1</text>
+    <text x="150" y="85" text-anchor="middle" font-size="9" style="fill:var(--muted)">3</text>
+    <text x="190" y="85" text-anchor="middle" font-size="9" style="fill:var(--muted)">5</text>
+    <text x="110" y="143" text-anchor="middle" font-size="9" style="fill:var(--muted)">2</text>
+    <text x="150" y="143" text-anchor="middle" font-size="9" style="fill:var(--muted)">4</text>
+    <text x="190" y="143" text-anchor="middle" font-size="9" style="fill:var(--muted)">6</text>
+    <circle cx="150" cy="110" r="12" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <path d="M150 110L158 102" style="stroke:var(--ink)" stroke-width="2" stroke-linecap="round" fill="none"></path>
+    <rect x="210" y="88" width="24" height="44" rx="3" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <path d="M110 150V200L128 226" style="stroke:var(--wire-l)" stroke-width="3" stroke-linejoin="round" fill="none"></path>
+    <path d="M150 150V220" style="stroke:var(--wire-l2)" stroke-width="3" fill="none"></path>
+    <path d="M190 150V200L172 226" style="stroke:var(--wire-l3)" stroke-width="3" stroke-linejoin="round" fill="none"></path>
+    <path d="M40 22V254H116" style="stroke:var(--wire-pe)" stroke-width="3" fill="none"></path>
+    <path d="M40 22V254H116" style="stroke:var(--wire-pe2)" stroke-width="3" stroke-dasharray="6 6" fill="none"></path>
+    <circle cx="150" cy="254" r="34" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.5"></circle>
+    <text x="150" y="256" text-anchor="middle" font-size="16" font-weight="600" style="fill:var(--ink)">M</text>
+    <text x="150" y="273" text-anchor="middle" font-size="12" style="fill:var(--ink)">3~</text>
+    <path d="M72 82H104M72 116H137M72 146H104M258 110H235" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="62" cy="82" r="10" style="fill:var(--ink)"></circle><text x="62" y="86" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="62" cy="116" r="10" style="fill:var(--ink)"></circle><text x="62" y="120" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="62" cy="146" r="10" style="fill:var(--ink)"></circle><text x="62" y="150" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="268" cy="110" r="10" style="fill:var(--ink)"></circle><text x="268" y="114" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  rcd: `<svg class="sema" viewBox="0 0 318 300" role="img" aria-label="Kaçak akım rölesi bağlantısı: faz ve nötr röleden geçer, toprak doğrudan cihaz gövdesine gider">
+    <text x="90" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-l)">L</text>
+    <text x="120" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-n)">N</text>
+    <text x="250" y="14" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--wire-pe)">PE</text>
+    <rect x="56" y="58" width="96" height="104" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <path d="M90 22V210" style="stroke:var(--wire-l)" stroke-width="3" fill="none"></path>
+    <path d="M120 22V210" style="stroke:var(--wire-n)" stroke-width="3" fill="none"></path>
+    <ellipse cx="105" cy="96" rx="34" ry="10" style="stroke:var(--ink)" stroke-width="2.5" fill="none"></ellipse>
+    <rect x="128" y="126" width="18" height="12" rx="2" style="fill:var(--dc-plus)"></rect>
+    <text x="137" y="156" text-anchor="middle" font-size="9" style="fill:var(--muted)">30 mA</text>
+    <path d="M250 22V234H206" style="stroke:var(--wire-pe)" stroke-width="3" fill="none"></path>
+    <path d="M250 22V234H206" style="stroke:var(--wire-pe2)" stroke-width="3" stroke-dasharray="6 6" fill="none"></path>
+    <rect x="56" y="210" width="150" height="48" rx="6" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <text x="131" y="239" text-anchor="middle" font-size="11" style="fill:var(--ink)">Cihaz (metal gövde)</text>
+    <path d="M180 258V284" style="stroke:var(--dc-plus)" stroke-width="2" stroke-dasharray="4 3" fill="none"></path>
+    <path d="M168 286H192M172 291H188M176 296H184" style="stroke:var(--ink)" stroke-width="1.5" fill="none"></path>
+    <text x="192" y="276" font-size="10" style="fill:var(--dc-plus)">kaçak</text>
+    <path d="M40 40H86M186 96H140M186 132H147M274 140H252" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="30" cy="40" r="10" style="fill:var(--ink)"></circle><text x="30" y="44" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="196" cy="96" r="10" style="fill:var(--ink)"></circle><text x="196" y="100" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="196" cy="132" r="10" style="fill:var(--ink)"></circle><text x="196" y="136" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="284" cy="140" r="10" style="fill:var(--ink)"></circle><text x="284" y="144" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  cam: `<svg class="sema" viewBox="0 0 318 184" role="img" aria-label="5×20 mm gecikmeli cam sigorta ve üzerindeki T2AL250V yazısının anlamı">
+    <path d="M40 24H278M40 18V30M278 18V30" style="stroke:var(--muted)" stroke-width="1" fill="none"></path>
+    <text x="159" y="15" text-anchor="middle" font-size="10" style="fill:var(--muted)">20 mm</text>
+    <rect x="80" y="46" width="158" height="40" style="fill:var(--card);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <path d="M90 52H228" style="stroke:var(--line)" stroke-width="1.5" fill="none"></path>
+    <path d="M80 66H134l4-6 4 12 4-12 4 12 4-12 4 12 4-6H238" style="stroke:var(--ink)" stroke-width="1.5" stroke-linejoin="round" fill="none"></path>
+    <rect x="40" y="40" width="40" height="52" rx="4" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="238" y="40" width="40" height="52" rx="4" style="fill:var(--rail);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <text x="298" y="70" text-anchor="middle" font-size="10" style="fill:var(--muted)">Ø5</text>
+    <text x="100" y="132" text-anchor="middle" font-size="22" font-weight="600" style="fill:var(--ink)">T</text>
+    <text x="146" y="132" text-anchor="middle" font-size="22" font-weight="600" style="fill:var(--ink)">2A</text>
+    <text x="190" y="132" text-anchor="middle" font-size="22" font-weight="600" style="fill:var(--ink)">L</text>
+    <text x="240" y="132" text-anchor="middle" font-size="22" font-weight="600" style="fill:var(--ink)">250V</text>
+    <path d="M100 140V154M146 140V154M190 140V154M240 140V154" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="100" cy="164" r="10" style="fill:var(--ink)"></circle><text x="100" y="168" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="146" cy="164" r="10" style="fill:var(--ink)"></circle><text x="146" y="168" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="190" cy="164" r="10" style="fill:var(--ink)"></circle><text x="190" y="168" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="240" cy="164" r="10" style="fill:var(--ink)"></circle><text x="240" y="168" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`,
+
+  ar: `<svg class="sema" viewBox="0 0 318 196" role="img" aria-label="Frekans konvertörü girişinde her fazda aR sigorta, doğrultucu ve DC bara">
+    <text x="4" y="46" font-size="11" font-weight="600" style="fill:var(--wire-l)">L1</text>
+    <text x="4" y="86" font-size="11" font-weight="600" style="fill:var(--wire-l2)">L2</text>
+    <text x="4" y="126" font-size="11" font-weight="600" style="fill:var(--wire-l3)">L3</text>
+    <path d="M24 50H64M100 50H150" style="stroke:var(--wire-l)" stroke-width="3" fill="none"></path>
+    <path d="M24 90H64M100 90H150" style="stroke:var(--wire-l2)" stroke-width="3" fill="none"></path>
+    <path d="M24 130H64M100 130H150" style="stroke:var(--wire-l3)" stroke-width="3" fill="none"></path>
+    <rect x="64" y="42" width="36" height="16" rx="2" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="64" y="82" width="36" height="16" rx="2" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <rect x="64" y="122" width="36" height="16" rx="2" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <path d="M64 50H100M64 90H100M64 130H100" style="stroke:var(--ink)" stroke-width="1" fill="none"></path>
+    <rect x="74" y="16" width="16" height="10" rx="2" style="fill:var(--chip);stroke:var(--ink)" stroke-width="1.2"></rect>
+    <path d="M82 26V42" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <rect x="150" y="30" width="70" height="120" rx="6" style="fill:var(--svg-body);stroke:var(--ink)" stroke-width="1.5"></rect>
+    <path d="M175 80V100L192 90Z" style="fill:var(--ink)"></path>
+    <path d="M193 80V100" style="stroke:var(--ink)" stroke-width="2" fill="none"></path>
+    <text x="185" y="128" text-anchor="middle" font-size="10" style="fill:var(--muted)">AC → DC</text>
+    <path d="M220 60H270V84" style="stroke:var(--dc-plus)" stroke-width="2.5" fill="none"></path>
+    <path d="M220 120H270V96" style="stroke:var(--ink)" stroke-width="2.5" fill="none"></path>
+    <path d="M256 84H284M256 96H284" style="stroke:var(--ink)" stroke-width="2.5" fill="none"></path>
+    <text x="234" y="54" font-size="12" font-weight="600" style="fill:var(--dc-plus)">+</text>
+    <text x="234" y="138" font-size="12" font-weight="600" style="fill:var(--ink)">−</text>
+    <path d="M82 166V139M185 166V151M270 166V121M110 21H91" style="stroke:var(--ink)" stroke-width="1" stroke-dasharray="2 2" fill="none"></path>
+    <circle cx="82" cy="176" r="10" style="fill:var(--ink)"></circle><text x="82" y="180" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">1</text>
+    <circle cx="185" cy="176" r="10" style="fill:var(--ink)"></circle><text x="185" y="180" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">2</text>
+    <circle cx="270" cy="176" r="10" style="fill:var(--ink)"></circle><text x="270" y="180" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">3</text>
+    <circle cx="120" cy="21" r="10" style="fill:var(--ink)"></circle><text x="120" y="25" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--paper)">4</text>
+  </svg>`
+};
+
+/* =====================================================================
+   PANO — UYGULAMA (içerik eklerken bu bölüme dokunmak gerekmez)
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const azHareket = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+  const sayi = (n) => { try { return Number(n).toLocaleString('tr-TR'); } catch (e) { return String(n); } };
+
+  const IKON = {
+    sigorta: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="10" y="14" width="20" height="12" rx="1"></rect><path d="M3 20h34"></path></svg>',
+    step: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="15"></circle><path d="M11 27h5v-5h5v-5h5v-5"></path></svg>',
+    servo: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="20" cy="20" r="15"></circle><circle cx="20" cy="20" r="5"></circle><path d="M20 8v4M20 28v4M8 20h4M28 20h4"></path></svg>',
+    surucu: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="9" width="30" height="22" rx="3"></rect><path d="M10 25h4v-10h4v10h4v-10h4v10h4"></path></svg>',
+    termik: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 19h6c5 0 9-4 11-12"></path><path d="M3 15h6c3 0 6-3 7.5-8"></path></svg>',
+    manyetik: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 12h2c0-4 4-4 4 0 0-4 4-4 4 0 0-4 4-4 4 0 0-4 4-4 4 0h2"></path></svg>',
+    ara: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>',
+    geri: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>',
+    ok: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>',
+    yerimi: '<svg class="yerimi" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"></path></svg>',
+    yerimiBuyuk: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"></path></svg>',
+    kablo: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg>',
+    motor: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 15.5v-7l4 4.5 4-4.5v7"></path></svg>',
+    cam: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2" y="8" width="20" height="8" rx="2"></rect><path d="M6 12h12"></path></svg>',
+    seramik: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2" y="8" width="20" height="8" rx="2"></rect><path d="M6 11h1M10 13h1M13 11h1M17 13h1"></path></svg>',
+    yariiletken: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h6M16 12h6"></path><path d="M8 6v12l8-6z"></path><path d="M16 6v12"></path></svg>',
+    uyari: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"></path><path d="M12 10v5"></path><path d="M12 18v.5"></path></svg>'
+  };
+
+  /* ---------- Dizinler ---------- */
+  const KONU = {};
+  const ALT = {};
+  VERI.konular.forEach((k, ki) => {
+    k.no = String(ki + 1).padStart(2, '0');
+    KONU[k.id] = k;
+    k.altlar.forEach((a, ai) => {
+      a.no = String(ai + 1).padStart(2, '0');
+      a.konu = k;
+      a.sira = ai;
+      ALT[a.id] = a;
+    });
+  });
+  const sayfaOf = (a) => (a && a.sayfa ? VERI.sayfalar[a.sayfa] : null);
+  const hazirMi = (a) => !!sayfaOf(a);
+  const hazirlar = () => VERI.konular.flatMap((k) => k.altlar.filter(hazirMi));
+
+  /* ---------- Tarayıcı deposu (yalnızca bu cihaz) ---------- */
+  const DEPO = {
+    oku(k, v) { try { const x = localStorage.getItem('pano.' + k); return x == null ? v : JSON.parse(x); } catch (e) { return v; } },
+    yaz(k, v) { try { localStorage.setItem('pano.' + k, JSON.stringify(v)); } catch (e) { /* depo kapalı olabilir */ } }
+  };
+  const durum = {
+    kayitli: DEPO.oku('kayitli', []),
+    son: DEPO.oku('son', null),
+    ilerleme: DEPO.oku('ilerleme', {}),
+    aramalar: DEPO.oku('aramalar', []),
+    hesap: Object.assign({ ms: 8, hatve: 5, hiz: 20 }, DEPO.oku('hesap', {})),
+    filtre: {},
+    sorgu: ''
+  };
+  if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
+  if (!Array.isArray(durum.aramalar)) durum.aramalar = [];
+  if (!durum.ilerleme || typeof durum.ilerleme !== 'object') durum.ilerleme = {};
+
+  /* ---------- Arama dizini ---------- */
+  const KATLA = { 'ı': 'i', 'ş': 's', 'ğ': 'g', 'ü': 'u', 'ö': 'o', 'ç': 'c', 'â': 'a', 'î': 'i', 'û': 'u' };
+  function katla(s) {
+    s = String(s);
+    let o = '';
+    for (let i = 0; i < s.length; i++) {
+      let l = s[i].toLocaleLowerCase('tr-TR');
+      if (l.length !== 1) l = l[0];
+      o += KATLA[l] || l;
+    }
+    return o;
+  }
+  function blokMetni(b) {
+    const p = [];
+    const ekle = (...x) => x.forEach((y) => { if (y) p.push(Array.isArray(y) ? y.join(' ') : y); });
+    switch (b.tip) {
+      case 'sema': (b.lejant || []).forEach((l) => ekle(l[1])); (b.isaretler || []).forEach((i) => ekle(i)); ekle(b.not); break;
+      case 'kartlar': b.kartlar.forEach((k) => ekle(k.baslik, k.etiket, k.metin)); break;
+      case 'aralik': ekle(b.baslik, b.eksen); b.satirlar.forEach((r) => ekle(r.ad + ' ' + r.bas + '–' + r.son, r.metin)); ekle(b.not); break;
+      case 'formul': ekle(b.formul); b.tanimlar.forEach((t) => ekle(t)); if (b.ornek) { ekle(b.ornek.baslik); b.ornek.satirlar.forEach((t) => ekle(t)); } ekle(b.kural); break;
+      case 'tablo': b.satirlar.forEach((r) => ekle(r[0], r[2])); break;
+      case 'hesap': ekle('Mikroadım, vida hatvesi, ilerleme hızı, darbe/tur, darbe/mm, darbe frekansı, motor hızı'); break;
+      case 'ariza': ekle('Belirti: ' + b.belirti); b.satirlar.forEach((r) => ekle(r)); break;
+      case 'hatalar': b.hatalar.forEach((r) => ekle(r)); break;
+      case 'parcalar': ekle(b.parcalar.join(', ')); break;
+      case 'not': ekle(b.metin); break;
+      case 'renkler': b.satirlar.forEach((r) => ekle(r[0] + ' ' + r[2])); break;
+      case 'adimlar': b.satirlar.forEach((m) => ekle(m)); break;
+    }
+    return p.join(' · ');
+  }
+  const DIZIN = [];
+  VERI.konular.forEach((k) => k.altlar.forEach((a) => {
+    const s = sayfaOf(a);
+    if (!s) {
+      const m = a.ad + ' · ' + a.alt;
+      DIZIN.push({ alt: a, bolum: null, bolumAd: null, metin: m, katli: katla(m) });
+      return;
+    }
+    const bm = [s.baslik, a.alt, s.giris].concat(s.etiketler || []).join(' · ');
+    DIZIN.push({ alt: a, bolum: null, bolumAd: null, metin: bm, katli: katla(bm) });
+    s.bolumler.forEach((b) => {
+      const m = [b.baslik].concat(b.bloklar.map(blokMetni)).join(' · ');
+      DIZIN.push({ alt: a, bolum: b.id, bolumAd: b.kisa, metin: m, katli: katla(m) });
+    });
+  }));
+  const TUM_PARCALAR = Array.from(new Set(Object.values(VERI.sayfalar).flatMap((s) => s.bolumler.flatMap((b) => b.bloklar.filter((x) => x.tip === 'parcalar').flatMap((x) => x.parcalar)))));
+  const aramaTerimi = (p) => p.replace(/\s*\(.*\)\s*$/, '');
+
+  function ara(q) {
+    const terimler = katla(q.trim()).split(/\s+/).filter((t) => t.length > 0);
+    if (!terimler.length || katla(q.trim()).length < 2) return { terimler, sonuclar: [] };
+    const gorulen = new Map();
+    DIZIN.forEach((d) => {
+      if (!terimler.every((t) => d.katli.includes(t))) return;
+      const var_ = gorulen.get(d.alt.id);
+      if (!var_) gorulen.set(d.alt.id, d);
+    });
+    const sonuclar = Array.from(gorulen.values()).sort((x, y) => (hazirMi(y.alt) ? 1 : 0) - (hazirMi(x.alt) ? 1 : 0));
+    return { terimler, sonuclar };
+  }
+  function vurgula(metin, terimler) {
+    const k = katla(metin);
+    const araliklar = [];
+    terimler.forEach((t) => {
+      if (!t) return;
+      let i = k.indexOf(t);
+      while (i !== -1) { araliklar.push([i, i + t.length]); i = k.indexOf(t, i + t.length); }
+    });
+    if (!araliklar.length) return esc(metin);
+    araliklar.sort((a, b) => a[0] - b[0]);
+    const birlesik = [araliklar[0].slice()];
+    araliklar.slice(1).forEach((r) => { const s = birlesik[birlesik.length - 1]; if (r[0] <= s[1]) s[1] = Math.max(s[1], r[1]); else birlesik.push(r.slice()); });
+    let o = '', son = 0;
+    birlesik.forEach(([a, b]) => { o += esc(metin.slice(son, a)) + '<mark>' + esc(metin.slice(a, b)) + '</mark>'; son = b; });
+    return o + esc(metin.slice(son));
+  }
+  function kesit(metin, terim) {
+    const i = katla(metin).indexOf(terim);
+    if (i < 0 || metin.length <= 140) return metin;
+    let bas = Math.max(0, i - 45);
+    if (bas > 0) { const b = metin.indexOf(' ', bas); if (b !== -1 && b < i) bas = b + 1; }
+    let bit = Math.min(metin.length, i + 110);
+    if (bit < metin.length) { const b = metin.lastIndexOf(' ', bit); if (b > i) bit = b; }
+    return (bas > 0 ? '…' : '') + metin.slice(bas, bit) + (bit < metin.length ? '…' : '');
+  }
+
+  /* ---------- Yönlendirme ---------- */
+  let rota = null;
+  let onceki = 'ana';
+  let bekleyenBolum = null;
+  let ilkCizim = true;
+  function rotaCoz(t) {
+    t = String(t || '').replace(/^#/, '');
+    if (!t || t === 'ana') return 'ana';
+    if (t === 'ara' || t === 'kaydedilenler') return t;
+    if (KONU[t]) return t;
+    if (ALT[t] && hazirMi(ALT[t])) return t;
+    return 'ana';
+  }
+  function git(hedef, bolum) {
+    const t = rotaCoz(hedef);
+    bekleyenBolum = bolum || null;
+    let hashDegisti = false;
+    try {
+      if (location.hash.replace(/^#/, '') !== t) { location.hash = t; hashDegisti = true; }
+    } catch (e) { hashDegisti = false; }
+    if (!hashDegisti) ciz(t);
+    else setTimeout(() => { if (rota !== t) ciz(t); }, 80);
+  }
+  window.addEventListener('hashchange', () => {
+    let t = 'ana';
+    try { t = rotaCoz(location.hash); } catch (e) { /* yok say */ }
+    if (t !== rota) ciz(t);
+  });
+
+  function ciz(t, secenek) {
+    const koru = secenek && secenek.koru;
+    if (rota && rota !== t) onceki = rota;
+    rota = t;
+    const app = $('#uygulama');
+    const y = window.scrollY;
+    let html;
+    if (t === 'ara') html = aramaEkrani();
+    else if (t === 'kaydedilenler') html = kayitEkrani();
+    else if (KONU[t]) html = konuEkrani(KONU[t]);
+    else if (ALT[t]) html = bilgiSayfasi(ALT[t]);
+    else html = anaSayfa();
+    app.innerHTML = html;
+    menuGuncelle();
+    aktifBolum = null;
+    if (ALT[t]) { hesapYaz(); sayfaAcildi(ALT[t]); }
+    if (koru) {
+      window.scrollTo(0, y);
+    } else if (bekleyenBolum && ALT[t]) {
+      const hedef = bekleyenBolum;
+      requestAnimationFrame(() => bolumeGit(hedef, false));
+    } else {
+      window.scrollTo(0, 0);
+    }
+    bekleyenBolum = null;
+    if (!koru && !ilkCizim) {
+      if (t === 'ara') { const g = $('#arama-kutusu'); if (g) g.focus({ preventScroll: true }); }
+      else { const h = app.querySelector('h1'); if (h) h.focus({ preventScroll: true }); }
+    }
+    ilkCizim = false;
+    kaydirmaIzle();
+  }
+
+  function menuGuncelle() {
+    const aktif = rota === 'ara' ? 'ara' : rota === 'kaydedilenler' ? 'kaydedilenler' : 'konular';
+    $$('[data-menu]').forEach((b) => {
+      if (b.dataset.menu === aktif) b.setAttribute('aria-current', 'page');
+      else b.removeAttribute('aria-current');
+    });
+  }
+
+  /* ---------- Ekranlar ---------- */
+  function anaSayfa() {
+    return `
+      <header class="marka">
+        <span class="marka-plaka" aria-hidden="true"></span>
+        <div><h1 class="marka-ad" tabindex="-1">PANO</h1><p class="marka-alt">Elektrik-elektronik bilgi notları</p></div>
+      </header>
+      <button type="button" class="arama-dugme" data-git="ara">${IKON.ara}<span>Konu, parça veya terim ara</span></button>
+      ${devamKarti()}
+      <section class="blok-grup" aria-labelledby="konular-baslik">
+        <div class="satir-baslik"><h2 class="h2" id="konular-baslik">Konular</h2><span class="ust">${VERI.konular.length} konu</span></div>
+        <div class="konu-izgara">${VERI.konular.map(konuKarti).join('')}</div>
+      </section>`;
+  }
+
+  function devamKarti() {
+    let a = durum.son && ALT[durum.son.sayfa];
+    let devam = !!(a && hazirMi(a));
+    if (!devam) a = hazirlar()[0];
+    if (!a) return '';
+    const s = sayfaOf(a);
+    const toplam = s.bolumler.length;
+    let bi = 0;
+    if (devam) bi = Math.max(0, s.bolumler.findIndex((b) => b.id === durum.son.bolum));
+    const okunan = devam ? Math.min(toplam, Math.max(bi, Number(durum.ilerleme[a.id]) || 0) + 1) : 0;
+    const alt = devam ? `${a.konu.ad} · ${s.bolumler[bi].kisa} bölümünden devam et` : `${a.konu.ad} · ${toplam} bölüm`;
+    const seg = s.bolumler.map((b, i) => `<span class="${i < okunan ? 'dolu' : ''}"></span>`).join('');
+    return `
+      <button type="button" class="panel" data-git="${a.id}"${devam ? ` data-hedef-bolum="${s.bolumler[bi].id}"` : ''}>
+        <span class="panel-ust"><span class="panel-etiket">${devam ? 'Kaldığın yer' : 'Buradan başla'}</span><span class="panel-sayac">${okunan} / ${toplam} bölüm</span></span>
+        <span><span class="panel-baslik" style="display:block">${esc(s.baslik)}</span><span class="panel-alt" style="display:block">${esc(alt)}</span></span>
+        <span class="ilerleme" style="grid-template-columns:repeat(${toplam},minmax(0,1fr))" aria-hidden="true">${seg}</span>
+      </button>`;
+  }
+
+  function konuKarti(k) {
+    const hazir = k.altlar.filter(hazirMi).length;
+    return `
+      <button type="button" class="konu-kart" data-git="${k.id}">
+        <span class="konu-kart-ust">${IKON[k.ikon] || ''}<span class="konu-no">${k.no}</span></span>
+        <span class="konu-kart-ad">${esc(k.ad)}</span>
+        <span class="konu-kart-ozet">${esc(k.ozet)}</span>
+        <span class="konu-kart-durum">${hazir} / ${k.altlar.length} hazır</span>
+      </button>`;
+  }
+
+  function altSatiri(a, yolGoster) {
+    const h = hazirMi(a);
+    const ic = `<span class="kod${h ? ' hazir' : ''}">${esc(a.kod)}</span>
+      <span class="satir-metin">${yolGoster ? `<span class="sonuc-yol">${esc(a.konu.ad)}</span>` : ''}<span class="satir-ad">${esc(a.ad)}</span><span class="satir-alt">${esc(a.alt)}</span></span>`;
+    return h
+      ? `<button type="button" class="satir" data-git="${a.id}">${ic}<span class="ok">${IKON.ok}</span></button>`
+      : `<div class="satir">${ic}<span class="rozet">Hazırlanıyor</span></div>`;
+  }
+
+  function konuEkrani(k) {
+    const f = durum.filtre[k.id] || 'tumu';
+    const altlar = k.altlar.filter((a) => f === 'tumu' || a.filtre === f);
+    const filtreler = k.filtreler
+      ? `<div class="cipler" role="group" aria-label="Filtre">${[{ id: 'tumu', ad: 'Tümü' }].concat(k.filtreler).map((x) =>
+          `<button type="button" class="cip" data-filtre="${x.id}" data-konu="${k.id}" aria-pressed="${x.id === f}">${esc(x.ad)}</button>`).join('')}</div>`
+      : '';
+    return `
+      <div class="ust-cubuk" id="ust-cubuk">
+        <div class="ust-satir"><button type="button" class="geri" data-git="ana">${IKON.geri}<span>Konular</span></button><span class="ust">Konu ${k.no}</span></div>
+      </div>
+      <div class="baslik-blok"><h1 class="h1" tabindex="-1">${esc(k.ad)}</h1><p class="giris">${esc(k.giris)}</p></div>
+      ${filtreler}
+      <div class="liste">
+        <span class="ust">${altlar.length} alt başlık · ${altlar.filter(hazirMi).length} hazır</span>
+        ${altlar.map((a) => altSatiri(a, false)).join('')}
+      </div>`;
+  }
+
+  function bilgiSayfasi(a) {
+    const s = sayfaOf(a);
+    const kayitli = durum.kayitli.includes(a.id);
+    return `
+      <div class="ust-cubuk" id="ust-cubuk">
+        <div class="ust-satir">
+          <button type="button" class="geri" data-git="${a.konu.id}">${IKON.geri}<span>${esc(a.konu.ad)}</span></button>
+          <button type="button" class="ikon-dugme" data-kaydet="${a.id}" aria-pressed="${kayitli}" aria-label="${kayitli ? 'Kayıtlardan çıkar' : 'Kaydet'}">${IKON.yerimi}</button>
+        </div>
+        <nav class="cipler" id="bolum-cipleri" aria-label="Sayfa bölümleri">
+          ${s.bolumler.map((b) => `<button type="button" class="cip" data-bolum-kaydir="${b.id}">${esc(b.kisa)}</button>`).join('')}
+        </nav>
+      </div>
+      <div class="baslik-blok">
+        <span class="ust">${esc(a.konu.ad)} › ${a.no}</span>
+        <h1 class="h1" tabindex="-1">${esc(s.baslik)}</h1>
+        <p class="giris">${esc(s.giris)}</p>
+        ${s.etiketler ? `<div class="etiketler">${s.etiketler.map((e) => `<span class="etiket">${esc(e)}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="bolumler">
+        ${s.bolumler.map((b, i) => `
+          <section class="bolum" id="b-${b.id}" data-bolum="${b.id}" aria-labelledby="h-${b.id}">
+            <div class="bolum-baslik"><span class="bolum-no">${String(i + 1).padStart(2, '0')}</span><h2 class="bolum-ad" id="h-${b.id}">${esc(b.baslik)}</h2></div>
+            ${b.bloklar.map(blok).join('')}
+          </section>`).join('')}
+        ${sonrakiKart(a)}
+      </div>`;
+  }
+
+  function sonrakiKart(a) {
+    const n = a.konu.altlar[a.sira + 1];
+    if (!n) {
+      return `<button type="button" class="sonraki" data-git="${a.konu.id}"><span><span class="panel-etiket" style="display:block">Konu sonu</span><span class="sonraki-ad">${esc(a.konu.ad)} listesine dön</span></span>${IKON.ok}</button>`;
+    }
+    if (hazirMi(n)) {
+      return `<button type="button" class="sonraki" data-git="${n.id}"><span><span class="panel-etiket" style="display:block">Sonraki</span><span class="sonraki-ad">${esc(n.ad)}</span></span>${IKON.ok}</button>`;
+    }
+    return `<div class="sonraki"><span><span class="panel-etiket" style="display:block">Sonraki</span><span class="sonraki-ad">${esc(n.ad)}</span></span><span class="rozet">Hazırlanıyor</span></div>`;
+  }
+
+  /* ---------- Bloklar ---------- */
+  function blok(b) {
+    switch (b.tip) {
+      case 'sema': return semaBlok(b);
+      case 'kartlar': return `<div class="ikili">${b.kartlar.map((k) => `
+        <div class="mini-kart">${IKON[k.ikon] || ''}<span class="mini-ad">${esc(k.baslik)}</span>${k.etiket ? `<span class="mini-etiket">${esc(k.etiket)}</span>` : ''}<span class="mini-metin">${esc(k.metin)}</span></div>`).join('')}</div>`;
+      case 'aralik': return aralikBlok(b);
+      case 'formul': return formulBlok(b);
+      case 'tablo': return `<div class="tablo">${b.satirlar.map((r) => `<div class="tablo-satir"><span class="tablo-etiket ${esc(r[1] || '')}">${esc(r[0])}</span><span class="tablo-metin">${esc(r[2])}</span></div>`).join('')}</div>`;
+      case 'hesap': return b.tur === 'step' ? hesapStep() : '';
+      case 'ariza': return `
+        <div class="ariza">
+          <div class="ariza-ust"><span class="panel-etiket">Belirti</span><span class="ariza-belirti">${esc(b.belirti)}</span></div>
+          ${b.satirlar.map((r) => `<div class="ariza-satir"><span class="ariza-ad">${esc(r[0])}</span><span class="ariza-metin">${esc(r[1])}</span></div>`).join('')}
+        </div>`;
+      case 'hatalar': return b.hatalar.map((h) => `
+        <div class="hata">${IKON.uyari}<div><span class="hata-ad">${esc(h[0])}</span><span class="hata-metin">${esc(h[1])}</span></div></div>`).join('');
+      case 'parcalar': return `<div class="cip-kutu">${b.parcalar.map((p) => `<button type="button" class="parca" data-ara-terim="${esc(aramaTerimi(p))}">${esc(p)}</button>`).join('')}</div>
+        <p class="kucuk">Bir parçaya dokununca geçtiği tüm notları gösterir.</p>`;
+      case 'not': return `<p class="not">${esc(b.metin)}</p>`;
+      case 'renkler': return `<div class="renk-izgara">${b.satirlar.map((r) => `<div class="renk"><span class="renk-nokta" style="background:${esc(r[1])}" aria-hidden="true"></span><span class="renk-akim">${esc(r[0])}</span><span class="renk-ad">${esc(r[2])}</span></div>`).join('')}</div>`;
+      case 'adimlar': return `<ol class="sira-liste">${b.satirlar.map((m, i) => `<li><span class="sira-no">${i + 1}</span><span>${esc(m)}</span></li>`).join('')}</ol>`;
+      default: return '';
+    }
+  }
+
+  function semaBlok(b) {
+    const lejant = b.lejant ? `<div class="lejant">${b.lejant.map(([s, ad]) => `<span><i class="sw sw-${esc(s)}" aria-hidden="true"></i>${esc(ad)}</span>`).join('')}</div>` : '';
+    const isaret = b.isaretler ? `<ol class="isaretler">${b.isaretler.map(([ad, m], i) => `
+      <li><span class="isaret-no" aria-hidden="true">${i + 1}</span><div><span class="isaret-ad"><span class="gizli">${i + 1}. </span>${esc(ad)}</span><span class="isaret-metin">${esc(m)}</span></div></li>`).join('')}</ol>` : '';
+    return `<div class="kart">${SEMALAR[b.svg] || ''}${lejant}</div>${isaret}${b.not ? `<p class="not">${esc(b.not)}</p>` : ''}`;
+  }
+
+  function aralikBlok(b) {
+    const W = 318, x0 = 36, x1 = 306, ust = 14, ara_ = 36;
+    const eksenY = ust + b.satirlar.length * ara_ - 4;
+    const H = eksenY + 28;
+    const sx = (v) => +(x0 + ((x1 - x0) * v) / b.max).toFixed(2);
+    let izgara = '';
+    for (let v = b.adim; v <= b.max; v += b.adim) izgara += `M${sx(v)} 4V${eksenY}`;
+    let ticks = '';
+    for (let v = 0; v <= b.max; v += b.adim) ticks += `<text x="${Math.min(sx(v), W - 12)}" y="${eksenY + 20}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${v}</text>`;
+    const satirlar = b.satirlar.map((r, i) => {
+      const y = ust + i * ara_;
+      return `<text x="14" y="${y + 13}" text-anchor="middle" font-size="13" font-weight="600" style="fill:var(--ink)">${esc(r.ad)}</text>
+        <rect x="${sx(r.bas)}" y="${y}" width="${sx(r.son) - sx(r.bas)}" height="16" rx="4" style="fill:var(--signal)"><title>${esc(r.ad)}: ${r.bas}–${r.son} × In</title></rect>`;
+    }).join('');
+    const aciklama = b.satirlar.map((r) => `${r.ad}: ${r.bas}–${r.son}`).join(', ');
+    return `
+      <div class="kart">
+        <span style="font-size:13px;font-weight:600">${esc(b.baslik)}</span>
+        <svg class="sema" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(b.baslik)}. ${esc(aciklama)}">
+          <path d="${izgara}" style="stroke:var(--line)" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
+          <path d="M${x0} 4V${eksenY}" style="stroke:var(--muted)" stroke-width="1" fill="none"></path>
+          ${satirlar}${ticks}
+        </svg>
+        <span class="aralik-alt">${esc(b.eksen)}</span>
+        <div class="aralik-liste">${b.satirlar.map((r) => `<div><span class="aralik-kod">${esc(r.ad)} ${r.bas}–${r.son}×</span><span class="mini-metin">${esc(r.metin)}</span></div>`).join('')}</div>
+        ${b.not ? `<p class="kucuk">${esc(b.not)}</p>` : ''}
+      </div>`;
+  }
+
+  function formulBlok(b) {
+    return `
+      <div class="kart" style="gap:14px">
+        <div class="formul">${esc(b.formul)}</div>
+        <div class="tanimlar">${b.tanimlar.map((t) => `<div class="tanim"><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div>`).join('')}</div>
+        ${b.ornek ? `<div class="ornek"><span class="ust" style="font-size:11px">${esc(b.ornek.baslik)}</span>${b.ornek.satirlar.map((t) => `<div class="ornek-satir"><b>${esc(t[0])}</b> ${esc(t[1])}</div>`).join('')}</div>` : ''}
+        ${b.kural ? `<p class="kural">${esc(b.kural)}</p>` : ''}
+      </div>`;
+  }
+
+  /* ---------- Step hesaplayıcı ---------- */
+  const SECENEK = {
+    ms: [[1, 'Tam'], [2, '1/2'], [4, '1/4'], [8, '1/8'], [16, '1/16']],
+    hatve: [[4, '4 mm'], [5, '5 mm'], [8, '8 mm'], [10, '10 mm']],
+    hiz: [[10, '10 mm/s'], [20, '20 mm/s'], [50, '50 mm/s']]
+  };
+  Object.keys(SECENEK).forEach((k) => {
+    if (!SECENEK[k].some(([v]) => v === durum.hesap[k])) durum.hesap[k] = { ms: 8, hatve: 5, hiz: 20 }[k];
+  });
+  function hesapStep() {
+    const grup = (k, ad) => `
+      <fieldset class="hesap-grup"><legend>${ad}</legend>
+        <div class="secenekler">${SECENEK[k].map(([v, l]) => `<button type="button" class="secenek" data-hesap="${k}" data-deger="${v}" aria-pressed="${durum.hesap[k] === v}">${l}</button>`).join('')}</div>
+      </fieldset>`;
+    return `
+      <div class="kart" style="gap:16px">
+        ${grup('ms', 'Mikroadım')}${grup('hatve', 'Vida hatvesi')}${grup('hiz', 'İlerleme hızı')}
+        <div class="sonuc" aria-live="polite">
+          <div><span class="sonuc-ad">Darbe / tur</span><span class="sonuc-deger" id="h-ppr"></span></div>
+          <div><span class="sonuc-ad">Darbe / mm</span><span class="sonuc-deger" id="h-ppmm"></span></div>
+          <div><span class="sonuc-ad">Darbe frekansı</span><span class="sonuc-deger" id="h-hz"></span></div>
+          <div><span class="sonuc-ad">Motor hızı</span><span class="sonuc-deger" id="h-rpm"></span></div>
+        </div>
+        <div class="adimlar"><span id="h-f1"></span><span id="h-f2"></span><span id="h-f3"></span></div>
+        <p class="kucuk">1,8° motor: 360 ÷ 1,8 = 200 tam adım/tur. PLC darbe çıkışının frekans sınırını kataloğundan kontrol et; motor torku yüksek devirde düşer.</p>
+      </div>`;
+  }
+  function hesapYaz() {
+    const el = $('#h-ppr');
+    if (!el) return;
+    const { ms, hatve, hiz } = durum.hesap;
+    const ppr = 200 * ms;
+    const ppmm = ppr / hatve;
+    const hz = ppmm * hiz;
+    const rpm = (hiz / hatve) * 60;
+    el.textContent = sayi(ppr);
+    $('#h-ppmm').textContent = sayi(ppmm);
+    $('#h-hz').textContent = sayi(hz) + ' Hz';
+    $('#h-rpm').textContent = sayi(rpm) + ' d/dk';
+    $('#h-f1').textContent = `200 × ${ms} = ${sayi(ppr)} darbe/tur`;
+    $('#h-f2').textContent = `${sayi(ppr)} ÷ ${hatve} = ${sayi(ppmm)} darbe/mm`;
+    $('#h-f3').textContent = `${sayi(ppmm)} × ${hiz} = ${sayi(hz)} Hz`;
+  }
+
+  /* ---------- Arama ekranı ---------- */
+  function aramaEkrani() {
+    const vazgec = onceki && onceki !== 'ara' ? onceki : 'ana';
+    return `
+      <div class="ust-cubuk" id="ust-cubuk">
+        <div class="arama-satir">
+          <label class="arama-alan" for="arama-kutusu">${IKON.ara}<span class="gizli">Konu, parça veya terim ara</span>
+            <input id="arama-kutusu" type="search" autocomplete="off" enterkeyhint="search" placeholder="Konu, parça veya terim ara" value="${esc(durum.sorgu)}">
+          </label>
+          <button type="button" class="metin-dugme" data-git="${vazgec}">Vazgeç</button>
+        </div>
+      </div>
+      <h1 class="gizli" tabindex="-1">Arama</h1>
+      <div id="arama-sonuc" class="blok-grup" style="gap:20px">${aramaSonuclari()}</div>`;
+  }
+  function aramaSonuclari() {
+    const q = durum.sorgu.trim();
+    if (katla(q).length < 2) {
+      const son = durum.aramalar.length ? durum.aramalar : ['C eğrisi', 'PUL', 'Mikroadım', 'Kaplin', 'gG'];
+      return `
+        <div class="blok-grup" style="gap:10px"><span class="ust">${durum.aramalar.length ? 'Son aramalar' : 'Örnek aramalar'}</span>
+          <div class="cip-kutu">${son.map((t) => `<button type="button" class="parca" data-ara-terim="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+        <div class="blok-grup" style="gap:10px"><span class="ust">Parçalar ve terimler</span>
+          <div class="cip-kutu">${TUM_PARCALAR.map((p) => `<button type="button" class="parca" data-ara-terim="${esc(aramaTerimi(p))}">${esc(p)}</button>`).join('')}</div></div>`;
+    }
+    const { terimler, sonuclar } = ara(q);
+    if (!sonuclar.length) {
+      return `<div class="bos">${IKON.ara}<span>“${esc(q)}” için sonuç yok. Daha kısa bir terim ya da parça adı dene.</span></div>`;
+    }
+    return `
+      <span class="ust" aria-live="polite">“${esc(q)}” için ${sonuclar.length} sonuç</span>
+      <div class="liste">${sonuclar.map((d) => {
+        const a = d.alt;
+        const h = hazirMi(a);
+        const baslik = h ? sayfaOf(a).baslik : a.ad;
+        const yol = a.konu.ad + (d.bolumAd ? ' › ' + d.bolumAd : '');
+        const parca = vurgula(kesit(d.metin, terimler[0]), terimler);
+        const ic = `<span class="sonuc-yol">${esc(yol)}</span><span class="bulgu-ad">${vurgula(baslik, terimler)}</span><span class="sonuc-parca">${parca}</span>`;
+        return h
+          ? `<button type="button" class="sonuc-kart" data-git="${a.id}"${d.bolum ? ` data-hedef-bolum="${d.bolum}"` : ''}>${ic}</button>`
+          : `<div class="sonuc-kart">${ic}<span class="rozet" style="align-self:flex-start">Hazırlanıyor</span></div>`;
+      }).join('')}</div>`;
+  }
+  function aramaKaydet(q) {
+    q = q.trim();
+    if (katla(q).length < 2) return;
+    durum.aramalar = [q].concat(durum.aramalar.filter((x) => katla(x) !== katla(q))).slice(0, 6);
+    DEPO.yaz('aramalar', durum.aramalar);
+  }
+  function sonucYenile() {
+    const k = $('#arama-sonuc');
+    if (k) k.innerHTML = aramaSonuclari();
+  }
+
+  /* ---------- Kaydedilenler ---------- */
+  function kayitEkrani() {
+    const liste = durum.kayitli.map((id) => ALT[id]).filter((a) => a && hazirMi(a));
+    return `
+      <div class="baslik-blok" style="padding-top:8px">
+        <h1 class="h1" tabindex="-1">Kaydedilenler</h1>
+        <p class="giris">Bilgi sayfalarındaki yer imi düğmesiyle kaydettiğin notlar burada. Kayıtlar bu cihazda, bu tarayıcıda tutulur.</p>
+      </div>
+      ${liste.length
+        ? `<div class="liste">${liste.map((a) => altSatiri(a, true)).join('')}</div>`
+        : `<div class="bos">${IKON.yerimiBuyuk}<span>Henüz kaydettiğin bir not yok.</span><button type="button" class="cip" data-git="ana">Konulara göz at</button></div>`}`;
+  }
+
+  /* ---------- Bölüm takibi ---------- */
+  let aktifBolum = null;
+  let kareBekliyor = false;
+  function sayfaAcildi(a) {
+    const s = sayfaOf(a);
+    const bolum = bekleyenBolum && s.bolumler.some((b) => b.id === bekleyenBolum) ? bekleyenBolum : s.bolumler[0].id;
+    durum.son = { sayfa: a.id, bolum };
+    DEPO.yaz('son', durum.son);
+  }
+  function bolumeGit(id, yumusak) {
+    const sec = document.getElementById('b-' + id);
+    if (!sec) return;
+    const cubuk = $('#ust-cubuk');
+    const h = cubuk ? cubuk.offsetHeight : 0;
+    const top = sec.getBoundingClientRect().top + window.scrollY - h - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: yumusak && !azHareket() ? 'smooth' : 'auto' });
+  }
+  function kaydirmaIzle() {
+    const cubuk = $('#ust-cubuk');
+    if (cubuk) cubuk.classList.toggle('golgeli', window.scrollY > 4);
+    if (!ALT[rota]) return;
+    const secs = $$('.bolum');
+    if (!secs.length) return;
+    const alt = cubuk ? cubuk.getBoundingClientRect().bottom : 0;
+    let idx = 0;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= alt + 48) idx = i; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) idx = secs.length - 1;
+    const id = secs[idx].dataset.bolum;
+    if (id === aktifBolum) return;
+    aktifBolum = id;
+    const satir = $('#bolum-cipleri');
+    if (satir) {
+      $$('.cip', satir).forEach((c) => c.classList.toggle('etkin', c.dataset.bolumKaydir === id));
+      const c = $(`[data-bolum-kaydir="${id}"]`, satir);
+      if (c) {
+        const hedef = c.offsetLeft - satir.offsetLeft - 40;
+        try { satir.scrollTo({ left: Math.max(0, hedef), behavior: azHareket() ? 'auto' : 'smooth' }); } catch (e) { satir.scrollLeft = Math.max(0, hedef); }
+      }
+    }
+    durum.son = { sayfa: rota, bolum: id };
+    DEPO.yaz('son', durum.son);
+    if (idx > (Number(durum.ilerleme[rota]) || 0)) {
+      durum.ilerleme[rota] = idx;
+      DEPO.yaz('ilerleme', durum.ilerleme);
+    }
+  }
+  window.addEventListener('scroll', () => {
+    if (kareBekliyor) return;
+    kareBekliyor = true;
+    requestAnimationFrame(() => { kareBekliyor = false; kaydirmaIzle(); });
+  }, { passive: true });
+
+  /* ---------- Bildirim ---------- */
+  let bildirimZamani = null;
+  function bildir(m) {
+    const b = $('#bildirim');
+    b.textContent = m;
+    b.classList.add('acik');
+    clearTimeout(bildirimZamani);
+    bildirimZamani = setTimeout(() => b.classList.remove('acik'), 1800);
+  }
+
+  /* ---------- Olaylar ---------- */
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-kaydet],[data-bolum-kaydir],[data-filtre],[data-hesap],[data-ara-terim],[data-git]');
+    if (!el) return;
+    const d = el.dataset;
+    if (d.kaydet) {
+      const i = durum.kayitli.indexOf(d.kaydet);
+      if (i >= 0) durum.kayitli.splice(i, 1); else durum.kayitli.unshift(d.kaydet);
+      DEPO.yaz('kayitli', durum.kayitli);
+      const acik = i < 0;
+      el.setAttribute('aria-pressed', String(acik));
+      el.setAttribute('aria-label', acik ? 'Kayıtlardan çıkar' : 'Kaydet');
+      bildir(acik ? 'Kaydedildi' : 'Kayıtlardan çıkarıldı');
+    } else if (d.bolumKaydir) {
+      bolumeGit(d.bolumKaydir, true);
+    } else if (d.filtre) {
+      durum.filtre[d.konu] = d.filtre;
+      ciz(rota, { koru: true });
+      const b = $(`[data-filtre="${d.filtre}"]`);
+      if (b) b.focus({ preventScroll: true });
+    } else if (d.hesap) {
+      durum.hesap[d.hesap] = Number(d.deger);
+      DEPO.yaz('hesap', durum.hesap);
+      $$(`[data-hesap="${d.hesap}"]`).forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+      hesapYaz();
+    } else if (d.araTerim) {
+      durum.sorgu = d.araTerim;
+      aramaKaydet(d.araTerim);
+      if (rota === 'ara') {
+        const g = $('#arama-kutusu');
+        if (g) g.value = durum.sorgu;
+        sonucYenile();
+        window.scrollTo(0, 0);
+      } else {
+        git('ara');
+      }
+    } else if (d.git) {
+      if (rota === 'ara' && el.closest('#arama-sonuc')) aramaKaydet(durum.sorgu);
+      git(d.git, d.hedefBolum);
+    }
+  });
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.id === 'arama-kutusu') {
+      durum.sorgu = e.target.value;
+      sonucYenile();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.target && e.target.id === 'arama-kutusu' && e.key === 'Enter') {
+      aramaKaydet(e.target.value);
+      e.target.blur();
+    }
+  });
+
+  /* ---------- Başlat ---------- */
+  let ilk = 'ana';
+  try { ilk = rotaCoz(location.hash); } catch (e) { /* yok say */ }
+  ciz(ilk);
+})();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
+}
+</script>
+</body>
+</html>
