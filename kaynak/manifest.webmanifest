@@ -1,0 +1,25 @@
+{
+  "name": "PANO Bilgi Notları",
+  "short_name": "PANO",
+  "description": "Elektrik-elektronik konularında şemalı, hesaplı ve arıza odaklı bilgi notları.",
+  "lang": "tr",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F1EA",
+  "theme_color": "#F3F1EA",
+  "categories": ["education", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {"src": "varliklar/simgeler/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "varliklar/simgeler/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "varliklar/simgeler/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Ara", "url": "./#ara", "icons": [{"src": "varliklar/simgeler/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Kaydedilenler", "url": "./#kaydedilenler", "icons": [{"src": "varliklar/simgeler/icon-192.png", "sizes": "192x192"}]}
+  ]
+}

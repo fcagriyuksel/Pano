@@ -1,0 +1,15 @@
+/* Arama ekranı */
+.arama-satir{display:flex;align-items:center;gap:10px}
+.arama-alan{flex-grow:1;min-width:0;display:flex;align-items:center;gap:10px;height:50px;padding:0 14px;border:2px solid var(--ink);border-radius:12px;background:var(--card)}
+.arama-alan input{flex-grow:1;min-width:0;height:100%;border:0;outline:none;background:transparent;font:inherit;font-size:16px;color:var(--ink)}
+.arama-alan input::placeholder{color:var(--muted)}
+.metin-dugme{flex-shrink:0;height:44px;padding:0 4px;border:0;background:none;color:var(--signal);font-size:15px;font-weight:500;cursor:pointer}
+.sonuc-kart{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;width:100%;color:var(--ink)}
+button.sonuc-kart{cursor:pointer}
+button.sonuc-kart:hover{border-color:var(--ink)}
+.sonuc-yol{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.bulgu-ad{font-size:16px;font-weight:600}
+.sonuc-parca{font-size:13px;line-height:1.5;color:var(--ink-2)}
+mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
+.bos{padding:28px 20px;border:1px dashed var(--line);border-radius:16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5;display:flex;flex-direction:column;align-items:center;gap:10px}
+.bos svg{color:var(--muted)}

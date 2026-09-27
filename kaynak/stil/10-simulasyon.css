@@ -1,0 +1,7 @@
+/* Simülasyon */
+.sim-durum{padding:10px 12px;border-radius:10px;background:var(--chip);font-size:14px;line-height:1.5;font-weight:500;min-height:44px;display:flex;align-items:center}
+.sim-durum.uyari{background:var(--danger-bg);color:var(--danger-ink);border:1px solid var(--danger-line)}
+.dugme-kucuk{min-height:44px;padding:0 12px;font-size:14px}
+.dugme[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.secenekler{flex-wrap:wrap}
+.secenek{flex:1 1 56px}

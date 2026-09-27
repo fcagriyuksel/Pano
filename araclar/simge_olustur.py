@@ -1,16 +1,17 @@
-"""Uygulama simgelerini SVG’den üretir (PNG, depo kökü).
+"""Uygulama simgelerini SVG’den üretir (PNG, varliklar/simgeler/).
 
 Kullanım (depo kökünden):
-  python3 simge_olustur.py              # icon-192, icon-512, icon-maskable-512, apple-touch-icon
-  python3 simge_olustur.py --onizle DIR # ayrıca yuvarlak ve kare maskeli önizleme kaydeder
+  python3 araclar/simge_olustur.py              # icon-192, icon-512, icon-maskable-512, apple-touch-icon
+  python3 araclar/simge_olustur.py --onizle DIR # ayrıca yuvarlak ve kare maskeli önizleme kaydeder
 
 Simge: sarı bara → sigorta (IEC 60617 sembolü, içi enerjili) → bağlantı ucu.
-Açılış ekranındaki çizim (pano-kaynak.html, #acilis) aynı koordinatları kullanır; biri değişirse öbürünü de güncelle.
+Açılış ekranındaki çizim (kaynak/govde/03-acilis.html) aynı koordinatları kullanır; biri değişirse öbürünü de güncelle.
+Ayrıntılı adımlar: belgeler/simge-ve-acilis.md
 Gerekli: pip install playwright (ortamda Chromium varsa kurulum gerekmez).
 """
 import pathlib, argparse
 
-kok = pathlib.Path(__file__).resolve().parent
+hedef = pathlib.Path(__file__).resolve().parent.parent / 'varliklar' / 'simgeler'
 arg = argparse.ArgumentParser()
 arg.add_argument('--onizle', help='önizleme görüntüsünün kaydedileceği klasör')
 a = arg.parse_args()
@@ -47,7 +48,7 @@ with sync_playwright() as p:
     for ad, px, olcek in DOSYALAR:
         pg = b.new_page(viewport={'width': px, 'height': px}, device_scale_factor=1)
         pg.set_content(f'<body style="margin:0">{simge(px, olcek)}</body>')
-        pg.screenshot(path=str(kok / ad))
+        pg.screenshot(path=str(hedef / ad))
         pg.close()
         print('yazıldı:', ad)
     if a.onizle:

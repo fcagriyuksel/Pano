@@ -1,0 +1,36 @@
+:root{
+  --paper:#F3F1EA; --card:#FFFDF8; --ink:#1B1E21; --ink-2:#3A3F44; --muted:#50565C;
+  --line:#DAD5C8; --line-soft:#E4E0D5; --chip:#E9E5DA;
+  --accent:#F2B01E; --on-accent:#1B1E21; --signal:#1D5FB8;
+  --panel:#1B1E21; --panel-ink:#F3F1EA; --panel-muted:#C9C5BA; --panel-track:#3A3F44;
+  --danger-bg:#F8E4DE; --danger-line:#E7B9AD; --danger-ink:#7F2414;
+  --mark:#FBE3A6; --focus:#1D5FB8;
+  --wire-l:#7A4A22; --wire-l2:#1B1E21; --wire-l3:#8A8F94; --wire-n:#1D5FB8; --wire-pe:#4E8A2A; --wire-pe2:#E0C21A; --dc-plus:#A8321F;
+  --rail:#D3CEC1; --svg-body:#FFFFFF; --hatch:#8A8F94;
+  --f-display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --nav-h:68px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#141619; --card:#1D2024; --ink:#ECE8DF; --ink-2:#C9C5BB; --muted:#A7A398;
+    --line:#343940; --line-soft:#2A2E34; --chip:#2A2E34;
+    --signal:#7AAAF2; --panel:#262A30; --panel-ink:#F3F1EA; --panel-muted:#C3BFB5; --panel-track:#454B52;
+    --danger-bg:#3A201B; --danger-line:#6B3328; --danger-ink:#F2A996;
+    --mark:#6B5410; --focus:#7AAAF2;
+    --wire-l:#C58B55; --wire-l2:#646B73; --wire-l3:#B3B7BC; --wire-n:#7AAAF2; --wire-pe:#6DB043; --dc-plus:#E07A64;
+    --rail:#3A3F45; --svg-body:#2A2E34; --hatch:#7D838A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#141619; --card:#1D2024; --ink:#ECE8DF; --ink-2:#C9C5BB; --muted:#A7A398;
+  --line:#343940; --line-soft:#2A2E34; --chip:#2A2E34;
+  --signal:#7AAAF2; --panel:#262A30; --panel-ink:#F3F1EA; --panel-muted:#C3BFB5; --panel-track:#454B52;
+  --danger-bg:#3A201B; --danger-line:#6B3328; --danger-ink:#F2A996;
+  --mark:#6B5410; --focus:#7AAAF2;
+  --wire-l:#C58B55; --wire-l2:#646B73; --wire-l3:#B3B7BC; --wire-n:#7AAAF2; --wire-pe:#6DB043; --dc-plus:#E07A64;
+  --rail:#3A3F45; --svg-body:#2A2E34; --hatch:#7D838A;
+}

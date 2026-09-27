@@ -1,6 +1,7 @@
-/* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır. */
-const KABUK = 'pano-202609272155';
-const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./barlow-condensed-latin-ext-600-normal.woff2", "./barlow-condensed-latin-600-normal.woff2", "./barlow-condensed-latin-ext-700-normal.woff2", "./barlow-condensed-latin-700-normal.woff2", "./ibm-plex-sans-latin-ext-400-normal.woff2", "./ibm-plex-sans-latin-400-normal.woff2", "./ibm-plex-sans-latin-ext-500-normal.woff2", "./ibm-plex-sans-latin-500-normal.woff2", "./ibm-plex-sans-latin-ext-600-normal.woff2", "./ibm-plex-sans-latin-600-normal.woff2", "./ibm-plex-mono-latin-ext-500-normal.woff2", "./ibm-plex-mono-latin-500-normal.woff2", "./ibm-plex-mono-latin-ext-600-normal.woff2", "./ibm-plex-mono-latin-600-normal.woff2"];
+/* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır.
+   Bu dosya şablondur: derle.py 202609272219 ve ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./varliklar/simgeler/apple-touch-icon.png", "./varliklar/simgeler/icon-192.png", "./varliklar/simgeler/icon-512.png", "./varliklar/simgeler/icon-maskable-512.png", "./varliklar/yazitipleri/barlow-condensed-latin-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-700-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-700-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-600-normal.woff2"] yerine gerçek değerleri yazar. */
+const KABUK = 'pano-202609272219';
+const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./varliklar/simgeler/apple-touch-icon.png", "./varliklar/simgeler/icon-192.png", "./varliklar/simgeler/icon-512.png", "./varliklar/simgeler/icon-maskable-512.png", "./varliklar/yazitipleri/barlow-condensed-latin-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-700-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-700-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-600-normal.woff2"];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(KABUK).then((c) => c.addAll(DOSYALAR)).then(() => self.skipWaiting()));
@@ -37,7 +38,7 @@ function onceAg(r) {
   });
 }
 
-/* Yazı tipi ve simgeler değişmez: önce önbellek. */
+/* varliklar/ altındaki dosyalar (yazı tipi, simge, kütüphane) sürümle değişmez: önce önbellek. */
 function onceOnbellek(r) {
   return caches.match(r).then((m) => m || fetch(r).then((y) => {
     if (y && y.ok) { const kopya = y.clone(); caches.open(KABUK).then((c) => c.put(r, kopya)); }
@@ -50,6 +51,6 @@ self.addEventListener('fetch', (e) => {
   if (r.method !== 'GET') return;
   const u = new URL(r.url);
   if (u.origin !== self.location.origin) return;
-  if (/\.(woff2|png)$/.test(u.pathname)) { e.respondWith(onceOnbellek(r)); return; }
+  if (u.pathname.includes('/varliklar/')) { e.respondWith(onceOnbellek(r)); return; }
   e.respondWith(onceAg(r));
 });

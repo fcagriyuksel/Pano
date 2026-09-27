@@ -1,48 +1,50 @@
 """Bütün konu ve bilgi sayfalarını tarayıcıda açıp kontrol eder.
 
 Kullanım (depo kökünden):
-  python3 test_sayfalar.py              # açık ve koyu tema, 360 px genişlik
-  python3 test_sayfalar.py --ekran DIR  # ayrıca her şemanın ekran görüntüsünü DIR’e kaydeder
-  python3 test_sayfalar.py --sayfa pid,ladder --ekran /tmp/ekran
+  python3 test/test_sayfalar.py                          # açık ve koyu tema, 360 px genişlik
+  python3 test/test_sayfalar.py --ekran DIR              # ayrıca her şemanın ekran görüntüsünü DIR’e kaydeder
+  python3 test/test_sayfalar.py --sayfa pid,ladder --ekran /tmp/ekran
 
-Kontroller: açılış ekranının kendiliğinden kalkması, JavaScript hatası, ekranda 'undefined' / 'NaN' / '[object', yatay taşma, h1 yokluğu,
-her simülasyon düğmesine bir kez basma. Gerçek yazı tipleri depo kökündeki woff2 dosyalarından yüklenir.
-Gerekli: pip install playwright && playwright install chromium (ortamda Chromium varsa kurulum gerekmez).
+Kaynak geçici bir klasöre derlenir (araclar/derle.py); depodaki yayın dosyalarına dokunulmaz.
+Kontroller: açılış ekranının kendiliğinden kalkması, JavaScript hatası, ekranda 'undefined' / 'NaN' / '[object',
+yatay taşma, h1 yokluğu, her simülasyon ve model düğmesine bir kez basma, 3B modelin çizilmesi.
+Gerekli: pip install playwright (ortamda Chromium varsa kurulum gerekmez).
 """
-import sys, re, pathlib, threading, http.server, socketserver, functools, argparse
+import sys, pathlib, threading, http.server, socketserver, functools, argparse, tempfile, os, shutil
 
-kok = pathlib.Path(__file__).resolve().parent
+kok = pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(kok / 'araclar'))
+import derle  # noqa: E402
+
 arg = argparse.ArgumentParser()
 arg.add_argument('--ekran', help='şema ekran görüntülerinin kaydedileceği klasör')
 arg.add_argument('--sayfa', help='virgülle ayrılmış sayfa id’leri (boşsa hepsi)')
 a = arg.parse_args()
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright  # noqa: E402
 
-# Google Fonts yerine depo kökündeki yazı tiplerini kullanan geçici sayfa
-kaynak = (kok / 'pano-kaynak.html').read_text(encoding='utf-8')
-index = (kok / 'index.html').read_text(encoding='utf-8')
-ff = re.search(r'<style>\s*@font-face.*?</style>', index, re.S)
-kaynak = re.sub(r'<link rel="preconnect"[^>]*>\s*', '', kaynak)
-kaynak = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^>]*>', ff.group(0) if ff else '', kaynak)
-gecici = kok / '_test_sayfalar.html'
-gecici.write_text('<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + kaynak + '</body></html>', encoding='utf-8')
+gecici = pathlib.Path(tempfile.mkdtemp(prefix='pano-test-'))
+derle.derle(gecici)
+os.symlink(kok / 'varliklar', gecici / 'varliklar')
+
 
 class Sessiz(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *x): pass
-sunucu = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Sessiz, directory=str(kok)))
+
+
+sunucu = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Sessiz, directory=str(gecici)))
 port = sunucu.server_address[1]
 threading.Thread(target=sunucu.serve_forever, daemon=True).start()
 
 sorunlar, hatalar = [], []
 try:
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
         for tema in ('light', 'dark'):
-            pg = b.new_page(viewport={'width': 360, 'height': 780}, device_scale_factor=2, color_scheme=tema)
+            pg = b.new_page(viewport={'width': 360, 'height': 780}, device_scale_factor=2, color_scheme=tema, service_workers='block')
             pg.on('pageerror', lambda e: hatalar.append(str(e)))
             pg.on('console', lambda m: hatalar.append(m.text) if m.type == 'error' else None)
-            pg.goto(f'http://127.0.0.1:{port}/_test_sayfalar.html'); pg.wait_for_timeout(500)
+            pg.goto(f'http://127.0.0.1:{port}/index.html'); pg.wait_for_timeout(500)
             # Açılış ekranı kendiliğinden kalkmalı ve giriş animasyonu bitmeli
             try: pg.wait_for_function("!document.getElementById('acilis') && !document.documentElement.classList.contains('acilis')", timeout=4000)
             except Exception: sorunlar.append((tema, 'açılış', 'açılış ekranı 4 sn içinde kalkmadı'))
@@ -59,18 +61,28 @@ try:
                 for d in pg.locator('[data-sim-olay]').all():
                     try: d.click(timeout=1000); pg.wait_for_timeout(60)
                     except Exception as e: sorunlar.append((tema, r, 'sim düğmesi', str(e)[:80]))
+                modeller = pg.locator('[data-model-kutu]')
+                if modeller.count():
+                    try: pg.wait_for_function("[...document.querySelectorAll('[data-model-kutu]')].every((k) => k.dataset.durum === 'hazir')", timeout=8000)
+                    except Exception: sorunlar.append((tema, r, '3B model çizilmedi', pg.evaluate("[...document.querySelectorAll('[data-model-kutu]')].map((k) => k.dataset.durum).join(',')")))
+                    for d in pg.locator('[data-model-olay]').all():
+                        try: d.click(timeout=1000); pg.wait_for_timeout(80)
+                        except Exception as e: sorunlar.append((tema, r, 'model düğmesi', str(e)[:80]))
                 if a.ekran:
                     klasor = pathlib.Path(a.ekran); klasor.mkdir(parents=True, exist_ok=True)
                     semalar = pg.locator('.bolum svg.sema:not([data-sim-kutu] svg)')
                     for i in range(semalar.count()):
                         semalar.nth(i).scroll_into_view_if_needed()
                         semalar.nth(i).screenshot(path=str(klasor / f'{r}_{i}_{tema}.png'))
+                    for i in range(modeller.count()):
+                        modeller.nth(i).scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+                        modeller.nth(i).screenshot(path=str(klasor / f'{r}_model{i}_{tema}.png'))
             print(tema, len(rotalar), 'sayfa tarandı')
             pg.close()
         b.close()
 finally:
     sunucu.shutdown()
-    gecici.unlink(missing_ok=True)
+    shutil.rmtree(gecici, ignore_errors=True)
 
 for s in sorunlar: print('SORUN:', s)
 for h in hatalar[:20]: print('HATA:', h)

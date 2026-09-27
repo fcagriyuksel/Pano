@@ -1,0 +1,11 @@
+/* Alt menü */
+.alt-menu{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(10px + env(safe-area-inset-bottom,0px))}
+.alt-menu-ic{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.menu-oge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;border:0;background:none;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer}
+.menu-ikon{width:60px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center}
+.menu-oge[aria-current="page"]{color:var(--ink);font-weight:600}
+.menu-oge[aria-current="page"] .menu-ikon{background:var(--accent);color:var(--on-accent)}
+.sayi{font-family:var(--f-mono);font-size:10px;margin-left:2px}
+
+.bildirim{position:fixed;left:50%;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;padding:10px 16px;border-radius:12px;background:var(--panel);color:var(--panel-ink);font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s}
+.bildirim.acik{opacity:1}

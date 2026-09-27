@@ -1,144 +1,90 @@
 # PANO — proje kılavuzu
 
-PANO, Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Tek dosyalık bir HTML uygulamasıdır (PWA). GitHub Pages’ten yayınlanır ve telefonun ana ekranına eklenerek kullanılır. Dil Türkçedir.
+PANO, Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Telefonun ana ekranına eklenen bir PWA’dır ve GitHub Pages’ten yayınlanır. Dil Türkçedir.
 
-Canlı adres: https://fcagriyuksel.github.io/Pano/ (bu deponun kökü yayınlanır).
+Canlı adres: https://fcagriyuksel.github.io/Pano/ (deponun kökü yayınlanır).
+
+Kaynak `kaynak/` klasöründe konu ve türe göre küçük dosyalara bölünmüştür. `araclar/derle.py` bunları birleştirip tek dosyalık `index.html` üretir.
 
 ## Altın kurallar (kullanıcının)
 
 - Optimize, hatasız, geliştirmeye açık. Bir hata düzeltildiğinde aynı hatanın başka nerede çıkabileceğine de bak.
 - Türkçe yazım doğru olmalı. Kısa, doğrudan, yapmacık olmayan cümleler kullan.
-- Kullanıcı odaklı, pratik ve şematik ol. Her sayfada görsel olsun: şema, hesaplayıcı ya da simülasyon.
+- Kullanıcı odaklı, pratik ve şematik ol. Her sayfada görsel olsun: şema, hesaplayıcı, simülasyon.
 - Değerler saha ve standartlarla uyumlu olmalı (IEC/EN, Elektrik İç Tesisleri Yönetmeliği). Emin olmadığın değeri yazma.
+- Proje her zaman düzenli kalmalı: her iş için ne yapılacağı `belgeler/` altında yazılı olmalı. Yeni bir iş türü eklenirse rehberini de yaz; akış değişirse rehberi güncelle.
 
-## Dosya düzeni
+## Kullanıcının tercihleri
 
-Depoda klasör yok; her şey kökte durur (GitHub Pages kökü yayınlar).
+- Düzenlemeleri yalnızca Claude Code yapar. Kullanıcı dosyaları elle ya da claude.ai sohbetinde düzenlemez.
+- Değişiklikler şimdilik doğrudan `main` dalına gönderilir (PR açılmaz). Göndermeden önce `python3 araclar/kontrol.py` temiz olmalı.
+- 3B modeller uygulamanın görsel dilinde olur: gerçek biçim ve oranlar, sade malzeme, uygulamanın renkleri, numaralı parçalar. Aşırı gerçekçilik yerine telefonda akıcılık.
+- Kullanıcı teknik terimlerde (PR, dal vb.) açıklamaya ihtiyaç duyabilir; kısa ve sade anlat.
+
+## Klasör düzeni
 
 ```
-pano-kaynak.html       TEK ANA KAYNAK: içerik + stil + kod (elle düzenlenen tek dosya)
-pwa_olustur.py         pano-kaynak.html → yayın dosyaları
-simge_olustur.py       uygulama simgeleri (SVG → PNG, Playwright)
-test_hesaplar.js       bütün hesaplayıcı kombinasyonları
-test_sayfalar.py       bütün sayfalar, iki tema, taşma ve hata kontrolü
-index.html             DERLENİR, elle düzenleme
-privacy.html           DERLENİR
-manifest.webmanifest   DERLENİR
-sw.js                  DERLENİR (önbellek sürümü her derlemede değişir)
-*.woff2, *.png         yazı tipleri (@fontsource, OFL) ve simgeler (simge_olustur.py üretir)
-CLAUDE.md, README.md
+kaynak/                     ELLE DÜZENLENEN TEK YER
+  sablon.html               index.html iskeleti
+  gizlilik.html, sw.js, manifest.webmanifest   diğer yayın dosyalarının şablonları
+  stil/NN-*.css             stil (01 belirteçler … 99 hareket azaltma)
+  govde/NN-*                gövde parçaları: uygulama kabı, erken betik, açılış ekranı, alt menü
+  ortak/NN-*.js             genel kapsam: sayi(), kayıtlar, ayarlar (sürüm), metinler, şema araçları
+  konular/NN-konu/          konu başına: konu.js, semalar.js, hesaplar.js, simler.js
+  uygulama/NN-*.js          uygulama kodu (tek IIFE): simgeler, dizin, arama, yönlendirme, ekranlar, bloklar, olaylar
+varliklar/                  sabit dosyalar: yazitipleri/, simgeler/, LISANSLAR.md
+araclar/                    derle.py, kontrol.py, simge_olustur.py
+test/                       test_icerik.js (tarayıcısız), test_sayfalar.py (Playwright)
+belgeler/                   iş başına rehberler
+index.html, privacy.html, manifest.webmanifest, sw.js   DERLENİR, elle düzenleme
 ```
 
-`pano-kaynak.html` doctype içermez: claude.ai Artifact gövdesi olarak da yayınlanabilir. Yayın sürümü `pwa_olustur.py` ile üretilir. Bu sırada Google Fonts bağlantıları kökteki woff2 dosyalarıyla değiştirilir ve service worker eklenir.
+Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 
-Play Store görselleri ve metinleri (magaza/) şimdilik depoda değil, kullanıcının bilgisayarındaki proje zip’inde duruyor. Yayın zamanı gelince eklenir.
+## Hangi iş, hangi rehber
+
+İşe başlamadan önce ilgili rehberi oku.
+
+| İş | Rehber |
+|---|---|
+| Konu, alt başlık, bilgi sayfası | `belgeler/yeni-sayfa.md` |
+| Şema | `belgeler/sema.md` |
+| Hesaplayıcı | `belgeler/hesaplayici.md` |
+| Simülasyon | `belgeler/simulasyon.md` |
+| Renk, yazı tipi, bileşen | `belgeler/gorunum.md` |
+| Simge ve açılış efekti | `belgeler/simge-ve-acilis.md` |
+| Derleme, test, yayın, Play Store notları | `belgeler/yayin.md` |
+| Yazım kuralları | `belgeler/yazim.md` |
 
 ## Değişiklik akışı
 
-1. `pano-kaynak.html` dosyasını düzenle.
-2. Anlamlı bir değişiklikte `UYGULAMA.surum` değerini artır (Ayarlar › Hakkında’da görünür).
-3. Testleri çalıştır (aşağıda).
-4. `python3 pwa_olustur.py` ile yayın dosyalarını üret.
-5. Commit at ve `main` dalına gönder. GitHub Pages birkaç dakikada yayınlar. Telefondaki uygulama internet varken bir sonraki açılışta yeni sürümü alır (service worker, HTML için önce ağı dener).
-
-Eski sw.js dursa bile yalnızca index.html’in güncellenmesi yeter. Yine de her derlemede dört dosyayı birlikte gönder.
-
-## Kodun yapısı (pano-kaynak.html)
-
-Sırayla: CSS (tema belirteçleri `:root`, koyu tema iki kez tanımlı) → `.app` → erken betik (seçili tema + açılış ekranı kararı) → açılış ekranı `#acilis` → menü → `VERI` → `UYGULAMA` + `METINLER` → şema yardımcıları + `SEMALAR` → uygulama IIFE’si (`IKON`, `HESAPLAR`, `SIMLER`, dizinler, arama, premium, yönlendirme, ekranlar, bloklar, olaylar).
-
-### İçerik: VERI
-
-- `VERI.konular[]`: `{ id, ad, ikon, ozet, giris, filtreler?, altlar[] }`
-- `altlar[]`: `{ id, kod, ad, alt, filtre?, sayfa }`. `sayfa` yoksa listede “Hazırlanıyor” görünür.
-- `VERI.sayfalar[id]`: `{ baslik, giris, etiketler[], bolumler[] }`
-- `bolumler[]`: `{ id, kisa (bölüm çipi), baslik, bloklar[] }`
-- Blok tipleri:
-  - `sema {svg, lejant?[[sınıf, ad]], isaretler?[[ad, metin]], not?}`: isaretler sırası şemadaki 1, 2, 3… numaralarıyla aynı olmalı.
-  - `kartlar {kartlar[{ikon, baslik, etiket, metin}]}`: ikon, IKON’daki 28 px simgelerden biri.
-  - `tablo {satirlar[[etiket, ''|'sig'|'dc', metin]]}`
-  - `formul {formul, tanimlar[[k, v]], ornek?{baslik, satirlar[[k, v]]}, kural?}`
-  - `aralik {baslik, eksen, max, adim, satirlar[{ad, bas, son, metin}], not?}`
-  - `hesap {tur}`, `sim {tur}`
-  - `ariza {belirti, satirlar[[neden, 'Kontrol: …']]}`
-  - `hatalar {hatalar[[hata, '… Doğrusu: …']]}`
-  - `adimlar {satirlar[]}`, `not {metin}`, `renkler {satirlar[[ad, cssRenk, renkAdı]]}`, `parcalar {parcalar[]}`
-- Lejant sınıfları: `l l2 l3 n pe pen sig dc ink acc opt opt2 kacak hatch`.
-- `VERI.ucretsiz`: premium kilidi açıldığında ücretsiz kalacak sayfalar.
-
-### Şemalar: SEMALAR
-
-- Genişlik her zaman `viewBox="0 0 318 H"`, `class="sema"`, `role="img"` ve açıklayıcı `aria-label` kullan.
-- Renkleri öznitelikle değil, stil ile ver: `style="fill:var(--ink)"`. Belirteçler: `--ink --muted --line --card --svg-body --chip --rail --hatch --accent --signal --dc-plus --wire-l --wire-l2 --wire-l3 --wire-n --wire-pe --wire-pe2 --paper`. Siyah iletken için `--wire-l2` kullan (`--ink` koyu temada açık renk olur).
-- Yardımcılar: `_no(x, y, n)` numaralı işaret, `_yazi(x, y, metin, {a, b, w, r})`, `_kutu(x, y, w, h, {rx, f, sw})`, `_tel(d, renk, {w, k})`, `_pe(d)`, `_cizgi(d)` noktalı kılavuz, `_kontak`, `_bobin`, `_lamba`, `_sig`, `_puls`.
-- SEMALAR, uygulama IIFE’sinden önce çalışır; `sayi()` burada **yoktur**. Gerekirse yerel `toLocaleString('tr-TR')` kullan.
-- Şema yazıları IBM Plex Mono’dur: karakter genişliği ≈ 0,6 × yazı boyutu. Taşma ve üst üste binme için genişliği hesapla, sonra ekran görüntüsüyle iki temada kontrol et.
-
-### Hesaplayıcılar: HESAPLAR
-
-`{ gruplar[{k, ad, v, s[[değer, etiket]]}], hesapla(d) → {sonuclar: 4 × [ad, değer], adimlar: [en az 2 satır]}, not }`
-
-- Varsayılan `v` seçeneklerden biri olmalı (test bunu kontrol eder).
-- Sayıları `sayi(n, ondalık)` ile yaz (tr-TR: 1.234,5). Negatif işaret için `−` kullan.
-- `adimlar` satır sayısı değişebilir, uyarı satırı eklenebilir. Sonuç ve adımlar her seçimde yeniden çizilir.
-- Seçenek etiketleri kısa olmalı; 4 düğmeli satırda ≈ 8 karakter.
-
-### Simülasyonlar: SIMLER
-
-`{ not, yeni() → durum, hesapla?(s), olay(s, olay, guncelle), tik?(s, dt), dugmeler(s) → [[olay, etiket, basılı?]], durum(s) → {metin, uyari?}, ciz(s) → svg }`
-
-- `tik` varsa sayfa açıkken 100 ms’de bir çağrılır; sayfadan çıkınca durur.
-- Anlık buton için `setTimeout` ile geri bırak ve `guncelle()` çağır (bkz. `muhurleme`, `valf52`).
-
-## Yazım kuralları
-
-- Tipografik kesme işareti kullan: `PLC’ye`, `V’ta`. Ek, kısaltmanın okunuşuna göre gelir: `mA’e`, `4 mA’de`, `16 A’den`, `1.600 A’e`.
-- Ondalık ayırıcı virgül, binlik ayırıcı nokta: `2,5 mm²`, `27.648`.
-- `hâl`, `hâlde` yazılır; “sadece” yerine “yalnızca” kullanılır.
-- Terimler: izolasyon direnci, DIP anahtarı, yumuşak yol verici, döngüsel.
-- Arıza satırı “Kontrol:” ile başlayıp eylemle sürer. Hata kartı “Doğrusu:” ile biter.
-- Eğri ya da tip anlatılırken “B tipi” yerine “B eğrisi” yazılır; “D tipi” yalnızca DIAZED için kullanılabilir.
-
-## Test
-
-```
-node test_hesaplar.js                               # bütün hesaplayıcı kombinasyonları
-python3 test_sayfalar.py                            # bütün sayfalar, iki tema, 360 px
-python3 test_sayfalar.py --sayfa pid --ekran /tmp/ekran   # şema görüntüleri
-```
-
-`test_sayfalar.py` için Playwright ve Chromium gerekir. Yoksa en azından JavaScript söz dizimini kontrol et: `pano-kaynak.html` içindeki `<script>` bloklarını ayır ve `node --check` ile dene.
+1. `kaynak/` altında düzenle.
+2. Anlamlı bir değişiklikte `kaynak/ortak/30-ayarlar.js` içindeki `surum` değerini artır.
+3. `python3 araclar/kontrol.py` (içerik testi + iki temada sayfa testi + yayın dosyaları güncel mi).
+4. `python3 araclar/derle.py`.
+5. Commit at ve `main` dalına gönder. GitHub Pages birkaç dakikada yayınlar; telefon internet varken bir sonraki açılışta yeni sürümü alır.
 
 ## Commit öncesi kontrol listesi
 
-- [ ] İki test de temiz.
-- [ ] Yeni ya da değişen şemaların ekran görüntüleri açık ve koyu temada kontrol edildi: yazı taşması, üst üste binme, işaret numaraları.
-- [ ] Arama yeni içeriği buluyor (dizin sayfa metninden otomatik oluşur).
-- [ ] `UYGULAMA.surum` artırıldı, `python3 pwa_olustur.py` çalıştırıldı.
+- [ ] `python3 araclar/kontrol.py` temiz.
+- [ ] Yeni ya da değişen şema, simülasyon ve modellerin ekran görüntüleri açık ve koyu temada kontrol edildi (`python3 test/test_sayfalar.py --sayfa <id> --ekran /tmp/ekran`).
+- [ ] Arama yeni içeriği buluyor.
+- [ ] `surum` artırıldı, `python3 araclar/derle.py` çalıştırıldı.
+- [ ] Akış ya da yapı değiştiyse ilgili rehber ve bu dosya güncellendi.
 
-## Bilinen tuzaklar
+## Genel tuzaklar
 
 - SVG sunum özniteliklerinde `var()` çalışmaz (`fill="var(--x)"`); her zaman `style` kullan.
-- `sayi()` SEMALAR içinde tanımlı değildir.
-- Betikle toplu metin değiştirdikten sonra `<script>` bloklarını `node --check` ile doğrula; eşleşme sayısını her zaman kontrol et (tam 1 olmalı).
+- Betikle toplu metin değiştirirken eşleşme sayısını kontrol et (çoğunlukla tam 1 olmalı), sonra derle: derleme söz dizimini `node --check` ile denetler.
+- Yorumun içine `*/` yazma (ör. `konular/*/simler.js` yorumu erken kapatır). `konular/<konu>/simler.js` yaz.
 - Arama, katlama tablosuyla tire türlerini eşitler (`4-20` = `4–20`); katlama tek karakteri tek karakterle değiştirmeli, yoksa vurgulama kayar.
-- Hesap seçenek düğmelerinde bölünemeyen uzun metin taşar (CSS artık kırıyor; yine de kısa tut).
-- Pnömatik valf sembolünde aktif kare portların altına kaydırılır; port x konumları sabittir.
-- Açılış ekranı oturum başına bir kez (sessionStorage `pano.acilis`) ve yalnızca hareket azaltma kapalıyken görünür. CSS ile kendi kendine kapanır (≈ 1,7 sn); JS çökse bile uygulamayı örtmez. Dokununca atlanır.
-- Açılış çizimi ile `simge_olustur.py` aynı koordinatları kullanır (bara, sigorta, uç). Biri değişirse öbürünü de güncelle.
-- Erken betik seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
-
-## Premium ve Play Store (ertelendi)
-
-Kullanıcı şimdilik yalnızca ana ekrandaki PWA’yı istiyor. Altyapı hazır ama kapalı:
-
-- `UYGULAMA.premium.kilit = false`. `--kilit` bayrağıyla derlenince kilit açılır.
-- `UYGULAMA.eposta = '[İLETİŞİM E-POSTASI]'`: kullanıcı ayrı bir adres açacak.
-- Mağaza dosyaları (magaza/): metinler güncel. Ekran görüntüleri ve tanıtım görseli eski sürümden kaldı; yayından önce yenilenmeli.
-- Play için notlar (Eylül 2026 itibarıyla): hedef API 36; yeni kişisel hesapta 12 test kullanıcısıyla 14 gün kapalı test; dijital içerikte Play Billing zorunlu, satın alma 72 saat içinde sunucu tarafında onaylanmalı (doğrulama sunucusu gerekir); TWA için alan adının kökünde `assetlinks.json` gerekir (github.io/Pano alt yolu uygun değil, alan adı gerekir).
+- Erken betik (`govde/02-erken-betik.js`) seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
+- Uygulama kodu tek IIFE içindedir; `uygulama/` dosyaları aynı kapsamı paylaşır. Sıra önemlidir: bir dosya, kendinden sonra gelen dosyanın sabitini yükleme anında kullanamaz.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 67 sayfa, 24 hesaplayıcı, 8 simülasyon.
+Mevcut: 13 konu, 67 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon.
+
+Sıradaki iş: 3B etkileşimli modeller. Önce step motor (iç yapı, adım adım dönme); sonra sürücü klemensleri, servo motor, otomatik sigorta.
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

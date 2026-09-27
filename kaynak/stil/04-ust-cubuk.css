@@ -1,0 +1,16 @@
+/* Üst çubuk (alt ekranlar) */
+.ust-cubuk{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin-inline:-20px;padding:8px 20px 10px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid transparent}
+.ust-cubuk.golgeli{border-bottom-color:var(--line)}
+.ust-satir{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.geri{display:flex;align-items:center;gap:4px;height:44px;padding:0 12px 0 4px;margin-left:-4px;border:0;background:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink)}
+.ikon-dugme{width:44px;height:44px;flex-shrink:0;border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.ikon-dugme[aria-pressed="true"] .yerimi{fill:var(--accent)}
+
+/* Çipler */
+.cipler{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-20px;padding-inline:20px;padding-bottom:2px}
+.cipler::-webkit-scrollbar{display:none}
+.cip{flex-shrink:0;height:36px;padding:0 13px;display:flex;align-items:center;border-radius:18px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.cip[aria-pressed="true"],.cip.etkin{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.cip-kutu{display:flex;flex-wrap:wrap;gap:8px}
+.parca{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:13px;cursor:pointer;color:var(--ink);text-align:left}
+.parca:hover{border-color:var(--ink)}

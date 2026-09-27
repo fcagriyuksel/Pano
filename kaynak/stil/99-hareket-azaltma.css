@@ -1,0 +1,5 @@
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto!important;transition:none!important}
+  .acilis-ekran{display:none!important}
+  .acilis .app>*,.acilis .alt-menu{animation:none!important}
+}

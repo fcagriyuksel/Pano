@@ -1,0 +1,23 @@
+/* Düğmeler, uyarı, premium, metin sayfaları */
+.dugme{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.dugme-ana{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.dugme-tehlike{background:var(--danger-ink);border-color:var(--danger-ink);color:var(--paper)}
+.dugme-genis{width:100%}
+.dugme-satir{display:flex;gap:8px;flex-wrap:wrap}
+.uyari-kart{padding:16px;border:1px solid var(--danger-line);border-radius:16px;background:var(--danger-bg);display:flex;flex-direction:column;gap:10px}
+.uyari-ust{display:flex;align-items:center;gap:8px;color:var(--danger-ink)}
+.uyari-ust h2{margin:0;font-size:16px;font-weight:600}
+.uyari-kart p{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.premium-panel{cursor:default}
+.premium-fiyat{font-family:var(--f-mono);font-size:16px;font-weight:600;color:var(--accent)}
+.premium-liste{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.premium-liste li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5}
+.premium-liste svg{flex-shrink:0;margin-top:3px;color:var(--ink)}
+.basari{padding:14px 16px;border-radius:14px;background:var(--chip);font-weight:600}
+.rozet-premium{border-style:solid;border-color:var(--accent);color:var(--ink);display:inline-flex;align-items:center;gap:4px}
+.metin-sayfa{display:flex;flex-direction:column;gap:20px}
+.metin-sayfa section{display:flex;flex-direction:column;gap:6px}
+.metin-baslik{margin:0;font-size:16px;font-weight:600}
+.metin-sayfa p{margin:0;font-size:15px;line-height:1.6;color:var(--ink-2)}
+.marka-ic{flex-grow:1;min-width:0}
+.buyuk-yazi .app{zoom:1.12}
