@@ -1,3 +1,39 @@
+/* ---------- Başlık yazımı ----------
+   Veride başlıklar cümle düzeninde yazılır; burada bir kez baslikYaz ile dönüştürülür (arama dizini de bunu görür).
+   Başlık sayılanlar: konu, filtre, alt başlık ve sayfa adları, bölüm başlıkları ve çipleri, kart ve örnek başlıkları,
+   şema işaret adları, “Birlikte kullanılır” listeleri, hesaplayıcı grup adları, model parça adları, metin sayfası başlıkları. */
+(() => {
+  const B = baslikYaz;
+  VERI.konular.forEach((k) => {
+    k.ad = B(k.ad);
+    (k.filtreler || []).forEach((f) => { f.ad = B(f.ad); });
+    k.altlar.forEach((a) => { a.ad = B(a.ad); });
+  });
+  Object.values(VERI.sayfalar).forEach((s) => {
+    s.baslik = B(s.baslik);
+    s.bolumler.forEach((b) => {
+      b.baslik = B(b.baslik);
+      b.kisa = B(b.kisa);
+      b.bloklar.forEach((k) => {
+        if (k.baslik) k.baslik = B(k.baslik);
+        if (k.ornek) k.ornek.baslik = B(k.ornek.baslik);
+        if (k.kartlar) k.kartlar.forEach((c) => { c.baslik = B(c.baslik); });
+        if (k.isaretler) k.isaretler.forEach((i) => { i[0] = B(i[0]); });
+        if (k.tip === 'parcalar') k.parcalar = k.parcalar.map(B);
+      });
+    });
+  });
+  Object.values(HESAPLAR).forEach((h) => (h.gruplar || []).forEach((g) => { g.ad = B(g.ad); }));
+  Object.values(MODELLER).forEach((m) => {
+    m.parcalar.forEach((p) => { p[0] = B(p[0]); });
+    if (m.etiketBaslik) m.etiketBaslik = B(m.etiketBaslik);
+  });
+  Object.values(METINLER).forEach((m) => {
+    m.baslik = B(m.baslik);
+    m.bolumler.forEach((b) => { b[0] = B(b[0]); });
+  });
+})();
+
 /* ---------- Dizinler ---------- */
 const KONU = {};
 const ALT = {};

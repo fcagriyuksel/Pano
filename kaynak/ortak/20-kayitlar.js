@@ -1,5 +1,5 @@
 /* =====================================================================
-   PANO — KAYITLAR
+   OTOMASYON NOTLARI — KAYITLAR
    Bütün içerik bu kayıtlara, kaynak/konular/<NN-konu>/ dosyalarından eklenir.
    Biçimler ve örnekler: belgeler/ klasöründeki rehberler.
    ===================================================================== */

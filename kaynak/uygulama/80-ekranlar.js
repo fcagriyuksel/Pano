@@ -3,14 +3,14 @@ function anaSayfa() {
   return `
     <header class="marka">
       <span class="marka-plaka" aria-hidden="true"></span>
-      <div class="marka-ic"><h1 class="marka-ad" tabindex="-1">PANO</h1><p class="marka-alt">Elektrik-elektronik bilgi notları</p></div>
+      <div class="marka-ic"><h1 class="marka-ad" tabindex="-1">${esc(UYGULAMA.ad)}</h1><p class="marka-alt">${esc(UYGULAMA.alt)}</p></div>
       <button type="button" class="ikon-dugme" data-git="ayarlar" aria-label="Ayarlar">${IKON.ayar}</button>
     </header>
     ${uyariKarti()}
     <button type="button" class="arama-dugme" data-git="ara">${IKON.ara}<span>Konu, parça veya terim ara</span></button>
     ${devamKarti()}
     <section class="blok-grup" aria-labelledby="konular-baslik">
-      <div class="satir-baslik"><h2 class="h2" id="konular-baslik">Konular</h2><span class="ust">${VERI.konular.length} konu</span></div>
+      <div class="satir-baslik"><h2 class="h2" id="konular-baslik">Konular</h2></div>
       <div class="konu-izgara">${VERI.konular.map(konuKarti).join('')}</div>
     </section>`;
 }
@@ -29,20 +29,18 @@ function devamKarti() {
   const seg = s.bolumler.map((b, i) => `<span class="${i < okunan ? 'dolu' : ''}"></span>`).join('');
   return `
     <button type="button" class="panel" data-git="${a.id}"${devam ? ` data-hedef-bolum="${s.bolumler[bi].id}"` : ''}>
-      <span class="panel-ust"><span class="panel-etiket">${devam ? 'Kaldığın yer' : 'Buradan başla'}</span><span class="panel-sayac">${okunan} / ${toplam} bölüm</span></span>
+      <span class="panel-ust"><span class="panel-etiket">${devam ? 'Kaldığın Yer' : 'Buradan Başla'}</span><span class="panel-sayac">${okunan} / ${toplam} bölüm</span></span>
       <span><span class="panel-baslik" style="display:block">${esc(s.baslik)}</span><span class="panel-alt" style="display:block">${esc(alt)}</span></span>
       <span class="ilerleme" style="grid-template-columns:repeat(${toplam},minmax(0,1fr))" aria-hidden="true">${seg}</span>
     </button>`;
 }
 
+/* Ana sayfa kartı: yalnızca sembol ve konu adı (özet ve sayaç konu ekranında ve aramada kalır). */
 function konuKarti(k) {
-  const hazir = k.altlar.filter(hazirMi).length;
   return `
     <button type="button" class="konu-kart" data-git="${k.id}">
-      <span class="konu-kart-ust">${IKON[k.ikon] || ''}<span class="konu-no">${k.no}</span></span>
+      <span class="konu-kart-ust">${IKON[k.ikon] || ''}</span>
       <span class="konu-kart-ad">${esc(k.ad)}</span>
-      <span class="konu-kart-ozet">${esc(k.ozet)}</span>
-      <span class="konu-kart-durum">${hazir} / ${k.altlar.length} hazır</span>
     </button>`;
 }
 
@@ -69,7 +67,7 @@ function konuEkrani(k) {
     <div class="baslik-blok"><h1 class="h1" tabindex="-1">${esc(k.ad)}</h1><p class="giris">${esc(k.giris)}</p></div>
     ${filtreler}
     <div class="liste">
-      <span class="ust">${altlar.length} alt başlık · ${altlar.filter(hazirMi).length} hazır</span>
+      <span class="ust">${altlar.length} alt başlık</span>
       ${altlar.map((a) => altSatiri(a, false)).join('')}
     </div>`;
 }
@@ -106,7 +104,7 @@ function bilgiSayfasi(a) {
 function sonrakiKart(a) {
   const n = a.konu.altlar[a.sira + 1];
   if (!n) {
-    return `<button type="button" class="sonraki" data-git="${a.konu.id}"><span><span class="panel-etiket" style="display:block">Konu sonu</span><span class="sonraki-ad">${esc(a.konu.ad)} listesine dön</span></span>${IKON.ok}</button>`;
+    return `<button type="button" class="sonraki" data-git="${a.konu.id}"><span><span class="panel-etiket" style="display:block">Konu Sonu</span><span class="sonraki-ad">${esc(a.konu.ad)} Listesine Dön</span></span>${IKON.ok}</button>`;
   }
   if (hazirMi(n)) {
     return `<button type="button" class="sonraki" data-git="${n.id}"><span><span class="panel-etiket" style="display:block">Sonraki</span><span class="sonraki-ad">${esc(n.ad)}</span></span>${kilitli(n) ? `<span class="rozet" style="color:var(--accent);border-color:var(--accent)">Premium</span>` : IKON.ok}</button>`;

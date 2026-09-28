@@ -1,7 +1,7 @@
 {
-  "name": "PANO Bilgi Notları",
-  "short_name": "PANO",
-  "description": "Elektrik-elektronik konularında şemalı, hesaplı ve arıza odaklı bilgi notları.",
+  "name": "Otomasyon Notları",
+  "short_name": "Otomasyon",
+  "description": "Elektrik, elektronik ve endüstriyel otomasyon için şemalı, hesaplı, 3B modelli ve arıza odaklı bilgi notları.",
   "lang": "tr",
   "dir": "ltr",
   "id": "./",

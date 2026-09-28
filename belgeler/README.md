@@ -1,4 +1,4 @@
-# PANO rehberleri
+# Otomasyon Notları rehberleri
 
 Bir işe başlamadan önce ilgili rehberi oku. Her rehberde hangi dosyaya dokunulacağı, adımlar ve denetim listesi yazar.
 

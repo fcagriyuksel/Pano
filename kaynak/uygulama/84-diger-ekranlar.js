@@ -3,7 +3,7 @@ function uyariKarti() {
   if (durum.uyariOnay) return '';
   return `
     <section class="uyari-kart" aria-labelledby="uyari-baslik">
-      <div class="uyari-ust">${IKON.uyari}<h2 id="uyari-baslik">Başlamadan önce</h2></div>
+      <div class="uyari-ust">${IKON.uyari}<h2 id="uyari-baslik">Başlamadan Önce</h2></div>
       <p>Bu notlar eğitim amaçlıdır. Elektrik işlerini yalnızca yetkili kişiler, enerjiyi kesip gerilim olmadığını ölçerek yapmalıdır. Değerlerde ürün kataloğu ve yönetmelik esastır.</p>
       <div class="dugme-satir"><button type="button" class="dugme dugme-ana" data-uyari-onay>Anladım</button><button type="button" class="dugme" data-git="uyari">Ayrıntılar</button></div>
     </section>`;
@@ -32,8 +32,8 @@ function premiumEkrani() {
   return `
     <div class="ust-cubuk" id="ust-cubuk"><div class="ust-satir"><button type="button" class="geri" data-git="${geri}">${IKON.geri}<span>Geri</span></button></div></div>
     <div class="panel premium-panel">
-      <span class="panel-etiket">PANO Premium</span>
-      <h1 class="h1" tabindex="-1">Bütün notları aç</h1>
+      <span class="panel-etiket">${esc(UYGULAMA.ad)} Premium</span>
+      <h1 class="h1" tabindex="-1">Bütün Notları Aç</h1>
       <span class="panel-alt">Tek seferlik satın alma, abonelik yok.</span>
       <span class="premium-fiyat">${esc(PREMIUM.aktif ? 'Satın alındı' : fiyat)}</span>
     </div>
@@ -47,7 +47,7 @@ function premiumEkrani() {
     ${eylem}
     ${bilgi}
     <section class="blok-grup" aria-labelledby="ucretsiz-baslik">
-      <h2 class="h2" id="ucretsiz-baslik">Ücretsiz sayfalar</h2>
+      <h2 class="h2" id="ucretsiz-baslik">Ücretsiz Sayfalar</h2>
       <div class="liste">${ucretsiz.map((a) => altSatiri(a, true)).join('')}</div>
     </section>`;
 }
@@ -74,7 +74,7 @@ function ayarlarEkrani() {
     </section>
     ${UYGULAMA.premium.kilit ? `<section class="blok-grup" aria-labelledby="ay-premium">
       <h2 class="h2" id="ay-premium">Premium</h2>
-      <div class="liste">${satir('premium', PREMIUM.aktif ? 'Premium etkin' : 'PANO Premium', premiumAlt)}</div>
+      <div class="liste">${satir('premium', PREMIUM.aktif ? 'Premium etkin' : `${UYGULAMA.ad} Premium`, premiumAlt)}</div>
     </section>` : ''}
     <section class="blok-grup" aria-labelledby="ay-veri">
       <h2 class="h2" id="ay-veri">Verilerim</h2>
@@ -107,7 +107,7 @@ function hakkindaEkrani() {
   const satir = (e, m) => `<div class="tablo-satir"><span class="tablo-etiket">${esc(e)}</span><span class="tablo-metin">${esc(m)}</span></div>`;
   return `
     <div class="ust-cubuk" id="ust-cubuk"><div class="ust-satir"><button type="button" class="geri" data-git="ayarlar">${IKON.geri}<span>Ayarlar</span></button></div></div>
-    <header class="marka"><span class="marka-plaka" aria-hidden="true"></span><div class="marka-ic"><h1 class="marka-ad" tabindex="-1">PANO</h1><p class="marka-alt">Elektrik-elektronik bilgi notları</p></div></header>
+    <header class="marka"><span class="marka-plaka" aria-hidden="true"></span><div class="marka-ic"><h1 class="marka-ad" tabindex="-1">${esc(UYGULAMA.ad)}</h1><p class="marka-alt">${esc(UYGULAMA.alt)}</p></div></header>
     <div class="tablo">
       ${satir('Sürüm', UYGULAMA.surum)}
       ${satir('İçerik', `${VERI.konular.length} konu · ${hazirlar().length} bilgi sayfası · ${Object.keys(HESAPLAR).length} hesaplayıcı`)}

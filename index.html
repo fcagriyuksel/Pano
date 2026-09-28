@@ -8,14 +8,14 @@
 <meta name="theme-color" content="#141619" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="PANO">
+<meta name="apple-mobile-web-app-title" content="Otomasyon">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609280810">
+<meta name="pano-surum" content="202609280817">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>PANO Bilgi Notları</title>
+<title>Otomasyon Notları</title>
 <style>
 @font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(varliklar/yazitipleri/barlow-condensed-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(varliklar/yazitipleri/barlow-condensed-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -85,7 +85,7 @@ h1,h2,h3{text-wrap:balance}
 /* Marka */
 .marka{display:flex;align-items:center;gap:12px;padding-top:8px}
 .marka-plaka{width:12px;height:40px;border-radius:3px;background:var(--accent);flex-shrink:0}
-.marka-ad{margin:0;font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1;letter-spacing:.09em}
+.marka-ad{margin:0;font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;letter-spacing:.02em}
 .marka-alt{font-size:13px;color:var(--muted);margin:4px 0 0}
 
 /* Arama kutusu (ana sayfa) */
@@ -109,12 +109,10 @@ h1,h2,h3{text-wrap:balance}
 
 /* Konu kartları */
 .konu-izgara{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.konu-kart{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;cursor:pointer;min-height:168px}
+.konu-kart{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;cursor:pointer;min-height:118px}
 .konu-kart:hover{border-color:var(--ink)}
 .konu-kart-ust{display:flex;justify-content:space-between;align-items:flex-start;color:var(--ink)}
-.konu-kart-ad{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.1}
-.konu-kart-ozet{font-size:13px;line-height:1.35;color:var(--muted)}
-.konu-kart-durum{margin-top:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.konu-kart-ad{margin-top:auto;font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.1}
 
 /* Üst çubuk (alt ekranlar) */
 .ust-cubuk{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin-inline:-20px;padding:8px 20px 10px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid transparent}
@@ -155,7 +153,6 @@ button.satir:hover{border-color:var(--ink)}
 
 /* Bilgi sayfası bölümleri */
 .bolumler{display:flex;flex-direction:column;gap:40px;padding-top:8px}
-.konu-no{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .gizli{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .blok-grup{display:flex;flex-direction:column;gap:12px}
 .bolum{display:flex;flex-direction:column;gap:14px;scroll-margin-top:120px}
@@ -313,7 +310,7 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 .secenekler{flex-wrap:wrap}
 .secenek{flex:1 1 56px}
 
-/* Açılış ekranı: bara → iletken → sigorta çizilir, akım geçer, sigorta enerjilenir, PANO belirir.
+/* Açılış ekranı: bara → iletken → sigorta çizilir, akım geçer, sigorta enerjilenir, uygulama adı belirir.
    Çizim simge_olustur.py ile aynı koordinatları kullanır. Ekran CSS ile kendi kendine kapanır; JS yalnızca DOM’dan kaldırır. */
 .acilis-ekran{display:none;position:fixed;inset:0;z-index:50;overflow:hidden;background:var(--paper);align-items:center;justify-content:center;padding-bottom:8vh;cursor:pointer;animation:acilis-kapan .35s ease 1.35s forwards}
 .acilis-var .acilis-ekran{display:flex}
@@ -327,7 +324,7 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 .a-govde{fill:var(--paper);stroke:var(--ink);stroke-width:18;stroke-dasharray:360;stroke-dashoffset:360;animation:acilis-ciz .45s cubic-bezier(.4,0,.2,1) .4s forwards}
 .a-eleman{fill:none;stroke:var(--accent);stroke-width:14;stroke-dasharray:94;stroke-dashoffset:94;animation:acilis-ciz .25s ease-out .8s forwards}
 .a-uc{fill:none;stroke:var(--ink);stroke-width:16;transform-box:fill-box;transform-origin:center;animation:acilis-uc .3s cubic-bezier(.3,1.6,.5,1) .6s both}
-.acilis-ad{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1;letter-spacing:.14em;padding-left:.14em;color:var(--ink);animation:acilis-ad .6s cubic-bezier(.2,.7,.2,1) .35s both}
+.acilis-ad{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1;letter-spacing:.04em;padding-left:.04em;color:var(--ink);animation:acilis-ad .6s cubic-bezier(.2,.7,.2,1) .35s both}
 .acilis-alt{font-size:13px;color:var(--muted);animation:acilis-belir .5s ease .6s both}
 .acilis .app>*{animation:acilis-gir .55s cubic-bezier(.2,.7,.2,1) 1.5s both}
 .acilis .app>:nth-child(1){animation-delay:1.2s}
@@ -340,7 +337,7 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 @keyframes acilis-ciz{to{stroke-dashoffset:0}}
 @keyframes acilis-akim{to{stroke-dashoffset:-184}}
 @keyframes acilis-uc{from{transform:scale(0)}}
-@keyframes acilis-ad{from{opacity:0;letter-spacing:.6em;padding-left:.6em}}
+@keyframes acilis-ad{from{opacity:0;letter-spacing:.3em;padding-left:.3em}}
 @keyframes acilis-belir{from{opacity:0;transform:translateY(6px)}}
 @keyframes acilis-kapan{to{opacity:0;visibility:hidden}}
 @keyframes acilis-atla{to{opacity:0;visibility:hidden}}
@@ -417,8 +414,8 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
       <circle class="a-uc" cx="372" cy="256" r="20"></circle>
       <g class="a-bara"><rect x="120" y="140" width="48" height="232" rx="12"></rect><circle cx="144" cy="178" r="9"></circle><circle cx="144" cy="334" r="9"></circle></g>
     </svg>
-    <div class="acilis-ad">PANO</div>
-    <div class="acilis-alt">Elektrik-elektronik bilgi notları</div>
+    <div class="acilis-ad">Otomasyon Notları</div>
+    <div class="acilis-alt">Elektrik, elektronik ve endüstriyel otomasyon</div>
   </div>
 </div>
 
@@ -445,11 +442,22 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 /* Her yerde kullanılan yardımcılar (şemalar, hesaplayıcılar, simülasyonlar ve uygulama). */
 
 /* Sayıyı Türkçe biçimde yazar: 1.234,5. b: en fazla ondalık basamak (varsayılan 2). */
+/* Başlık yazımı: her kelimenin ilk harfi büyür (Türkçe: i → İ). Bağlaçlar (TDK), içinde büyük harf olan kısaltma ve birimler
+   (mA, kW, PLC), küçük harfli birimler ve Latin olmayan harfle başlayan kelimeler (φ, μ) olduğu gibi kalır. Veride başlıklar cümle düzeninde yazılır. */
+const BASLIK_KUCUK = new Set(['ve', 'ile', 'ya', 'da', 'de', 'veya', 'ki', 'mi', 'mı', 'mu', 'mü']);
+const BASLIK_SABIT = new Set(['mm', 'mm²', 'cm', 'ms', 'sn', 'dk', 'd/dk', 'cos', 'sin', 'tan', 'x']);
+const baslikYaz = (m) => String(m).split(' ').map((k, i) => {
+  if ((i > 0 && BASLIK_KUCUK.has(k)) || BASLIK_SABIT.has(k) || /\p{Lu}/u.test(k)) return k;
+  const j = k.search(/\p{L}/u);
+  if (j < 0 || !/[a-zçğıöşü]/.test(k[j])) return k;
+  return k.slice(0, j) + k[j].toLocaleUpperCase('tr-TR') + k.slice(j + 1);
+}).join(' ');
+
 const sayi = (n, b) => { try { return Number(n).toLocaleString('tr-TR', { maximumFractionDigits: b == null ? 2 : b }); } catch (e) { return String(Math.round(n * 100) / 100); } };
 
 /* ---- kaynak/ortak/20-kayitlar.js ---- */
 /* =====================================================================
-   PANO — KAYITLAR
+   OTOMASYON NOTLARI — KAYITLAR
    Bütün içerik bu kayıtlara, kaynak/konular/<NN-konu>/ dosyalarından eklenir.
    Biçimler ve örnekler: belgeler/ klasöründeki rehberler.
    ===================================================================== */
@@ -476,13 +484,14 @@ const MODELLER = {};
 
 /* ---- kaynak/ortak/30-ayarlar.js ---- */
 /* =====================================================================
-   PANO — UYGULAMA AYARLARI
+   OTOMASYON NOTLARI — UYGULAMA AYARLARI
    Play Store yayını öncesi: eposta ve dogrulamaAdresi doldurulur,
    premium.kilit true yapılır.
    ===================================================================== */
 const UYGULAMA = {
-  ad: 'PANO',
-  surum: '1.17.0',
+  ad: 'Otomasyon Notları',
+  alt: 'Elektrik, elektronik ve endüstriyel otomasyon',
+  surum: '1.18.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
@@ -498,7 +507,7 @@ const METINLER = {
   uyari: {
     baslik: 'Güvenlik uyarısı',
     bolumler: [
-      ['Eğitim amaçlıdır', 'PANO bilgi notları öğrenmek ve hatırlamak içindir. Tesisat, pano ya da makine üzerinde çalışmak için tek başına yeterli değildir.'],
+      ['Eğitim amaçlıdır', 'Otomasyon Notları öğrenmek ve hatırlamak içindir. Tesisat, pano ya da makine üzerinde çalışmak için tek başına yeterli değildir.'],
       ['Önce güvenlik', 'Elektrik işlerini yalnızca yetkili ve ehliyetli kişiler yapmalıdır. Çalışmadan önce enerjiyi kes, kilitle ve etiketle, gerilim olmadığını ölçerek doğrula.'],
       ['Katalog ve mevzuat önceliklidir', 'Uygulamadaki değerler tipik örneklerdir. Kullandığın ürünün kataloğu, yürürlükteki yönetmelikler ve standartlar her zaman önce gelir.']
     ]
@@ -507,11 +516,11 @@ const METINLER = {
     baslik: 'Gizlilik politikası',
     guncelleme: '27 Eylül 2026',
     bolumler: [
-      ['Toplanan veriler', 'PANO hesap açmanı istemez. Adını, e-posta adresini, konumunu ya da cihaz kimliğini toplamaz. Uygulamada analiz, izleme ya da reklam aracı yoktur.'],
+      ['Toplanan veriler', 'Otomasyon Notları hesap açmanı istemez. Adını, e-posta adresini, konumunu ya da cihaz kimliğini toplamaz. Uygulamada analiz, izleme ya da reklam aracı yoktur.'],
       ['Cihazında saklanan bilgiler', 'Kaydettiğin notlar, okuma ilerlemen, son aramaların, hesaplayıcı seçimlerin ve ayarların yalnızca kendi cihazında, uygulamanın yerel depolamasında tutulur ve bize gönderilmez. Bunları Ayarlar › Verileri sıfırla ile ya da uygulamayı kaldırarak silebilirsin.'],
       ['Satın almalar', 'Premium satın alma Google Play üzerinden yapılır. Ödeme bilgilerin Google tarafından işlenir; biz bu bilgileri görmeyiz. Satın almanın geçerli olduğunu doğrulamak için Google Play’in ürettiği satın alma kodu doğrulama sunucumuza gönderilir. Bu kod ödeme ya da kimlik bilgisi içermez.'],
       ['Üçüncü taraflar', 'Uygulama, yazı tipleri dahil bütün dosyalarını kendi içinden yükler. Satın alma işlemleri dışında üçüncü taraf sunuculara istek göndermez. Google Play işlemleri Google’ın gizlilik politikasına tabidir.'],
-      ['Çocuklar', 'PANO mesleki eğitim amaçlıdır ve çocuklara yönelik değildir.'],
+      ['Çocuklar', 'Otomasyon Notları mesleki eğitim amaçlıdır ve çocuklara yönelik değildir.'],
       ['Değişiklikler', 'Bu politika değişirse güncel hâli bu sayfada, güncelleme tarihiyle birlikte yayımlanır.'],
       ['İletişim', 'Gizlilikle ilgili soruların için: {eposta}']
     ]
@@ -520,7 +529,7 @@ const METINLER = {
     baslik: 'Kullanım koşulları',
     guncelleme: '27 Eylül 2026',
     bolumler: [
-      ['Kapsam', 'PANO, elektrik-elektronik konularında eğitim amaçlı bilgi notları sunar.'],
+      ['Kapsam', 'Otomasyon Notları, elektrik-elektronik konularında eğitim amaçlı bilgi notları sunar.'],
       ['Sorumluluk', 'İçerik özenle hazırlanır ancak hatasız olduğu garanti edilmez. Bilgileri uygulamadan önce ürün kataloğu ve yürürlükteki mevzuatla doğrula. Uygulamanın kullanımından doğabilecek zararlardan geliştirici sorumlu tutulamaz.'],
       ['Premium', 'Premium tek seferlik bir satın almadır ve satın alındığı Google hesabında geçerlidir. İade koşulları Google Play politikalarına tabidir.'],
       ['Fikri mülkiyet', 'Metinler, şemalar ve tasarım geliştiriciye aittir; izinsiz çoğaltılamaz. Anılan marka ve ürün adları (ör. Kinco) sahiplerine aittir.'],
@@ -9383,6 +9392,42 @@ function simSaatiKur() {
 }
 
 /* ---- kaynak/uygulama/40-dizin-depo-durum.js ---- */
+/* ---------- Başlık yazımı ----------
+   Veride başlıklar cümle düzeninde yazılır; burada bir kez baslikYaz ile dönüştürülür (arama dizini de bunu görür).
+   Başlık sayılanlar: konu, filtre, alt başlık ve sayfa adları, bölüm başlıkları ve çipleri, kart ve örnek başlıkları,
+   şema işaret adları, “Birlikte kullanılır” listeleri, hesaplayıcı grup adları, model parça adları, metin sayfası başlıkları. */
+(() => {
+  const B = baslikYaz;
+  VERI.konular.forEach((k) => {
+    k.ad = B(k.ad);
+    (k.filtreler || []).forEach((f) => { f.ad = B(f.ad); });
+    k.altlar.forEach((a) => { a.ad = B(a.ad); });
+  });
+  Object.values(VERI.sayfalar).forEach((s) => {
+    s.baslik = B(s.baslik);
+    s.bolumler.forEach((b) => {
+      b.baslik = B(b.baslik);
+      b.kisa = B(b.kisa);
+      b.bloklar.forEach((k) => {
+        if (k.baslik) k.baslik = B(k.baslik);
+        if (k.ornek) k.ornek.baslik = B(k.ornek.baslik);
+        if (k.kartlar) k.kartlar.forEach((c) => { c.baslik = B(c.baslik); });
+        if (k.isaretler) k.isaretler.forEach((i) => { i[0] = B(i[0]); });
+        if (k.tip === 'parcalar') k.parcalar = k.parcalar.map(B);
+      });
+    });
+  });
+  Object.values(HESAPLAR).forEach((h) => (h.gruplar || []).forEach((g) => { g.ad = B(g.ad); }));
+  Object.values(MODELLER).forEach((m) => {
+    m.parcalar.forEach((p) => { p[0] = B(p[0]); });
+    if (m.etiketBaslik) m.etiketBaslik = B(m.etiketBaslik);
+  });
+  Object.values(METINLER).forEach((m) => {
+    m.baslik = B(m.baslik);
+    m.bolumler.forEach((b) => { b[0] = B(b[0]); });
+  });
+})();
+
 /* ---------- Dizinler ---------- */
 const KONU = {};
 const ALT = {};
@@ -9675,14 +9720,14 @@ function anaSayfa() {
   return `
     <header class="marka">
       <span class="marka-plaka" aria-hidden="true"></span>
-      <div class="marka-ic"><h1 class="marka-ad" tabindex="-1">PANO</h1><p class="marka-alt">Elektrik-elektronik bilgi notları</p></div>
+      <div class="marka-ic"><h1 class="marka-ad" tabindex="-1">${esc(UYGULAMA.ad)}</h1><p class="marka-alt">${esc(UYGULAMA.alt)}</p></div>
       <button type="button" class="ikon-dugme" data-git="ayarlar" aria-label="Ayarlar">${IKON.ayar}</button>
     </header>
     ${uyariKarti()}
     <button type="button" class="arama-dugme" data-git="ara">${IKON.ara}<span>Konu, parça veya terim ara</span></button>
     ${devamKarti()}
     <section class="blok-grup" aria-labelledby="konular-baslik">
-      <div class="satir-baslik"><h2 class="h2" id="konular-baslik">Konular</h2><span class="ust">${VERI.konular.length} konu</span></div>
+      <div class="satir-baslik"><h2 class="h2" id="konular-baslik">Konular</h2></div>
       <div class="konu-izgara">${VERI.konular.map(konuKarti).join('')}</div>
     </section>`;
 }
@@ -9701,20 +9746,18 @@ function devamKarti() {
   const seg = s.bolumler.map((b, i) => `<span class="${i < okunan ? 'dolu' : ''}"></span>`).join('');
   return `
     <button type="button" class="panel" data-git="${a.id}"${devam ? ` data-hedef-bolum="${s.bolumler[bi].id}"` : ''}>
-      <span class="panel-ust"><span class="panel-etiket">${devam ? 'Kaldığın yer' : 'Buradan başla'}</span><span class="panel-sayac">${okunan} / ${toplam} bölüm</span></span>
+      <span class="panel-ust"><span class="panel-etiket">${devam ? 'Kaldığın Yer' : 'Buradan Başla'}</span><span class="panel-sayac">${okunan} / ${toplam} bölüm</span></span>
       <span><span class="panel-baslik" style="display:block">${esc(s.baslik)}</span><span class="panel-alt" style="display:block">${esc(alt)}</span></span>
       <span class="ilerleme" style="grid-template-columns:repeat(${toplam},minmax(0,1fr))" aria-hidden="true">${seg}</span>
     </button>`;
 }
 
+/* Ana sayfa kartı: yalnızca sembol ve konu adı (özet ve sayaç konu ekranında ve aramada kalır). */
 function konuKarti(k) {
-  const hazir = k.altlar.filter(hazirMi).length;
   return `
     <button type="button" class="konu-kart" data-git="${k.id}">
-      <span class="konu-kart-ust">${IKON[k.ikon] || ''}<span class="konu-no">${k.no}</span></span>
+      <span class="konu-kart-ust">${IKON[k.ikon] || ''}</span>
       <span class="konu-kart-ad">${esc(k.ad)}</span>
-      <span class="konu-kart-ozet">${esc(k.ozet)}</span>
-      <span class="konu-kart-durum">${hazir} / ${k.altlar.length} hazır</span>
     </button>`;
 }
 
@@ -9741,7 +9784,7 @@ function konuEkrani(k) {
     <div class="baslik-blok"><h1 class="h1" tabindex="-1">${esc(k.ad)}</h1><p class="giris">${esc(k.giris)}</p></div>
     ${filtreler}
     <div class="liste">
-      <span class="ust">${altlar.length} alt başlık · ${altlar.filter(hazirMi).length} hazır</span>
+      <span class="ust">${altlar.length} alt başlık</span>
       ${altlar.map((a) => altSatiri(a, false)).join('')}
     </div>`;
 }
@@ -9778,7 +9821,7 @@ function bilgiSayfasi(a) {
 function sonrakiKart(a) {
   const n = a.konu.altlar[a.sira + 1];
   if (!n) {
-    return `<button type="button" class="sonraki" data-git="${a.konu.id}"><span><span class="panel-etiket" style="display:block">Konu sonu</span><span class="sonraki-ad">${esc(a.konu.ad)} listesine dön</span></span>${IKON.ok}</button>`;
+    return `<button type="button" class="sonraki" data-git="${a.konu.id}"><span><span class="panel-etiket" style="display:block">Konu Sonu</span><span class="sonraki-ad">${esc(a.konu.ad)} Listesine Dön</span></span>${IKON.ok}</button>`;
   }
   if (hazirMi(n)) {
     return `<button type="button" class="sonraki" data-git="${n.id}"><span><span class="panel-etiket" style="display:block">Sonraki</span><span class="sonraki-ad">${esc(n.ad)}</span></span>${kilitli(n) ? `<span class="rozet" style="color:var(--accent);border-color:var(--accent)">Premium</span>` : IKON.ok}</button>`;
@@ -9962,7 +10005,7 @@ function uyariKarti() {
   if (durum.uyariOnay) return '';
   return `
     <section class="uyari-kart" aria-labelledby="uyari-baslik">
-      <div class="uyari-ust">${IKON.uyari}<h2 id="uyari-baslik">Başlamadan önce</h2></div>
+      <div class="uyari-ust">${IKON.uyari}<h2 id="uyari-baslik">Başlamadan Önce</h2></div>
       <p>Bu notlar eğitim amaçlıdır. Elektrik işlerini yalnızca yetkili kişiler, enerjiyi kesip gerilim olmadığını ölçerek yapmalıdır. Değerlerde ürün kataloğu ve yönetmelik esastır.</p>
       <div class="dugme-satir"><button type="button" class="dugme dugme-ana" data-uyari-onay>Anladım</button><button type="button" class="dugme" data-git="uyari">Ayrıntılar</button></div>
     </section>`;
@@ -9991,8 +10034,8 @@ function premiumEkrani() {
   return `
     <div class="ust-cubuk" id="ust-cubuk"><div class="ust-satir"><button type="button" class="geri" data-git="${geri}">${IKON.geri}<span>Geri</span></button></div></div>
     <div class="panel premium-panel">
-      <span class="panel-etiket">PANO Premium</span>
-      <h1 class="h1" tabindex="-1">Bütün notları aç</h1>
+      <span class="panel-etiket">${esc(UYGULAMA.ad)} Premium</span>
+      <h1 class="h1" tabindex="-1">Bütün Notları Aç</h1>
       <span class="panel-alt">Tek seferlik satın alma, abonelik yok.</span>
       <span class="premium-fiyat">${esc(PREMIUM.aktif ? 'Satın alındı' : fiyat)}</span>
     </div>
@@ -10006,7 +10049,7 @@ function premiumEkrani() {
     ${eylem}
     ${bilgi}
     <section class="blok-grup" aria-labelledby="ucretsiz-baslik">
-      <h2 class="h2" id="ucretsiz-baslik">Ücretsiz sayfalar</h2>
+      <h2 class="h2" id="ucretsiz-baslik">Ücretsiz Sayfalar</h2>
       <div class="liste">${ucretsiz.map((a) => altSatiri(a, true)).join('')}</div>
     </section>`;
 }
@@ -10033,7 +10076,7 @@ function ayarlarEkrani() {
     </section>
     ${UYGULAMA.premium.kilit ? `<section class="blok-grup" aria-labelledby="ay-premium">
       <h2 class="h2" id="ay-premium">Premium</h2>
-      <div class="liste">${satir('premium', PREMIUM.aktif ? 'Premium etkin' : 'PANO Premium', premiumAlt)}</div>
+      <div class="liste">${satir('premium', PREMIUM.aktif ? 'Premium etkin' : `${UYGULAMA.ad} Premium`, premiumAlt)}</div>
     </section>` : ''}
     <section class="blok-grup" aria-labelledby="ay-veri">
       <h2 class="h2" id="ay-veri">Verilerim</h2>
@@ -10066,7 +10109,7 @@ function hakkindaEkrani() {
   const satir = (e, m) => `<div class="tablo-satir"><span class="tablo-etiket">${esc(e)}</span><span class="tablo-metin">${esc(m)}</span></div>`;
   return `
     <div class="ust-cubuk" id="ust-cubuk"><div class="ust-satir"><button type="button" class="geri" data-git="ayarlar">${IKON.geri}<span>Ayarlar</span></button></div></div>
-    <header class="marka"><span class="marka-plaka" aria-hidden="true"></span><div class="marka-ic"><h1 class="marka-ad" tabindex="-1">PANO</h1><p class="marka-alt">Elektrik-elektronik bilgi notları</p></div></header>
+    <header class="marka"><span class="marka-plaka" aria-hidden="true"></span><div class="marka-ic"><h1 class="marka-ad" tabindex="-1">${esc(UYGULAMA.ad)}</h1><p class="marka-alt">${esc(UYGULAMA.alt)}</p></div></header>
     <div class="tablo">
       ${satir('Sürüm', UYGULAMA.surum)}
       ${satir('İçerik', `${VERI.konular.length} konu · ${hazirlar().length} bilgi sayfası · ${Object.keys(HESAPLAR).length} hesaplayıcı`)}

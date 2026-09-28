@@ -16,6 +16,13 @@ Uygulamanın dili Türkçedir. Kısa, doğrudan, yapmacık olmayan cümleler kul
 - Terimler: izolasyon direnci, DIP anahtarı, yumuşak yol verici, döngüsel.
 - Eğri ya da tip anlatılırken “B tipi” yerine “B eğrisi” yazılır. “D tipi” yalnızca DIAZED için kullanılabilir.
 
+## Başlıklar
+
+- Veride başlıklar cümle düzeninde yazılır: `'Sık yapılan hatalar'`. Uygulama bunları ekranda “Sık Yapılan Hatalar” biçimine çevirir (`baslikYaz`).
+- Bağlaçlar (ve, ile, de, da, ya, veya, ki) ve soru ekleri küçük kalır; birimler (mm, ms, sn, dk) olduğu gibi kalır.
+- İçinde büyük harf olan kelimeye (PLC, PT100, VFD’ye) dokunulmaz.
+- Cümle olan metinler (hata kartı, arıza satırı, adım, açıklama) çevrilmez.
+
 ## Blok kalıpları
 
 - Arıza satırının ilk sütunu bir neden ise metin “Kontrol:” ile başlar ve eylemle sürer: `['Bir faz yok', 'Kontrol: üç faz gerilimini ölç.']`

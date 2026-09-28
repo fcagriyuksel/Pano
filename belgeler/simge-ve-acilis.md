@@ -46,7 +46,7 @@ Telefonda: Android ana ekran simgesini, uygulama açıldıktan sonra genelde bir
 | Bağlantı ucu belirir | `.a-uc` | 600–900 |
 | Akım darbesi geçer | `.a-akim` | 700–1200 |
 | Sigorta enerjilenir | `.a-eleman` | 800–1050 |
-| PANO yazısı | `.acilis-ad` | 350–950 |
+| Uygulama adı | `.acilis-ad` | 350–950 |
 | Alt yazı | `.acilis-alt` | 600–1100 |
 | Ekran söner | `.acilis-ekran` | 1350–1700 |
 | Ana ekran öğeleri girer | `.acilis .app>*` | 1200–2050 |

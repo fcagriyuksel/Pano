@@ -1,4 +1,4 @@
-# PANO
+# Otomasyon Notları
 
 Elektrik-elektronik ve endüstriyel otomasyon bilgi notları: 13 konu ve 81 sayfa. Sayfalarda şemalar, hesaplayıcılar, simülasyonlar, 3B etkileşimli modeller, arıza tabloları ve sık yapılan hatalar yer alır.
 

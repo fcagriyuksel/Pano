@@ -110,7 +110,8 @@ def doldur(sablon, degerler):
 
 
 def gizlilik(font_css):
-    betik = oku(KAYNAK / 'ortak/30-ayarlar.js') + '\n' + oku(KAYNAK / 'ortak/40-metinler.js') + '\nprocess.stdout.write(JSON.stringify({ u: UYGULAMA, m: METINLER.gizlilik }));'
+    betik = (oku(KAYNAK / 'ortak/10-yardimcilar.js') + '\n' + oku(KAYNAK / 'ortak/30-ayarlar.js') + '\n' + oku(KAYNAK / 'ortak/40-metinler.js')
+             + '\nconst m = METINLER.gizlilik;\nprocess.stdout.write(JSON.stringify({ u: UYGULAMA, m: { baslik: baslikYaz(m.baslik), guncelleme: m.guncelleme, bolumler: m.bolumler.map(([b, t]) => [baslikYaz(b), t]) } }));')
     veri = json.loads(subprocess.run(['node', '-e', betik], capture_output=True, text=True, check=True).stdout)
     e = lambda t: html.escape(t, quote=False)
     bolumler = ''.join(f'<h2>{e(b)}</h2><p>{e(t.replace("{eposta}", veri["u"]["eposta"]))}</p>' for b, t in veri['m']['bolumler'])

@@ -20,7 +20,6 @@ button.satir:hover{border-color:var(--ink)}
 
 /* Bilgi sayfası bölümleri */
 .bolumler{display:flex;flex-direction:column;gap:40px;padding-top:8px}
-.konu-no{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .gizli{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .blok-grup{display:flex;flex-direction:column;gap:12px}
 .bolum{display:flex;flex-direction:column;gap:14px;scroll-margin-top:120px}

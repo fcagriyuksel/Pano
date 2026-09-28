@@ -1,11 +1,12 @@
 /* =====================================================================
-   PANO — UYGULAMA AYARLARI
+   OTOMASYON NOTLARI — UYGULAMA AYARLARI
    Play Store yayını öncesi: eposta ve dogrulamaAdresi doldurulur,
    premium.kilit true yapılır.
    ===================================================================== */
 const UYGULAMA = {
-  ad: 'PANO',
-  surum: '1.17.0',
+  ad: 'Otomasyon Notları',
+  alt: 'Elektrik, elektronik ve endüstriyel otomasyon',
+  surum: '1.18.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {

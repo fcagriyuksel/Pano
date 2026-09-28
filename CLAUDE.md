@@ -1,6 +1,6 @@
-# PANO — proje kılavuzu
+# Otomasyon Notları — proje kılavuzu
 
-PANO, Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Telefonun ana ekranına eklenen bir PWA’dır ve GitHub Pages’ten yayınlanır. Dil Türkçedir.
+Otomasyon Notları (eski adı PANO; depo adı `Pano` kaldı), Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Telefonun ana ekranına eklenen bir PWA’dır ve GitHub Pages’ten yayınlanır. Dil Türkçedir.
 
 Canlı adres: https://fcagriyuksel.github.io/Pano/ (deponun kökü yayınlanır).
 
@@ -79,6 +79,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 
 - SVG sunum özniteliklerinde `var()` çalışmaz (`fill="var(--x)"`); her zaman `style` kullan.
 - Betikle toplu metin değiştirirken eşleşme sayısını kontrol et (çoğunlukla tam 1 olmalı), sonra derle: derleme söz dizimini `node --check` ile denetler.
+- Başlıkları veride cümle düzeninde yaz (`'Sık yapılan hatalar'`). Uygulama yüklenirken `baslikYaz()` (`ortak/10-yardimcilar.js`) başlıkları her kelimenin baş harfi büyük olacak biçimde çevirir; bağlaçlar (ve, ile, de …) ve birimler (mm, ms …) küçük kalır. Çevrilen alanlar `uygulama/40-dizin-depo-durum.js` başındadır; yeni bir başlık alanı eklersen oraya da ekle.
 - Yorumun içine `*/` yazma (ör. `konular/*/simler.js` yorumu erken kapatır). `konular/<konu>/simler.js` yaz.
 - Arama, katlama tablosuyla tire türlerini eşitler (`4-20` = `4–20`); katlama tek karakteri tek karakterle değiştirmeli, yoksa vurgulama kayar.
 - Erken betik (`govde/02-erken-betik.js`) seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
