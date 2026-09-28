@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Bağlantı, etiket, tork, yol verme',
   giris: 'Üç fazlı asenkron motor sanayideki motorların büyük çoğunluğudur. Doğru bağlantı ve yol verme, motorun ömrünü doğrudan belirler.',
   altlar: [
+    { id: 'motor-ic-yapi', kod: '3B', ad: 'Asenkron motor: iç yapı (3B)', alt: 'Stator, sincap kafesli rotor, klemens kutusu · döner alan', sayfa: 'motor-ic-yapi' },
     { id: 'motor-baglanti', kod: 'U1', ad: 'Yıldız ve üçgen bağlantı', alt: 'Klemens köprüleri · etiket gerilimi', sayfa: 'motor-baglanti' },
     { id: 'motor-etiketi', kod: 'kW', ad: 'Motor etiketi ve akım', alt: 'Etiketi okumak · akım hesabı', sayfa: 'motor-etiketi' },
     { id: 'guc-tork', kod: 'N·m', ad: 'Güç, tork ve devir', alt: 'T = 9550 · P ÷ n · kutup sayısı · redüktör', sayfa: 'guc-tork' },
@@ -13,6 +14,36 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'motor-ic-yapi': {
+    baslik: 'Asenkron motorun iç yapısı',
+    giris: 'Üç fazlı asenkron motorda stator sargıları döner bir manyetik alan oluşturur. Bu alan sincap kafesli rotorda akım endükler; rotor alanın arkasından, biraz daha yavaş döner.',
+    etiketler: ['3B model', 'IEC 60034', 'Döner alan', 'Kayma'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'asenkron-motor' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Nasıl döner', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Üç faz akımı, aralarında 120° faz farkıyla sargılardan geçer; toplam alan stator boşluğunda döner.',
+          'Döner alan hızı: ns = 120 × f ÷ kutup sayısı (50 Hz, 4 kutup: 1.500 d/dk).',
+          'Alan rotor çubuklarını keser, çubuklarda akım endüklenir; akım ile alan torku üretir.',
+          'Rotor alanın hızına ulaşamaz; ulaşsa çubuklar alanı kesmez, tork kalmaz. Aradaki fark kaymadır: s = (ns − n) ÷ ns.',
+          'Yük arttıkça kayma ve akım artar. Anma yükünde kayma küçük motorlarda yüzde birkaç, büyük motorlarda daha azdır.'
+        ]},
+        { tip: 'not', metin: 'Modelde döner alan yavaşlatıldı, kayma abartıldı. Renkler oluklardaki anlık akımı gösterir: iki kırmızı ve iki mavi bölge 4 kutbu oluşturur. İki fazın yeri değişince desen de rotor da ters döner. Yıldız mı üçgen mi olacağını motor etiketi söyler: 230/400 V motor 400 V şebekede yıldız, 400/690 V motor üçgen bağlanır.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Gövde kanatlarını ve fan ızgarasını kirli bırakmak', 'Soğutma azalır; sargı sıcaklığı her 10 °C arttığında yalıtım ömrü kabaca yarıya iner. Doğrusu: kanatları ve ızgarayı düzenli temizle.'],
+          ['Sürücüyle düşük devirde uzun süre yüklü çalıştırmak', 'Mile takılı fan yavaş döner, motor ısınır. Doğrusu: ayrı fanlı motor kullan ya da kataloğun düşük devir tork eğrisine uy.'],
+          ['Kaplini hizalamadan bağlamak', 'Mil ve rulmanlar zorlanır, titreşim artar, rulman erken bozulur. Doğrusu: kaplini komparatör ya da lazerle hizala.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Motor koruma şalteri', 'Kontaktör', 'Termik röle', 'Frekans çevirici', 'Kaplin'] }
+      ]}
+    ]
+  },
   'motor-baglanti': {
     baslik: 'Yıldız ve üçgen bağlantı',
     giris: 'Motor klemens kutusunda altı uç vardır: sargı başları U1-V1-W1 ve sonları U2-V2-W2. Köprülerin yerleşimi motorun yıldız mı üçgen mi çalışacağını belirler.',

@@ -86,12 +86,13 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 - Konu dosyaları (`konular/`) genel kapsamdadır. Yardımcı sabit gerekiyorsa dosyayı IIFE içine al; yoksa başka konunun aynı adlı sabitiyle çakışır.
 - Şablonlardaki yer tutucuları (`{{STIL}}`, `__SURUM__` …) yorumlarda bile yazma; derleme her geçtiği yere değer yazar. Derleme artık bunu denetler.
 - Ekran görüntüsü betiğinde sürükleme miktarı 0 ise tarayıcı bunu dokunuş sayar; 3B modelde parça seçilir ve görüntü yanıltır.
+- Ekran görüntüsü betiğinde sürüklemeyi tuvalin boş bir köşesinden başlat: ortadaki numara rozetleri olayı yutar, kamera dönmez. Parçala düğmesinden sonra kamera yaklaşık 1 sn döner; sürüklemeden önce bekle.
 - Değişiklikten sonra yalnızca testlere güvenme: şema, açılış ve 3B modelde iki temada ekran görüntüsü al ve bak. Z-fighting, taşma, beyaza kaçan ışık gibi hatalar testte görünmez.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 74 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 7 3B model (step motor, servo motor, step sürücü, otomatik sigorta, kompakt PLC, kontaktör, endüktif sensör).
+Mevcut: 13 konu, 75 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 8 3B model (step motor, servo motor, step sürücü, otomatik sigorta, kompakt PLC, kontaktör, endüktif sensör, asenkron motor).
 
-Sıradaki 3B modeller (kullanıcının istediği sıra; kontaktör ve endüktif sensör tamam): asenkron motor, pnömatik silindir ve valf, kaçak akım rölesi, servo sürücü, VFD (frekans çevirici).
+Sıradaki 3B modeller (kullanıcının istediği sıra; kontaktör, endüktif sensör ve asenkron motor tamam): pnömatik silindir ve valf, kaçak akım rölesi, servo sürücü, VFD (frekans çevirici).
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

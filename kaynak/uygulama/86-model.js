@@ -30,7 +30,8 @@ const MALZEMELER = {
   kabloYesil: { renk: 0x3f8a3a, metal: 0, puruz: 0.6 },
   kabloKirmizi: { renk: 0xb7352a, metal: 0, puruz: 0.6 },
   kabloMavi: { renk: 0x2c63b0, metal: 0, puruz: 0.6 },
-  kabloKahve: { renk: 0x7b4a2c, metal: 0, puruz: 0.6 }
+  kabloKahve: { renk: 0x7b4a2c, metal: 0, puruz: 0.6 },
+  kabloGri: { renk: 0x8b9096, metal: 0, puruz: 0.6 }
 };
 
 const modelDurum = (tur) => {
@@ -283,11 +284,12 @@ function modelBaslat(T, o) {
       return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar), n * 2, tel, 8, false);
     },
     /* Dönel parça: (r, z) profilini z ekseni etrafında döndürür. Kapalı ağ için profil kapalı olmalı (ilk ve son nokta aynı
-       ya da ikisi de eksende) ve saat yönünün tersine dolaşmalı (r sağa, z yukarı). [r, z, 1] köşeyi keskin yapar. */
-    torna(noktalar, bolum = 48) {
+       ya da ikisi de eksende) ve saat yönünün tersine dolaşmalı (r sağa, z yukarı). [r, z, 1] köşeyi keskin yapar.
+       bas, aci: yalnızca bir dilim (radyan; bas, +x ekseninden saat yönünün tersine ölçülür). */
+    torna(noktalar, bolum = 48, bas = 0, aci = Math.PI * 2) {
       const p = [], son = noktalar.length - 1;
       noktalar.forEach(([r, z, k], i) => { p.push(new T.Vector2(r, z)); if (k && i > 0 && i < son) p.push(new T.Vector2(r, z)); });
-      const g = new T.LatheGeometry(p, bolum).rotateX(Math.PI / 2);
+      const g = new T.LatheGeometry(p, bolum, bas + Math.PI / 2, aci).rotateX(Math.PI / 2);   // Lathe açısı −y’den başlar
       const n = g.attributes.normal, v = new T.Vector3();   // LatheGeometry son halkanın normalini boyutlandırmaz
       for (let i = 0; i < n.count; i++) { v.fromBufferAttribute(n, i).normalize(); n.setXYZ(i, v.x, v.y, v.z); }
       return g;
