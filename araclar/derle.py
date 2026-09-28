@@ -124,6 +124,10 @@ def derle(cikti, kilit=False):
     font_css = yazitipi_css()
     js = betik(kilit)
     soz_dizimi('betik (birleşik)', js)
+    # Türkçe metinde Kiril harf olmaz; görünüşü Latin harfe benzediği için gözle fark edilmez (ör. “toprakla” içinde Kiril “а”).
+    kiril = re.search(r'\w*[Ѐ-ӿ]\w*', js)
+    if kiril:
+        hata(f'metinde Kiril harf var: “{kiril.group(0)}”')
     for yol in sorted(set(re.findall(r"varliklar/[\w./-]+\.(?:js|png|woff2)", js))):
         if not (KOK / yol).exists():
             hata(f'betikte geçen dosya yok: {yol}')

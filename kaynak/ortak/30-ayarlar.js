@@ -5,7 +5,7 @@
    ===================================================================== */
 const UYGULAMA = {
   ad: 'PANO',
-  surum: '1.14.0',
+  surum: '1.15.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {

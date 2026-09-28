@@ -349,3 +349,188 @@
     }
   });
 })();
+
+/* Frekans çevirici (VFD): genel bir 400 V, 2,2 kW sınıfı sürücü. Ölçüler mm; z = 0 pano sacı (+z öne), y yukarı, x genişlik (100).
+   Katmanlar servo sürücüdeki gibidir; altta fan ve klemens bölmesi vardır. Klemens adları üreticiye göre değişir. */
+(() => {
+  const TUR = Math.PI * 2;
+  const VDC = 565, VNOM = 400, FNOM = 50;   // 400 V × √2 ≈ 565 V; V/f: 400 V / 50 Hz
+  const GUC = ['L1', 'L2', 'L3', 'P+', 'BR', 'U', 'V', 'W', 'PE'];
+  const KONT = ['DI1', 'DI2', 'DI3', 'COM', '+10V', 'AI1', '0V', 'AO1', 'TA', 'TB', 'TC'];
+  const gucX = (k) => -40 + 10 * k, kontX = (k) => -40 + 8 * k;
+
+  Object.assign(MODELLER, {
+    'frekans-cevirici': {
+      aciklama: 'Frekans çeviricinin 3B modeli: soğutucu ve fan, kapak, klemens kapağı, operatör paneli, kontrol kartı, güç kartı, DC bara kondansatörleri, IGBT modülü, doğrultucu, güç ve kontrol klemensleri, CHARGE LED’i.',
+      not: 'Yan kesit katmanları gösterir. Ana gücü ver, çalıştır: frekans rampayla çıkar, gerilim V/f oranıyla artar, fan döner. Hedefi değiştirince paneldeki potansiyometre döner. Klemenslere dokununca adları çıkar.',
+      etiketBaslik: 'Klemensler',
+      etiketler: [
+        ['L1', 'Şebeke girişi (üç faz). Motor bu uçlara asla bağlanmaz.'],
+        ['L2', 'Şebeke girişi.'],
+        ['L3', 'Şebeke girişi.'],
+        ['P+', 'DC bara artı ucu; fren direncinin bir ucu.'],
+        ['BR', 'Fren kıyıcısı çıkışı; fren direncinin öbür ucu.'],
+        ['U', 'Motor çıkışı. İki fazın yeri değişince motor ters döner (ya da yön parametreyle değiştirilir).'],
+        ['V', 'Motor çıkışı.'],
+        ['W', 'Motor çıkışı.'],
+        ['PE', 'Koruma toprağı: şebeke PE’si ve motor kablosunun PE’si ile ekranı.'],
+        ['DI1', 'Dijital giriş: ör. ileri çalış.'],
+        ['DI2', 'Dijital giriş: ör. geri çalış.'],
+        ['DI3', 'Dijital giriş: ör. sabit hız ya da arıza sıfırlama.'],
+        ['COM', 'Dijital girişlerin ortak ucu (NPN/PNP seçimine göre).'],
+        ['+10V', 'Potansiyometre beslemesi.'],
+        ['AI1', 'Analog hız referansı: 0–10 V ya da 4–20 mA (seçime göre).'],
+        ['0V', 'Analog ortak uç.'],
+        ['AO1', 'Analog çıkış: ör. çıkış frekansı ya da akım.'],
+        ['TA', 'Röle çıkışı ortak ucu.'],
+        ['TB', 'Röle çıkışı NC ucu.'],
+        ['TC', 'Röle çıkışı NO ucu: ör. arıza ya da çalışıyor bilgisi.']
+      ],
+      parcalar: [
+        ['Soğutucu', 'IGBT ve doğrultucunun ısısını havaya verir. Kanatlar tozla dolarsa sürücü aşırı sıcaklık alarmı verir.'],
+        ['Fan', 'Havayı soğutucu kanatlarından geçirir. Ömrü sınırlıdır; bakımda dönüşünü ve sesini kontrol et.'],
+        ['Kapak', 'Yalıtkan plastik. Havalandırma yarıkları kapatılmamalı.'],
+        ['Klemens kapağı', 'Güç ve kontrol klemenslerini örter. Bağlantıdan sonra mutlaka takılır.'],
+        ['Operatör paneli', 'Ekran, tuşlar ve hız potansiyometresi. Parametre ayarı, izleme ve alarm kodları buradan okunur.'],
+        ['Kontrol kartı', 'İşlemci: rampa, V/f ya da vektör kontrol ve korumaları hesaplar, PWM üretir.'],
+        ['Güç kartı', 'Ön dolum direnci ve rölesi, IGBT sürücüleri, akım ölçümü.'],
+        ['DC bara kondansatörleri', '400 V sınıfında seri bağlı çiftler hâlinde. Enerji kesildikten sonra da bir süre yüklü kalır.'],
+        ['IGBT modülü', 'Evirici ve fren kıyıcısı: DC barayı PWM ile anahtarlayıp ayarlanabilir frekanslı üç faz üretir.'],
+        ['Doğrultucu', 'Üç faz şebekeyi DC’ye çevirir.'],
+        ['Güç klemensleri', 'Şebeke (L1-L2-L3), fren direnci (P+, BR), motor (U-V-W) ve toprak (PE).'],
+        ['Kontrol klemensleri', 'Dijital girişler, analog referans, analog çıkış ve röle çıkışı.'],
+        ['CHARGE LED’i', 'DC barada tehlikeli gerilim olduğunu gösterir. Sönmeden klemenslere dokunma.']
+      ],
+      kamera: { yon: [0.6, 0.35, 1.1], patlak: [1, 0.45, 0.9] },
+      secimdeOdak: true,
+      kesitler: [{ ad: 'yan', planlar: [[-1, 0, 0, 0]] }],
+      yeni: () => ({ guc: false, calis: false, hedef: FNOM, f: 0, vdc: 0, fan: 0, fanAci: 0, uyari: '' }),
+      dugmeler: (s) => [
+        ['guc', s.guc ? 'Ana gücü kes' : 'Ana güç ver', s.guc],
+        ['calis', s.calis ? 'Durdur' : 'Çalıştır', s.calis],
+        ['hedef', `Hedef: ${s.hedef} Hz`, s.hedef !== FNOM]
+      ],
+      olay(s, olay) {
+        s.uyari = '';
+        if (olay === 'guc') s.guc = !s.guc;
+        else if (olay === 'calis') { if (s.calis) s.calis = false; else if (s.guc && s.vdc > 500) s.calis = true; else s.uyari = 'guc'; }
+        else if (olay === 'hedef') s.hedef = s.hedef === FNOM ? 25 : FNOM;
+      },
+      tik(s, dt) {
+        const once = [s.f, s.vdc, s.fan, s.calis].join();
+        const yaklas = (a, b, v) => (a < b ? Math.min(b, a + v) : Math.max(b, a - v));
+        if (!s.guc && s.calis) s.calis = false;   // ana güç kesilince çıkış kapanır, motor serbest durur
+        s.f = s.guc ? yaklas(s.f, s.calis ? s.hedef : 0, dt * 20) : 0;   // gösterim: 20 Hz/s (gerçekte rampa süresi parametredir)
+        if (s.guc) { s.vdc += (VDC - s.vdc) * Math.min(1, dt * 2.5); if (VDC - s.vdc < 0.5) s.vdc = VDC; }
+        else { s.vdc *= Math.exp(-dt / 2.5); if (s.vdc < 1) s.vdc = 0; }
+        s.fan = yaklas(s.fan, s.f > 0 ? 1 : 0, dt * (s.f > 0 ? 1.5 : 0.5));
+        s.fanAci += dt * TUR * 3 * s.fan;
+        return [s.f, s.vdc, s.fan, s.calis].join() !== once || s.fan > 0;
+      },
+      durum(s) {
+        const v = Math.round(s.vdc), f = sayi(s.f, 1), u = Math.round(Math.min(VNOM, (VNOM * s.f) / FNOM));
+        if (s.uyari === 'guc') return { metin: 'Ana güç yok ya da DC bara dolmadı: çalıştırılamaz.', uyari: true };
+        if (!s.guc && s.vdc > 30) return { metin: `Ana güç kesildi: çıkış kapalı (dönen motor serbest durur). DC bara kondansatörleri hâlâ yüklü: ≈ ${v} V. CHARGE LED’i sönmeden ve etiketteki süre dolmadan klemenslere dokunma.`, uyari: true };
+        if (!s.guc) return { metin: 'Sürücü enerjisiz, DC bara boş. Bağlantıdan önce yine de ölçerek doğrula.' };
+        if (s.vdc < 540) return { metin: `Ana güç verildi: doğrultucu DC barayı dolduruyor (≈ ${v} V). Ön dolum direnci akımı sınırlar, sonra röle kapanır.` };
+        if (!s.calis && s.f > 0) return { metin: `Duruyor: frekans rampayla düşüyor (${f} Hz). Motor enerji geri verirse DC bara yükselir; fren direnci yoksa aşırı gerilim (OV) alarmı gelebilir.` };
+        if (!s.calis) return { metin: `Hazır: DC bara ≈ ${v} V (400 V × √2). Çalıştır komutu bekleniyor; çıkış kapalı.` };
+        if (s.f < s.hedef) return { metin: `Hızlanıyor: ${f} Hz, ≈ ${u} V. V/f oranı sabit: 400 V ÷ 50 Hz = 8 V/Hz.` };
+        return { metin: `Çalışıyor: ${f} Hz, ≈ ${u} V. 4 kutuplu motorda döner alan ${sayi((120 * s.f) / 4, 0)} d/dk; rotor biraz daha yavaş döner. Fan soğutucuyu soğutuyor.` };
+      },
+
+      kur(y) {
+        const T = y.T;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const kutu = (w, h, d, m, x, yy, z, sec) => yer(y.ag(new T.BoxGeometry(w, h, d), m, sec), x, yy, z);
+        const koyu = (w, h, d, x, yy, z) => kutu(w, h, d, 'entegre', x, yy, z, { kenar: false });
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- soğutucu (kanatlar z 0 … 40, taban 40 … 48) ve altındaki fan (y ekseninde) ---- */
+        const sogutucu = grup(kutu(100, 200, 8, 'aluminyum', 0, 0, 44),
+          ...Array.from({ length: 12 }, (_, k) => kutu(2, 175, 39.95, 'aluminyum', -49 + (98 * k) / 11, 12.5, 19.975, { esik: 60 })),
+          ...[1, -1].flatMap((d) => [kutu(40, 10, 2, 'aluminyum', 0, d * 105.05, 41), koyu(8, 5, 0.1, 0, d * 106, 42.1)]));
+        const fanCerceve = y.yuvarlakDikdortgen(40, 39.8, 3);   // z 0,05 … 39,85: soğutucu tabanına değmez
+        fanCerceve.holes.push(new T.Path().absarc(0, 0, 18.5, 0, TUR, true));
+        const pervane = grup(yer(y.ag(y.silindir(7, 20, 24).rotateX(Math.PI / 2), 'plastik'), 0, 0, 0),
+          ...Array.from({ length: 7 }, (_, k) => { const a = (k * TUR) / 7, m = kutu(10, 14, 2, 'plastik', 12.5 * Math.cos(a), 0, 12.5 * Math.sin(a)); m.rotation.y = -a; return m; }));
+        pervane.position.set(0, -87.5, 19.95);
+        const fan = grup(yer(y.ag(y.cek(fanCerceve, 24.9).rotateX(Math.PI / 2), 'plastik', { esik: 60 }), 0, -87.5, 19.95), pervane);
+
+        /* ---- kapak (üst ön yüz dâhil) ve klemens kapağı ---- */
+        const kapak = grup(
+          kutu(1.5, 200, 110.4, 'plastikAcik', -49.25, 0, 103.25), kutu(1.5, 200, 110.4, 'plastikAcik', 49.25, 0, 103.25),
+          kutu(96.9, 1.5, 110.4, 'plastikAcik', 0, 99.25, 103.25), kutu(96.9, 1.5, 110.4, 'plastikAcik', 0, -99.25, 103.25),
+          kutu(100, 115, 1.5, 'plastikAcik', 0, 42.5, 159.25),
+          ...[-80, -60, -40, -20, 0, 20, 40, 60, 80].map((yy) => koyu(0.1, 4, 60, 50.05, yy, 100)));
+        const klemensKapagi = grup(kutu(96.9, 84.8, 1.5, 'plastikAcik', 0, -57.5, 159.25), kutu(40, 3, 3, 'plastikAcik', 0, -93, 161.55));
+
+        /* ---- güç tarafı: IGBT ve doğrultucu (soğutucu tabanında), güç kartı, kondansatörler ---- */
+        const pwmMalzeme = y.malzeme('entegre').clone();
+        const igbt = grup(kutu(50, 60, 11.9, 'entegre', 0, 10, 54), kutu(40, 8, 0.1, pwmMalzeme, 0, 30, 60.05, { kenar: false }),
+          ...[-18, -10, -2, 6, 14].map((x) => kutu(1.2, 1.2, 19.95, 'celik', x, 38, 70, { kenar: false })));
+        const dogrultucu = grup(kutu(34, 30, 9.9, 'entegre', 0, -45, 53.05), ...[-12, -4, 4, 12].map((x) => kutu(1.2, 1.2, 21.95, 'celik', x, -32, 69, { kenar: false })));
+        const gucKarti = grup(kutu(94, 190, 2, 'kart', 0, 0, 81),
+          kutu(16, 20, 18, 'plastik', -30, 5, 91.05), kutu(8, 24, 8, 'plastikAcik', -30, -12, 86.05),   // ön dolum rölesi ve direnci
+          kutu(8, 8, 1.4, 'entegre', 20, 5, 82.75), kutu(8, 8, 1.4, 'entegre', 32, 5, 82.75));
+        const kondansatorler = grup(...[[-22, 40], [22, 40], [-22, 70], [22, 70]].flatMap(([x, yy]) => [
+          yer(y.ag(y.silindir(12.5, 40, 40), 'kondansator', { esik: 60 }), x, yy, 102.05), yer(y.ag(y.silindir(12, 0.5, 40), 'celik'), x, yy, 122.35)]));
+
+        /* ---- kontrol kartı ve operatör paneli ---- */
+        const kontrol = grup(kutu(90, 90, 1.6, 'kart', 0, 50, 140.8), kutu(16, 16, 1.4, 'entegre', -10, 40, 139.25), kutu(10, 10, 1.3, 'entegre', 15, 60, 139.3));
+        const lcdMalzeme = y.malzeme('entegre').clone();
+        const pot = grup(yer(y.ag(y.silindir(7, 6, 32), 'plastik'), 0, 0, 0), kutu(1.2, 5, 0.3, 'vurgu', 0, 3.5, 3.2, { kenar: false }));
+        pot.position.set(22, 40, 169.05);
+        const panel = grup(kutu(70, 64, 5.9, 'plastik', 0, 58, 163), kutu(50, 18, 0.1, lcdMalzeme, 0, 76, 166.05, { kenar: false }),
+          ...[-24, -12, 0, 12].map((x) => kutu(9, 7, 2, 'plastikAcik', x, 58, 167)),
+          kutu(10, 8, 2, 'kabloYesil', -22, 40, 167), kutu(10, 8, 2, 'kabloKirmizi', -6, 40, 167), pot);
+
+        /* ---- klemensler: kontrol (üst sıra), güç (alt sıra); CHARGE LED’i ---- */
+        const kontrolKl = grup(kutu(88, 12, 20, 'klemens', 0, -34, 144), kutu(70, 8, 51.9, 'plastik', 0, -34, 108));   // klemens ve karta oturan taban
+        KONT.forEach((a, k) => kontrolKl.add(yer(y.ag(y.silindir(1.8, 1, 16), 'celik'), kontX(k), -34, 154.55), koyu(0.4, 2.6, 0.1, kontX(k), -34, 155.1), koyu(4, 0.1, 4, kontX(k), -40.1, 146)));
+        const gucKl = grup(kutu(96, 16, 26, 'plastik', 0, -78, 141), kutu(80, 12, 45.9, 'plastik', 0, -78, 105));
+        GUC.forEach((a, k) => gucKl.add(yer(y.ag(y.silindir(2.8, 1.1, 20), 'celik'), gucX(k), -78, 154.6), koyu(0.6, 4, 0.1, gucX(k), -78, 155.2), koyu(7, 0.1, 7, gucX(k), -86.1, 146)));
+        const ledAg = yer(y.ag(y.silindir(2, 1, 16), y.malzeme('ledKirmizi').clone(), { kenar: false }), 40, -8, 160.55);
+        const led = grup(ledAg);
+
+        const parcalar = [
+          { nesne: sogutucu, isaret: [50, 60, 20], patlat: [0, 0, -45] },
+          { nesne: fan, isaret: [20, -87.5, 20], patlat: [0, -25, -45] },
+          { nesne: kapak, isaret: [50, 30, 110], patlat: [-120, 0, 30] },
+          { nesne: klemensKapagi, isaret: [30, -60, 160], patlat: [0, 0, 70] },
+          { nesne: panel, isaret: [-30, 70, 166], patlat: [0, 0, 60] },
+          { nesne: kontrol, isaret: [-44, 60, 141.6], patlat: [0, 0, 30] },
+          { nesne: gucKarti, isaret: [-44, -10, 82], patlat: [0, 0, 0] },
+          { nesne: kondansatorler, isaret: [-34.5, 40, 100], patlat: [0, 0, 0] },
+          { nesne: igbt, isaret: [-25, 10, 54], patlat: [0, 0, 0] },
+          { nesne: dogrultucu, isaret: [-17, -45, 53], patlat: [0, 0, 0] },
+          { nesne: gucKl, isaret: [-45, -78, 154], patlat: [0, 0, 30] },
+          { nesne: kontrolKl, isaret: [-43, -34, 154], patlat: [0, 0, 30] },
+          { nesne: led, isaret: [40, -8, 161.05], patlat: [0, 0, 20] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+
+        const etiketYerleri = GUC.map((a, k) => ({ nesne: gucKl, konum: [gucX(k), k % 2 ? -99 : -91, 150], parca: 10 }))   // iki kademe: dar aralıkta üst üste binmesin
+          .concat(KONT.map((a, k) => ({ nesne: kontrolKl, konum: [kontX(k), k % 2 ? -15 : -22, 150], parca: 11 })));
+        const sonuk = new T.Color(0x3a1414), kirmizi = new T.Color(0xff3b2f), lcdSonuk = lcdMalzeme.color.clone(), lcdYanik = new T.Color(0x9fd8a8);
+        const pwmRenk = y.malzeme('vurgu').color.clone(), pwmSonuk = pwmMalzeme.color.clone();
+
+        return {
+          kok,
+          parcalar,
+          etiketYerleri,
+          uygula(s) {
+            /* Malzemeler burada okunur: çalışma zamanı her parçaya kendi kopyasını verir. */
+            ledAg.material.color.copy(sonuk).lerp(kirmizi, Math.min(1, s.vdc / VDC));
+            panel.children[1].material.color.copy(s.vdc > 300 ? lcdYanik : lcdSonuk);
+            igbt.children[1].material.color.copy(s.f > 0 ? pwmRenk : pwmSonuk);
+            pervane.rotation.y = s.fanAci;
+            pot.rotation.z = 0.75 * Math.PI - (1.5 * Math.PI * s.hedef) / FNOM;   // saat yönünde artar: 0 Hz sol altta, 50 Hz sağ altta
+          }
+        };
+      }
+    }
+  });
+})();

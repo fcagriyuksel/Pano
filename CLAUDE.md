@@ -84,6 +84,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 - Erken betik (`govde/02-erken-betik.js`) seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
 - Uygulama kodu tek IIFE içindedir; `uygulama/` dosyaları aynı kapsamı paylaşır. Sıra önemlidir: bir dosya, kendinden sonra gelen dosyanın sabitini yükleme anında kullanamaz.
 - Konu dosyaları (`konular/`) genel kapsamdadır. Yardımcı sabit gerekiyorsa dosyayı IIFE içine al; yoksa başka konunun aynı adlı sabitiyle çakışır.
+- Metne görünüşü Latin harfe benzeyen Kiril harf karışabilir (“toprakla” içinde “а”); gözle görülmez, aramayı bozar. Derleme artık bunu denetler.
 - Şablonlardaki yer tutucuları (`{{STIL}}`, `__SURUM__` …) yorumlarda bile yazma; derleme her geçtiği yere değer yazar. Derleme artık bunu denetler.
 - Ekran görüntüsü betiğinde sürükleme miktarı 0 ise tarayıcı bunu dokunuş sayar; 3B modelde parça seçilir ve görüntü yanıltır.
 - Ekran görüntüsü betiğinde sürüklemeyi tuvalin boş bir köşesinden başlat: ortadaki numara rozetleri olayı yutar, kamera dönmez. Parçala düğmesinden sonra kamera yaklaşık 1 sn döner; sürüklemeden önce bekle.
@@ -91,8 +92,8 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 78 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 11 3B model (step motor, servo motor, step sürücü, servo sürücü, otomatik sigorta, kaçak akım rölesi, kompakt PLC, kontaktör, endüktif sensör, asenkron motor, pnömatik silindir ve 5/2 valf).
+Mevcut: 13 konu, 79 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 12 3B model (step motor, servo motor, step sürücü, servo sürücü, frekans çevirici, otomatik sigorta, kaçak akım rölesi, kompakt PLC, kontaktör, endüktif sensör, asenkron motor, pnömatik silindir ve 5/2 valf).
 
-Sıradaki 3B modeller (kullanıcının istediği sıra; kontaktör, endüktif sensör, asenkron motor, pnömatik, kaçak akım rölesi, servo sürücü tamam): VFD (frekans çevirici).
+3B modeller: kullanıcının istediği liste tamamlandı. Yeni model adayları: termik röle, motor koruma şalteri, güç kaynağı (SMPS), fotoelektrik sensör, enkoder.
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

@@ -8,6 +8,7 @@ VERI.konular.push({
     { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP anahtarı', sayfa: 'surucu-step' },
     { id: 'servo-surucu-ic-yapi', kod: '3B', ad: 'Servo sürücü: iç yapı (3B)', alt: 'DC bara, IGBT, fren direnci, konnektörler · CHARGE LED’i', sayfa: 'servo-surucu-ic-yapi' },
     { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork', sayfa: 'surucu-servo' },
+    { id: 'vfd-ic-yapi', kod: '3B', ad: 'Frekans çevirici: iç yapı (3B)', alt: 'DC bara, IGBT, fan, klemensler · rampa ve V/f', sayfa: 'vfd-ic-yapi' },
     { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler', sayfa: 'surucu-vfd' },
     { id: 'surucu-io', kod: 'I/O', ad: 'Sürücü giriş–çıkışları', alt: 'Dijital girişler, alarm ve hazır çıkışları', sayfa: 'surucu-io' }
   ]
@@ -175,6 +176,36 @@ Object.assign(VERI.sayfalar, {
       ]},
       { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
         { tip: 'parcalar', parcalar: ['Servo motor', 'Enkoder kablosu', 'EtherCAT kablosu', 'Güvenlik rölesi', 'Fren direnci'] }
+      ]}
+    ]
+  },
+  'vfd-ic-yapi': {
+    baslik: 'Frekans çeviricinin iç yapısı',
+    giris: 'Frekans çevirici şebekeyi önce DC’ye, sonra IGBT’lerle ayarlanabilir frekans ve gerilimde üç faz AC’ye çevirir. Asenkron motorun hızı frekansla orantılı değişir.',
+    etiketler: ['3B model', 'V/f', 'DC bara', 'Klemensler'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'frekans-cevirici' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Güç yolu', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Üç faz şebeke doğrultucudan geçer; DC bara 400 V girişte yaklaşık 565 V’a dolar.',
+          'Çalıştır komutu gelince IGBT’ler PWM ile anahtarlanır; çıkış frekansı rampayla hedefe çıkar.',
+          'V/f kontrolde gerilim frekansla birlikte artar (50 Hz’de 400 V, 25 Hz’de yaklaşık 200 V); motorun manyetik akısı sabit kalır.',
+          'Durdurmada frekans rampayla düşer. Yük ataleti büyükse motor enerji geri verir; DC bara yükselir, fren kıyıcısı enerjiyi fren direncine aktarır.',
+          'Fan, IGBT ve doğrultucunun ısısını soğutucudan atar; fan arızası aşırı sıcaklık alarmı verir.'
+        ]},
+        { tip: 'not', metin: 'Düşük frekansta V/f eğrisine gerilim artırma (boost) eklenir; vektör kontrol düşük hızda torku daha iyi tutar. Klemens adları üreticiye göre değişir; kılavuzdaki bağlantı şemasını esas al.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Şebekeyi U-V-W’ye bağlamak', 'Enerji verildiği anda sürücü zarar görür. Doğrusu: şebeke L1-L2-L3’e, motor U-V-W’ye; enerji vermeden önce kontrol et.'],
+          ['Kontrol kablolarını motor kablosuyla aynı kanala koymak', 'PWM gürültüsü analog referansı ve dijital girişleri bozar. Doğrusu: ayrı kanal, analog için ekranlı kablo; ekranı kılavuzdaki gibi toprakla.'],
+          ['Klemens kapağını takmadan çalıştırmak', 'Açık klemenslerde tehlikeli gerilim vardır; iletken toz ve talaş girer. Doğrusu: bağlantıdan sonra kapağı tak.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Fren direnci', 'Hat şoku', 'EMC filtresi', 'Ekranlı motor kablosu', 'Potansiyometre'] }
       ]}
     ]
   },
