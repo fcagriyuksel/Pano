@@ -168,3 +168,184 @@
     }
   });
 })();
+
+/* Servo sürücü: genel bir 230 V, 400 W sınıfı kitap tipi sürücü. Ölçüler mm; z = 0 pano sacı (+z öne), y yukarı, x genişlik (45).
+   Katmanlar arkadan öne: soğutucu, IGBT ve doğrultucu, güç kartı ve kondansatörler, kontrol kartı, ön yüz. Yerleşim üreticiye göre değişir. */
+(() => {
+  const VDC = 325, VFREN = 380;   // 230 V × √2 ≈ 325 V; fren kıyıcısı eşiği tipik ≈ 380 V (üreticiye göre değişir)
+  const GUC = ['L1', 'L2', 'L3', 'P+', 'BR', 'U', 'V', 'W', 'PE'];
+  const gucY = (k) => -13.25 - 7.5 * k;
+  const KON = [['CN1', -8, 12], ['CN2', 9, 17], ['CN3', -8, 38], ['CN4', 8, 38], ['STO', 9, 3]];   // ad, x, y (ön yüz)
+
+  Object.assign(MODELLER, {
+    'servo-surucu': {
+      aciklama: 'Servo sürücünün 3B modeli: soğutucu, IGBT modülü, doğrultucu, güç kartı, DC bara kondansatörleri, fren direnci, kontrol kartı, ekran ve tuşlar, konnektörler, güç klemensleri, CHARGE LED’i.',
+      not: 'Yan kesit katmanları gösterir: arkada soğutucu, önde kontrol kartı. Ana gücü verip kes: CHARGE LED’i kondansatörler boşalana kadar yanar. Servo ON’dan sonra hızlı yavaşlatıp fren direncine bak. Klemenslere ya da konnektörlere dokununca adları çıkar.',
+      etiketBaslik: 'Klemensler ve konnektörler',
+      etiketler: [
+        ['L1', 'Ana besleme girişi. Tek fazlı beslemede hangi iki ucun kullanılacağı kılavuzda yazar.'],
+        ['L2', 'Ana besleme girişi.'],
+        ['L3', 'Ana besleme girişi.'],
+        ['P+', 'DC bara artı ucu; dış fren direncinin bir ucu buraya. Adlar üreticiye göre değişir.'],
+        ['BR', 'Fren kıyıcısı çıkışı; dış fren direncinin öbür ucu. İç direnç köprüsü varsa dış direnç takılınca sökülür.'],
+        ['U', 'Motor fazı. Motor kablosundaki U ile aynı uca; yön için faz sırası değiştirilmez, parametre değiştirilir.'],
+        ['V', 'Motor fazı.'],
+        ['W', 'Motor fazı.'],
+        ['PE', 'Motor ve sürücü toprağı. Motor kablosunun PE’si ve ekranı buraya.'],
+        ['CN1', 'Kontrol G/Ç: darbe/yön, analog komut, dijital giriş ve çıkışlar (servo ON, alarm, hazır).'],
+        ['CN2', 'Enkoder konnektörü. Ekranlı kablo; güç kablosundan ayrı döşenir.'],
+        ['CN3', 'Haberleşme girişi (ör. EtherCAT IN ya da RS485).'],
+        ['CN4', 'Haberleşme çıkışı; sonraki sürücüye gider (ör. EtherCAT OUT).'],
+        ['STO', 'Güvenli tork kesme girişi. Kalıcı köprülenmez; güvenlik rölesi ya da güvenlik PLC’si üzerinden bağlanır.']
+      ],
+      parcalar: [
+        ['Soğutucu', 'IGBT ve doğrultucunun ısısını havaya verir. Kanatlar dikeydir; üstte ve altta montaj boşluğu bırakılmazsa sürücü aşırı sıcaklık alarmı verir. Kulaklardan pano sacına vidalanır.'],
+        ['Kapak', 'Yalıtkan plastik. Havalandırma yarıkları kapatılmamalı.'],
+        ['Kontrol kartı', 'İşlemci (DSP) ve mantık devresi: enkoderi okur, konum, hız ve akım döngülerini hesaplar, PWM üretir.'],
+        ['Ekran ve tuşlar', 'Parametre, izleme ve alarm kodları. Alarmda önce buradaki kodu oku.'],
+        ['Konnektörler (CN1–CN4, STO)', 'Kontrol, enkoder, haberleşme ve güvenlik bağlantıları.'],
+        ['Güç kartı', 'Ön dolum direnci ve rölesi, akım sensörleri, IGBT sürücüleri. Akım sensörleri motor akımını ölçer.'],
+        ['DC bara kondansatörleri', 'Doğrultulmuş gerilimi düzgünleştirir ve enerji depolar. Enerji kesildikten sonra da bir süre yüklü kalır.'],
+        ['IGBT modülü', 'Evirici: DC barayı PWM ile anahtarlayıp motora üç faz akım verir. Soğutucuya ısı macunuyla bağlanır.'],
+        ['Doğrultucu köprü', 'Şebeke AC’sini DC’ye çevirir.'],
+        ['Fren direnci (iç)', 'Yavaşlamada motordan dönen enerjiyi ısıya çevirir. Yetmezse P+ ile BR arasına dış direnç bağlanır.'],
+        ['Güç klemensleri', 'Besleme (L1-L2-L3), fren direnci (P+, BR), motor (U-V-W) ve toprak (PE).'],
+        ['CHARGE LED’i', 'DC barada tehlikeli gerilim olduğunu gösterir. Sönmeden klemenslere dokunma.']
+      ],
+      kamera: { yon: [0.55, 0.3, 1.15], patlak: [1, 0.4, 0.9] },
+      secimdeOdak: true,
+      kesitler: [{ ad: 'yan', planlar: [[-1, 0, 0, 0]] }],
+      yeni: () => ({ guc: false, servo: false, vdc: 0, frenT: 0, isi: 0, uyari: '' }),
+      dugmeler: (s) => [
+        ['guc', s.guc ? 'Ana gücü kes' : 'Ana güç ver', s.guc],
+        ['servo', s.servo ? 'Servo OFF' : 'Servo ON', s.servo],
+        ['fren', 'Hızlı yavaşla']
+      ],
+      olay(s, olay) {
+        s.uyari = '';
+        if (olay === 'guc') s.guc = !s.guc;
+        else if (olay === 'servo') { if (s.servo) s.servo = false; else if (s.guc && s.vdc > 290) s.servo = true; else s.uyari = 'guc'; }
+        else if (olay === 'fren') { if (s.servo) s.frenT = 2; else s.uyari = 'fren'; }
+      },
+      tik(s, dt) {
+        const once = [s.vdc, s.frenT, s.isi, s.servo].join();
+        if (s.frenT > 0) s.frenT = Math.max(0, s.frenT - dt);
+        if (!s.guc && s.servo) s.servo = false;   // ana güç kesilince sürücü servoyu kapatır
+        if (s.guc) {
+          const hedef = s.frenT > 0.4 ? VFREN : VDC;
+          s.vdc += (hedef - s.vdc) * Math.min(1, dt * (s.frenT > 0 ? 6 : 2.5));
+          if (Math.abs(hedef - s.vdc) < 0.5) s.vdc = hedef;
+        } else {
+          s.vdc *= Math.exp(-dt / 2.5);   // gösterim: gerçekte boşalma dakikalar sürebilir
+          if (s.vdc < 1) s.vdc = 0;
+        }
+        const isiH = s.frenT > 0.4 ? 1 : 0;
+        s.isi += (isiH - s.isi) * Math.min(1, dt * (isiH ? 3 : 0.7));
+        if (!isiH && s.isi < 0.01) s.isi = 0;
+        return [s.vdc, s.frenT, s.isi, s.servo].join() !== once;
+      },
+      durum(s) {
+        const v = Math.round(s.vdc);
+        if (s.uyari === 'guc') return { metin: 'Ana güç yok ya da DC bara dolmadı: Servo ON yapılamaz (sürücü “ana güç yok” uyarısı verir).', uyari: true };
+        if (s.uyari === 'fren') return { metin: 'Motor sürülmüyor: önce Servo ON.', uyari: true };
+        if (!s.guc && s.vdc > 30) return { metin: `Ana güç kesildi ama DC bara kondansatörleri hâlâ yüklü: ≈ ${v} V. CHARGE LED’i sönmeden ve etiketteki süre dolmadan klemenslere dokunma.`, uyari: true };
+        if (!s.guc) return { metin: 'Sürücü enerjisiz, DC bara boş. Bağlantıdan önce yine de ölçerek doğrula.' };
+        if (s.vdc < 300) return { metin: `Ana güç verildi: doğrultucu DC barayı dolduruyor (≈ ${v} V). İlk anda ön dolum direnci akımı sınırlar, sonra röle kapanır.` };
+        if (s.frenT > 0) return { metin: `Hızlı yavaşlama: motor jeneratör gibi çalışıyor, DC bara ≈ ${v} V’a çıktı. Fren kıyıcısı fazla enerjiyi fren direncine aktarıyor; direnç ısınıyor.` };
+        if (s.servo) return { metin: `Servo ON: IGBT’ler PWM ile U-V-W’ye akım veriyor, motor konumunu tutuyor. DC bara ≈ ${v} V.` };
+        return { metin: `Ana güç var: DC bara ≈ ${v} V (230 V × √2), CHARGE LED’i yanıyor. Servo OFF: IGBT’ler kapalı, motor serbest.` };
+      },
+
+      kur(y) {
+        const T = y.T;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const kutu = (w, h, d, m, x, yy, z, sec) => yer(y.ag(new T.BoxGeometry(w, h, d), m, sec), x, yy, z);
+        const koyu = (w, h, x, yy, z) => kutu(w, h, 0.1, 'entegre', x, yy, z, { kenar: false });   // ön yüzdeki koyu yuva
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- soğutucu: dikey kanatlar (z 0 … 28), taban (28 … 34), montaj kulakları ---- */
+        const sogutucu = grup(kutu(45, 170, 6, 'aluminyum', 0, 0, 31),
+          ...[-21.5, -14.3, -7.2, 0, 7.2, 14.3, 21.5].map((x) => kutu(2, 170, 27.95, 'aluminyum', x, 0, 13.975, { esik: 60 })),
+          ...[1, -1].flatMap((d) => [kutu(24, 10, 2, 'aluminyum', 0, d * 90.05, 29), koyu(6, 5, 0, d * 91, 30.1)]));
+
+        /* ---- kapak: içi boş kabuk ---- */
+        const kapak = grup(
+          kutu(1.5, 170, 114.4, 'plastikAcik', -21.75, 0, 91.25), kutu(1.5, 170, 114.4, 'plastikAcik', 21.75, 0, 91.25),
+          kutu(41.9, 1.5, 114.4, 'plastikAcik', 0, 84.25, 91.25), kutu(41.9, 1.5, 114.4, 'plastikAcik', 0, -84.25, 91.25),
+          kutu(45, 170, 1.5, 'plastikAcik', 0, 0, 149.25),
+          ...[-60, -40, -20, 0, 20, 40, 60].map((yy) => kutu(0.1, 3, 40, 'entegre', 22.55, yy, 70, { kenar: false }))   // havalandırma yarıkları
+        );
+
+        /* ---- IGBT modülü ve doğrultucu (soğutucu tabanında), güç kartı ve üstündekiler ---- */
+        const pwmMalzeme = y.malzeme('entegre').clone();
+        const igbt = grup(kutu(30, 40, 11.9, 'entegre', 0, 15, 40), kutu(24, 6, 0.1, pwmMalzeme, 0, 22, 46.05, { kenar: false }),
+          ...[-10, -6, -2, 2, 6, 10].map((x) => kutu(1, 1, 17.95, 'celik', x, 33, 55, { kenar: false })));
+        const dogrultucu = grup(kutu(20, 20, 7.9, 'entegre', 0, -35, 38.05), ...[-6, -2, 2, 6].map((x) => kutu(1, 1, 21.95, 'celik', x, -27, 53, { kenar: false })));
+        const gucKarti = grup(kutu(40, 164, 1.6, 'kart', 0, 0, 64.8),
+          kutu(10, 12, 14.9, 'plastik', -10, 22, 73.15),                                  // ön dolum rölesi
+          kutu(8, 8, 7.9, 'plastik', 10, -20, 69.65), kutu(8, 8, 7.9, 'plastik', 10, -31, 69.65),   // akım sensörleri
+          kutu(6, 6, 1.4, 'entegre', 8, 4, 66.35), kutu(6, 6, 1.4, 'entegre', -4, 4, 66.35));    // IGBT sürücüleri
+        const kondansatorler = grup(...[-10, 10].flatMap((x) => [yer(y.ag(y.silindir(9, 34.3, 40), 'kondansator', { esik: 60 }), x, 55, 82.8), yer(y.ag(y.silindir(8.5, 0.5, 40), 'celik'), x, 55, 100.25)]));
+        const direncAg = kutu(8, 34, 7.9, y.malzeme('plastikAcik').clone(), -12, -40, 69.65);
+        const direnc = grup(direncAg);
+
+        /* ---- kontrol kartı (üst yarım), ekran ve tuşlar, konnektörler ---- */
+        const kontrol = grup(kutu(40, 85, 1.6, 'kart', 0, 37.5, 136.8),
+          kutu(14, 14, 1.4, 'entegre', -8, 20, 135.25), kutu(12, 12, 1.3, 'entegre', -8, 44, 135.3), kutu(5, 3, 1.3, 'celik', 8, 60, 135.3));
+        const segmentMalzeme = y.malzeme('ledKirmizi').clone();
+        const ekran = grup(kutu(30, 14, 12.9, 'entegre', 0, 70, 144.15), kutu(24, 8, 0.1, segmentMalzeme, 0, 70, 150.7, { kenar: false }),
+          ...[-12, -4, 4, 12].map((x) => kutu(6, 4, 2.4, 'plastik', x, 54, 150.3)));
+        const konnektor = grup(
+          kutu(12, 26, 13.3, 'celik', -8, 12, 144.35), koyu(8, 22, -8, 12, 151.1),
+          kutu(10, 14, 13.3, 'celik', 9, 17, 144.35), koyu(7, 10, 9, 17, 151.1),
+          kutu(15, 13, 13.3, 'celik', -8, 38, 144.35), koyu(11, 8, -8, 37, 151.1),
+          kutu(15, 13, 13.3, 'celik', 8, 38, 144.35), koyu(11, 8, 8, 37, 151.1),
+          kutu(10, 7, 13.3, 'klemens', 9, 3, 144.35), koyu(7, 3, 9, 3, 151.1));
+
+        /* ---- güç klemensleri (dikey sıra) ve CHARGE LED’i ---- */
+        const klemensler = grup(kutu(12, 67.5, 60, 'plastik', -6, -43.25, 96.65), kutu(16, 67.5, 24.3, 'klemens', -6, -43.25, 138.85));   // karttaki taban ve takılıp çıkan fiş
+        GUC.forEach((a, k) => klemensler.add(yer(y.ag(y.silindir(1.8, 1, 16), 'celik'), -6, gucY(k), 151.55), kutu(0.4, 2.6, 0.1, 'entegre', -6, gucY(k), 152.1, { kenar: false }),
+          kutu(0.1, 4.5, 4.5, 'entegre', 2.1, gucY(k), 140, { kenar: false })));
+        const ledAg = yer(y.ag(y.silindir(1.5, 1, 16), y.malzeme('ledKirmizi').clone(), { kenar: false }), 12, -14, 150.55);
+        const led = grup(ledAg);
+
+        const parcalar = [
+          { nesne: sogutucu, isaret: [22.5, 60, 14], patlat: [0, 0, -35] },
+          { nesne: kapak, isaret: [22.5, 30, 100], patlat: [-80, 0, 20] },
+          { nesne: kontrol, isaret: [-19, 60, 137.6], patlat: [0, 0, 40] },
+          { nesne: ekran, isaret: [-10, 70, 150.75], patlat: [0, 0, 40] },
+          { nesne: konnektor, isaret: [-8, 12, 151.15], patlat: [0, 0, 40] },
+          { nesne: gucKarti, isaret: [-19, -70, 65.6], patlat: [0, 0, 0] },
+          { nesne: kondansatorler, isaret: [-19, 55, 82.8], patlat: [0, 0, 0] },
+          { nesne: igbt, isaret: [-15, 15, 40], patlat: [0, 0, 0] },
+          { nesne: dogrultucu, isaret: [-10, -35, 38], patlat: [0, 0, 0] },
+          { nesne: direnc, isaret: [-16, -40, 69.65], patlat: [0, 0, 0] },
+          { nesne: klemensler, isaret: [-11, -43, 151], patlat: [0, 0, 40] },
+          { nesne: led, isaret: [12, -14, 151.05], patlat: [0, 0, 20] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+
+        const etiketYerleri = GUC.map((a, k) => ({ nesne: klemensler, konum: [-18, gucY(k), 151.5], parca: 10 }))
+          .concat(KON.map(([a, x, yy]) => ({ nesne: konnektor, konum: [x, yy, 152], parca: 4 })));
+        const soguk = direncAg.material.color.clone(), sicak = y.malzeme('kuzey').color.clone();
+        const sonuk = new T.Color(0x3a1414), kirmizi = new T.Color(0xff3b2f), pwmRenk = y.malzeme('vurgu').color.clone(), pwmSonuk = pwmMalzeme.color.clone();
+
+        return {
+          kok,
+          parcalar,
+          etiketYerleri,
+          uygula(s) {
+            /* Malzemeler burada okunur: çalışma zamanı her parçaya kendi kopyasını verir. */
+            const dolu = Math.min(1, s.vdc / VDC);
+            ledAg.material.color.copy(sonuk).lerp(kirmizi, dolu);
+            ekran.children[1].material.color.copy(sonuk).lerp(kirmizi, s.vdc > 150 ? 1 : 0);
+            igbt.children[1].material.color.copy(s.servo ? pwmRenk : pwmSonuk);
+            direncAg.material.color.copy(soguk).lerp(sicak, 0.85 * s.isi);
+          }
+        };
+      }
+    }
+  });
+})();

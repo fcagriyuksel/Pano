@@ -6,6 +6,7 @@ VERI.konular.push({
   altlar: [
     { id: 'surucu-ic-yapi', kod: '3B', ad: 'Step sürücü: klemensler (3B model)', alt: 'PUL, DIR, ENA, A±, B± · DIP anahtarları · iç yapı', sayfa: 'surucu-ic-yapi' },
     { id: 'surucu-step', kod: 'STEP', ad: 'Step sürücüler', alt: 'Akım ayarı, mikroadım, DIP anahtarı', sayfa: 'surucu-step' },
+    { id: 'servo-surucu-ic-yapi', kod: '3B', ad: 'Servo sürücü: iç yapı (3B)', alt: 'DC bara, IGBT, fren direnci, konnektörler · CHARGE LED’i', sayfa: 'servo-surucu-ic-yapi' },
     { id: 'surucu-servo', kod: 'SRV', ad: 'Servo sürücüler', alt: 'Kontrol modları: konum, hız, tork', sayfa: 'surucu-servo' },
     { id: 'surucu-vfd', kod: 'VFD', ad: 'Hız kontrol cihazı (VFD)', alt: 'Asenkron motor hız kontrolü, parametreler', sayfa: 'surucu-vfd' },
     { id: 'surucu-io', kod: 'I/O', ad: 'Sürücü giriş–çıkışları', alt: 'Dijital girişler, alarm ve hazır çıkışları', sayfa: 'surucu-io' }
@@ -84,6 +85,36 @@ Object.assign(VERI.sayfalar, {
       ]},
       { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
         { tip: 'parcalar', parcalar: ['Step motor', 'Güç kaynağı', 'Enkoder', 'PLC transistör çıkışı'] }
+      ]}
+    ]
+  },
+  'servo-surucu-ic-yapi': {
+    baslik: 'Servo sürücünün iç yapısı',
+    giris: 'Servo sürücü şebekeyi önce DC’ye çevirir, sonra IGBT’lerle motora istenen akımı verir. Kontrol kartı enkoderi okuyup konum, hız ve akım döngülerini kapatır.',
+    etiketler: ['3B model', 'DC bara', 'IGBT', 'Fren direnci'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'servo-surucu' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Güç yolu', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Ana besleme doğrultucudan geçer; DC bara kondansatörleri 230 V girişte yaklaşık 325 V’a dolar. İlk anda ön dolum direnci akımı sınırlar, sonra röle direnci devreden çıkarır.',
+          'Kontrol kartı enkoderden konumu okur; konum, hız ve akım döngülerini hesaplar.',
+          'Servo ON gelince IGBT’ler PWM ile anahtarlanır; motor sargılarına istenen akım verilir. Akım sensörleri gerçek akımı ölçer.',
+          'Yavaşlamada motor enerjiyi geri verir, DC bara yükselir. Eşik aşılınca fren kıyıcısı enerjiyi fren direncine aktarır.',
+          'Enerji kesilince kondansatörler dirençler üzerinden boşalır; CHARGE LED’i sönmeden klemenslere dokunulmaz.'
+        ]},
+        { tip: 'not', metin: 'Modeldeki süreler kısaltıldı; gerçekte kondansatörlerin boşalması dakikalar sürebilir. Güvenli bekleme süresi sürücünün üzerinde yazar. 400 V sınıfı sürücülerde DC bara yaklaşık 565 V’tur.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['CHARGE LED’i yanarken klemenslere dokunmak', 'Ana güç kesilse de DC bara yüzlerce volt taşır. Doğrusu: LED’in sönmesini ve etiketteki süreyi bekle, DC bara uçları arasını ölçerek doğrula.'],
+          ['Fren direncini hesap yapmadan seçmek', 'Direnç aşırı ısınır ya da sürücü aşırı gerilim (OV) alarmı verir. Doğrusu: yük ataleti ve yavaşlama süresine göre gücü hesapla ya da kataloğa bak.'],
+          ['Soğutucunun üstünü ve altını kapatmak', 'Hava akışı kesilir, IGBT ısınır, sürücü aşırı sıcaklık alarmı verir. Doğrusu: kılavuzdaki montaj boşluklarına uy.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Servo motor', 'Enkoder kablosu', 'Fren direnci', 'Hat filtresi', 'Güvenlik rölesi'] }
       ]}
     ]
   },
