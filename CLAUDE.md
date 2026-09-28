@@ -92,8 +92,8 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 
 ## Konular ve fikirler
 
-Mevcut: 13 konu, 79 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 12 3B model (step motor, servo motor, step sürücü, servo sürücü, frekans çevirici, otomatik sigorta, kaçak akım rölesi, kompakt PLC, kontaktör, endüktif sensör, asenkron motor, pnömatik silindir ve 5/2 valf).
+Mevcut: 13 konu, 81 sayfa, 62 şema, 24 hesaplayıcı, 8 simülasyon, 14 3B model (step motor, servo motor, step sürücü, servo sürücü, frekans çevirici, otomatik sigorta, kaçak akım rölesi, kompakt PLC, kontaktör, termik röle, endüktif sensör, sıcaklık sensörü, asenkron motor, pnömatik silindir ve 5/2 valf).
 
-3B modeller: kullanıcının istediği liste tamamlandı. Yeni model adayları: termik röle, motor koruma şalteri, güç kaynağı (SMPS), fotoelektrik sensör, enkoder.
+3B modeller: kullanıcının istediği liste tamamlandı. Yeni model adayları: motor koruma şalteri, güç kaynağı (SMPS), fotoelektrik sensör, enkoder.
 
 Kullanıcıya önerilen ama henüz seçilmeyen konular: makine güvenliği (acil stop, güvenlik rölesi, PL, STO, ışık perdesi) ve pano tasarımı (IP/IK, ısı hesabı, EMC, işaretleme). Kompanzasyon, parafudr (SPD) ve temel formüller de aday konulardır.

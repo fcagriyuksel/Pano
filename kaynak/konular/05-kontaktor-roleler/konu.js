@@ -6,6 +6,7 @@ VERI.konular.push({
   altlar: [
     { id: 'kontaktor-ic-yapi', kod: '3B', ad: 'Kontaktör: iç yapı (3B)', alt: 'Bobin, nüve, taşıyıcı, ana ve yardımcı kontaklar', sayfa: 'kontaktor-ic-yapi' },
     { id: 'kontaktor', kod: 'K1', ad: 'Kontaktör', alt: 'Bobin, ana ve yardımcı kontaklar · AC-3', sayfa: 'kontaktor' },
+    { id: 'termik-ic-yapi', kod: '3B', ad: 'Termik röle: iç yapı (3B)', alt: 'Bimetal, ısıtıcı, diferansiyel sürgü · aşırı yük ve faz kaybı', sayfa: 'termik-ic-yapi' },
     { id: 'termik-role', kod: 'F2', ad: 'Termik röle', alt: 'Aşırı yük koruması · 95-96 / 97-98', sayfa: 'termik-role' },
     { id: 'zaman-rolesi', kod: 'KT', ad: 'Zaman rölesi', alt: 'Çekmede ve düşmede gecikme · 15-16-18', sayfa: 'zaman-rolesi' },
     { id: 'faz-koruma-rolesi', kod: 'FKR', ad: 'Faz koruma rölesi', alt: 'Faz kaybı, faz sırası, gerilim', sayfa: 'faz-koruma-rolesi' }
@@ -89,6 +90,36 @@ Object.assign(VERI.sayfalar, {
       ]},
       { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
         { tip: 'parcalar', parcalar: ['Termik röle', 'Yardımcı kontak bloğu', 'Mekanik kilit', 'Motor koruma şalteri', 'Zaman rölesi'] }
+      ]}
+    ]
+  },
+  'termik-ic-yapi': {
+    baslik: 'Termik rölenin iç yapısı',
+    giris: 'Termik rölede her fazın akımı bir ısıtıcıdan geçer ve bir bimetali ısıtır. Aşırı yükte bimetaller eğilir, sürgüyü iter ve yardımcı kontakları çevirir; kontaktör düşer. Termik yükü kendisi kesmez.',
+    etiketler: ['3B model', 'IEC 60947-4-1', 'Bimetal', 'Faz kaybı'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'termik-role' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Aşırı yükte ne olur', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Motor akımı ısıtıcılardan geçer; anma akımında bimetaller ılıktır, eşiğin altında kalır.',
+          'Akım artınca ısı akımın karesiyle artar; bimetaller eğilip açma sürgüsünü iter.',
+          'Sürgü eşiği geçince mandal boşalır: 95-96 açılır, 97-98 kapanır.',
+          '95-96 kontaktör bobinine seri olduğu için kontaktör düşer ve motor durur.',
+          'Bimetaller soğuyunca reset butonuyla (ya da otomatik reset seçiliyse kendiliğinden) röle kurulur.'
+        ]},
+        { tip: 'not', metin: 'Faz kaybında bir faz akım taşımaz, öbür ikisinin akımı artar. Diferansiyel mekanizma soğuk bimetal ile ısınanlar arasındaki farkı algılar; röle, üç fazın eşit aşırı yüklenmesine göre daha erken açar. Gösterimde süreler kısaltıldı; gerçekte sınıf 10 röle 7,2 × Ir’de 4–10 saniyede açar.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Atan termiği hemen resetleyip tekrar çalıştırmak', 'Motor soğumadan yeniden ısınır, sargı yalıtımı yaşlanır. Doğrusu: önce nedeni bul, akımı pens ampermetreyle ölç.'],
+          ['Sık attığı için ayarı yükseltmek', 'Röle motoru korumaz hâle gelir, motor yanabilir. Doğrusu: ayar anma akımında kalır; neden aşırı yük ya da faz kaybıdır.'],
+          ['95-96 yerine 97-98’i bobine seri bağlamak', 'Normalde açık kontak bobini hiç beslemez ya da termik atınca motoru çalıştırır. Doğrusu: 95-96 (NC) bobine seri, 97-98 (NO) arıza sinyaline.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Kontaktör', 'Motor koruma şalteri', 'Sigorta', 'Pens ampermetre'] }
       ]}
     ]
   },

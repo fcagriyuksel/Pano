@@ -177,3 +177,145 @@
     }
   });
 })();
+
+/* Sıcaklık sensörü: B tipi kafalı, G1/2 bağlantılı, Ø6 kılıflı daldırma sensörü; borudaki akışkana daldırılmış. Ölçüler mm; sensör ekseni y (kafa yukarıda).
+   Eleman PT100 (3 telli) ya da K tipi termokupl seçilir. Tablo değerleri: IEC 60751 (PT100), IEC 60584 (K tipi, 0 °C referans). */
+(() => {
+  const TUR = Math.PI * 2;
+  const PT = [[0, 100], [20, 107.79], [100, 138.51], [200, 175.86]];
+  const K = [[0, 0], [20, 0.798], [100, 4.096], [200, 8.138]];
+  const ara = (tablo, t) => { for (let i = 1; i < tablo.length; i++) if (t <= tablo[i][0] || i === tablo.length - 1) { const [a, fa] = tablo[i - 1], [b, fb] = tablo[i]; return fa + ((fb - fa) * (t - a)) / (b - a); } return 0; };
+  const HEDEF = [20, 100, 200];
+  const UC = -93, BORU_Y = -75.2;   // kılıf ucu ve DN50 borunun ekseni (y)
+  const mA = (t) => 4 + (16 * Math.min(200, Math.max(0, t))) / 200;   // transmitter 0–200 °C → 4–20 mA
+
+  Object.assign(MODELLER, {
+    'sicaklik-sensoru': {
+      aciklama: 'Daldırma tipi sıcaklık sensörünün 3B modeli: bağlantı kafası ve kapağı, kablo rakoru, kafa transmitteri, proses bağlantısı, koruyucu kılıf, ölçüm elemanı (PT100 ya da termokupl), iç teller, kaynak soketi ve boru.',
+      not: 'Boyuna kesit kılıfın içini gösterir. Proses sıcaklığını değiştir: sensör kılıf yüzünden biraz geç yetişir. Elemanı PT100 ile termokupl arasında değiştirip tellere ve uca bak.',
+      parcalar: [
+        ['Bağlantı kafası', 'Alüminyum B tipi kafa; içinde klemens bloğu ya da transmitter bulunur. Kapak contası suyu dışarıda tutar.'],
+        ['Kafa kapağı', 'Vidalıdır; kapak açık bırakılırsa nem girer, ölçüm kayar.'],
+        ['Kablo rakoru ve kablo', 'Transmitterin 4–20 mA çıkışı iki telli kabloyla PLC’ye gider.'],
+        ['Kafa transmitteri', 'Direnci ya da mV’u 4–20 mA’e çevirir; uzun kabloda sinyal bozulmaz. Termokuplda soğuk uç kompanzasyonunu da yapar.'],
+        ['Proses bağlantısı', 'G1/2 diş ve altıgen; boruya kaynatılmış sokete vidalanır.'],
+        ['Koruyucu kılıf', 'Paslanmaz çelik. Elemanı basınç ve akışkandan korur ama ısıyı gecikmeli iletir; tepki süresi uzar.'],
+        ['Ölçüm elemanı', 'PT100: sıcaklıkla direnci artan platin eleman. Termokupl: iki farklı telin kaynatıldığı uç; sıcaklık farkıyla gerilim üretir.'],
+        ['İç teller', 'PT100’de 3 tel: iki kırmızı, bir beyaz (IEC 60751). K tipi termokuplda + yeşil, − beyaz (IEC 60584-3).'],
+        ['Kaynak soketi ve boru', 'Kılıf ucu borunun ortasına yakın durmalı; akışkan kılıfın çevresinden akmalı.'],
+        ['Akışkan (gösterim)', 'Renk proses sıcaklığını gösterir: mavi soğuk, turuncu sıcak.']
+      ],
+      kamera: { yon: [1, 0.35, 0.9], patlak: [1, 0.3, 0.8] },
+      secimdeOdak: true,
+      kesitler: [{ ad: 'boyuna', planlar: [[-1, 0, 0, 0]] }],
+      yeni: () => ({ eleman: 'pt', hedef: 20, P: 20, T: 20 }),
+      dugmeler: (s) => [
+        ['eleman', s.eleman === 'pt' ? 'Eleman: PT100' : 'Eleman: termokupl K', s.eleman === 'tc'],
+        ['isi', `Proses: ${s.hedef} °C`, s.hedef !== 20]
+      ],
+      olay(s, olay) {
+        if (olay === 'eleman') s.eleman = s.eleman === 'pt' ? 'tc' : 'pt';
+        else if (olay === 'isi') s.hedef = HEDEF[(HEDEF.indexOf(s.hedef) + 1) % HEDEF.length];
+      },
+      tik(s, dt) {
+        const once = s.P + ',' + s.T;
+        const yaklas = (v, h, tau) => { const n = v + (h - v) * Math.min(1, dt / tau); return Math.abs(h - n) < 0.05 ? h : n; };
+        s.P = yaklas(s.P, s.hedef, 0.4);   // akışkan
+        s.T = yaklas(s.T, s.P, 2.5);        // sensör: kılıf yüzünden gecikir (gösterim; gerçekte saniyeler–dakikalar)
+        return s.P + ',' + s.T !== once;
+      },
+      durum(s) {
+        const P = sayi(s.P, 0), T = sayi(s.T, 0), akim = sayi(mA(s.T), 1);
+        const bas = `Proses ${P} °C, sensör ${T} °C${Math.abs(s.P - s.T) > 1 ? ' (kılıf ısıyı gecikmeli iletiyor)' : ''}. `;
+        if (s.eleman === 'pt') return { metin: `${bas}PT100 ≈ ${sayi(ara(PT, s.T), 1)} Ω (0 °C’ta 100 Ω). 3 telli bağlantıda kablo direnci düşülür. Transmitter (0–200 °C) ≈ ${akim} mA.` };
+        return { metin: `${bas}Klemens (soğuk uç) 20 °C: K tipi termokupl yalnızca farkı görür, ≈ ${sayi(ara(K, s.T) - ara(K, 20), 2)} mV. Transmitter soğuk ucu ölçüp ekler (soğuk uç kompanzasyonu): ≈ ${akim} mA.` };
+      },
+
+      kur(y) {
+        const T = y.T;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const dikey = (geo) => geo.rotateX(-Math.PI / 2);   // z eksenli (torna, halka, cek) geometriyi y eksenine çevirir
+        const tel = (n, m, r = 0.3) => y.ag(y.boru(n, r, 48), m, { kenar: false });
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- kafa, kapak, rakor ve kablo ---- */
+        const kafa = grup(y.ag(dikey(y.torna([[7.05, 0], [26, 0, 1], [26, 29.95, 1], [23, 29.95, 1], [23, 3, 1], [7.05, 3, 1], [7.05, 0]], 48)), 'aluminyum', { esik: 50 }));
+        const kapak = grup(y.ag(dikey(y.torna([[0, 30.05], [26, 30.05, 1], [26, 35, 1], [20, 40], [0, 40]], 48)), 'aluminyum', { esik: 50 }),
+          yer(y.ag(new T.CylinderGeometry(2.5, 2.5, 2, 16), 'celik'), 0, 41.05, 0));
+        const rakor = grup(yer(y.ag(y.silindir(7, 14, 24).rotateY(Math.PI / 2), 'plastik'), 33.05, 17, 0),
+          yer(y.ag(new T.CylinderGeometry(8.5, 8.5, 4, 6).rotateZ(Math.PI / 2), 'plastik'), 28.1, 17, 0),
+          tel([[40, 17, 0], [58, 17, 0], [70, 8, 0], [74, -14, 0]], 'kabloGri', 3.5));
+
+        /* ---- kafa transmitteri: 4–20 mA çıkışı rakora gider ---- */
+        const transmitter = grup(yer(y.ag(new T.CylinderGeometry(21.5, 21.5, 14, 40), 'plastik', { esik: 60 }), 0, 13, 0),
+          ...[0, 1, 2, 3, 4].map((k) => { const a = (k * TUR) / 5; return yer(y.ag(new T.CylinderGeometry(1.8, 1.8, 2, 12), 'celik'), 14 * Math.cos(a), 21.05, 14 * Math.sin(a)); }),
+          tel([[14, 22.3, 0], [20, 22.3, 0], [23.5, 17.5, 0], [27, 17, 0]], 'kabloKirmizi', 0.8),
+          tel([[4.3, 22.3, 13.3], [15, 22.3, 7], [23.5, 17.5, 1.8], [27, 17, 1.8]], 'kabloSiyah', 0.8));
+
+        /* ---- proses bağlantısı: G1/2 diş, altıgen, boyun (içleri teller için boş) ---- */
+        const dis = [[3.05, -48], [9.4, -48, 1]];
+        for (let yy = -47.1; yy < -30.6; yy += 1.814) dis.push([10.45, yy], [9.3, yy + 0.907]);
+        dis.push([9.4, -30.05, 1], [3.05, -30.05, 1], [3.05, -48]);
+        const altigen = new T.Shape();
+        for (let k = 0; k < 6; k++) { const a = (k * TUR) / 6, R = 27 / Math.sqrt(3); if (k) altigen.lineTo(R * Math.cos(a), R * Math.sin(a)); else altigen.moveTo(R * Math.cos(a), R * Math.sin(a)); }
+        altigen.closePath();
+        altigen.holes.push(new T.Path().absarc(0, 0, 3.05, 0, TUR, true));
+        const baglanti = grup(y.ag(dikey(y.torna(dis, 40)), 'celik', { esik: 70 }),
+          yer(y.ag(dikey(y.cek(altigen, 9.9, { pah: 0.6 })), 'celik'), 0, -25, 0),
+          yer(y.ag(dikey(y.halka(3, 7, 19.9, 32)), 'celik'), 0, -10, 0));
+
+        /* ---- koruyucu kılıf: Ø6 × 0,6 boru, yuvarlak kapalı uç ---- */
+        const ic = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * (Math.PI / 2); return [2.4 * Math.cos(t), UC + 3 - 2.4 * Math.sin(t)]; });
+        const dis2 = Array.from({ length: 7 }, (_, i) => { const u = (i / 6) * (Math.PI / 2); return [3 * Math.sin(u), UC + 3 - 3 * Math.cos(u)]; });
+        const kilif = grup(y.ag(dikey(y.torna([[2.4, -48], ...ic, [0, UC], ...dis2.slice(1), [3, -48, 1], [2.4, -48]], 32)), 'celik', { esik: 50 }));
+
+        /* ---- ölçüm elemanları ve teller (PT100: 3 tel; termokupl: 2 tel ve kaynak ucu) ---- */
+        const ptEleman = yer(y.ag(new T.CylinderGeometry(1.4, 1.4, 9, 16), 'plastikAcik'), -0.5, UC + 7, 0);
+        const tcUc = yer(y.ag(new T.SphereGeometry(0.9, 16, 12), 'bakir', { kenar: false }), -0.8, UC + 1.8, 0);
+        const eleman = grup(ptEleman, tcUc);
+        const telYolu = (z, y0) => [[-0.8, y0, z], [-0.8, -55, z], [-0.8, -10, z], [-1.2, 5.9, z * 3]];
+        const ptTeller = grup(tel(telYolu(-0.8, UC + 11.7), 'kabloKirmizi'), tel(telYolu(0, UC + 11.7), 'kabloKirmizi'), tel(telYolu(0.8, UC + 11.7), 'plastikAcik'));
+        const tcTeller = grup(tel(telYolu(-0.5, UC + 2), 'kabloYesil'), tel(telYolu(0.5, UC + 2), 'plastikAcik'));
+        const teller = grup(ptTeller, tcTeller);
+
+        /* ---- DN50 boru (Ø60 × 2,8) ve kaynak soketi; akışkan ---- */
+        const boru = grup(yer(y.ag(y.halka(27.2, 30, 70, 64), 'celik', { esik: 50 }), 0, BORU_Y, 0),
+          y.ag(dikey(y.torna([[10.55, -47.9], [14, -47.9, 1], [14, -40.05, 1], [10.55, -40.05, 1], [10.55, -47.9]], 40)), 'celik', { esik: 50 }));
+        const akiskanAg = yer(y.ag(y.silindir(27.15, 69.9, 64), y.malzeme('kabloMavi').clone(), { kenar: false }), 0, BORU_Y, 0);
+        const akiskan = grup(akiskanAg);
+
+        const parcalar = [
+          { nesne: kafa, isaret: [0, 15, 26], patlat: [0, 0, 0] },
+          { nesne: kapak, isaret: [0, 40, 12], patlat: [0, 40, 0] },
+          { nesne: rakor, isaret: [40.05, 17, 5], patlat: [22, 0, 0] },
+          { nesne: transmitter, isaret: [0, 13, 21.5], patlat: [0, 24, 0] },
+          { nesne: baglanti, isaret: [0, -39.84, 10.45], patlat: [0, 0, 0] },
+          { nesne: kilif, isaret: [0, -58, 3], patlat: [0, 0, 0] },
+          { nesne: eleman, isaret: [0, UC + 8, 1.4], patlat: [16, 0, 0] },
+          { nesne: teller, isaret: [-0.8, -55, 1.1], patlat: [16, 0, 0] },
+          { nesne: boru, isaret: [0, -44, 14], patlat: [0, -30, 0] },
+          { nesne: akiskan, isaret: [0, BORU_Y - 12, 34.95], patlat: [0, -30, 0] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+
+        const soguk = y.malzeme('kabloMavi').color.clone(), sicak = new T.Color(0xf08a24), elemanRenk = ptEleman.material.color.clone(), kizgin = y.malzeme('kuzey').color.clone();
+
+        return {
+          kok,
+          parcalar,
+          uygula(s) {
+            /* Malzemeler burada okunur: çalışma zamanı her parçaya kendi kopyasını verir. */
+            const pt = s.eleman === 'pt';
+            /* visible ağlara verilir: ışın testi (dokunma, örtülme) üst grubun görünürlüğüne bakmaz. */
+            ptEleman.visible = pt; ptTeller.children.forEach((m) => { m.visible = pt; });
+            tcUc.visible = !pt; tcTeller.children.forEach((m) => { m.visible = !pt; });
+            akiskanAg.material.color.copy(soguk).lerp(sicak, Math.min(1, s.P / 200));
+            ptEleman.material.color.copy(elemanRenk).lerp(kizgin, 0.6 * Math.min(1, s.T / 200));
+          }
+        };
+      }
+    }
+  });
+})();

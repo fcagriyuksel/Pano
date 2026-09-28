@@ -200,3 +200,176 @@
     }
   });
 })();
+
+/* Termik röle: kontaktörün altına takılan 3 kutuplu tip. Ölçüler mm; z = 0 arka yüz (+z öne), y yukarı (+y kontaktör tarafı), x genişlik (45).
+   İç yerleşim tipiktir; mekanizmanın biçimi üreticiye göre değişir. */
+(() => {
+  const KUTUP = [-13.5, 0, 13.5];
+  const YRD = [[-15, '97'], [-5, '98'], [5, '95'], [15, '96']];   // ön üst klemensler: x, ad (97-98 NO, 95-96 NC)
+  const ESIK = 1, FARK = 0.55;   // açma: en sıcak bimetal eşiği; faz kaybında sıcak–soğuk farkı (diferansiyel)
+
+  Object.assign(MODELLER, {
+    'termik-role': {
+      aciklama: 'Termik rölenin 3B modeli: bağlantı pimleri, yük klemensleri, yardımcı kontak klemensleri, bimetaller ve ısıtıcılar, açma sürgüsü, mandal, yardımcı kontaklar, ayar düğmesi, reset ve test butonları, açma göstergesi, gövde.',
+      not: 'Kesit ön kapağı kaldırır. Aşırı yük ya da faz kaybı seç: bimetaller ısınıp eğilir, sürgü mandalı iter, 95-96 açılır ve 97-98 kapanır. Bimetaller soğumadan reset tutmaz. Klemenslere dokununca uç adları çıkar.',
+      etiketBaslik: 'Klemensler',
+      etiketler: [
+        ['1/L1', 'Kontaktörün 2/T1 ucuna takılan pim.'], ['3/L2', 'Kontaktörün 4/T2 ucuna takılan pim.'], ['5/L3', 'Kontaktörün 6/T3 ucuna takılan pim.'],
+        ['2/T1', 'Motor ucu.'], ['4/T2', 'Motor ucu.'], ['6/T3', 'Motor ucu.'],
+        ['97', 'NO yardımcı kontak (97-98): termik atınca kapanır; arıza lambası ya da PLC girişi.'], ['98', 'NO yardımcı kontağın öbür ucu.'],
+        ['95', 'NC yardımcı kontak (95-96): kontaktör bobinine seri bağlanır; termik atınca açılır.'], ['96', 'NC yardımcı kontağın öbür ucu.']
+      ],
+      parcalar: [
+        ['Bağlantı pimleri (1-3-5)', 'Termik doğrudan kontaktörün alt klemenslerine takılır; ayrı montajda bir altlık kullanılır.'],
+        ['Yük klemensleri (2-4-6)', 'Motora giden fazlar buradan çıkar.'],
+        ['Yardımcı kontak klemensleri', '95-96 NC kumanda devresine, 97-98 NO sinyal devresine bağlanır.'],
+        ['Bimetaller ve ısıtıcılar', 'Her fazın akımı bir ısıtıcıdan geçer ve bimetali ısıtır; bimetal akımın karesiyle orantılı ısınıp eğilir. Soğuması zaman alır.'],
+        ['Açma sürgüsü', 'Bimetallerin uçları sürgüyü iter. Faz kaybında soğuk kalan bimetal ikinci bir sürgüyü tutar; aradaki fark (diferansiyel) röleyi daha erken açtırır.'],
+        ['Açma mandalı', 'Sürgü yeterince ilerleyince mandal boşalır ve yardımcı kontakları çevirir.'],
+        ['Yardımcı kontaklar', 'Salıncak kol NC köprüyü açar, NO köprüyü kapatır. Termik yükü kesmez; kontaktörü düşürür.'],
+        ['Akım ayar düğmesi', 'Motor etiketindeki anma akımına getirilir. Yıldız-üçgende termik sargı kolundaysa ayar = anma akımı × 0,58.'],
+        ['Reset ve test butonları', 'Mavi reset rölesi kurar; soğumadan tutmaz. Kırmızı buton röleyi elle açtırıp kontakları dener.'],
+        ['Açma göstergesi', 'Röle atınca turuncu görünür; arıza ararken ilk bakılacak yer.'],
+        ['Gövde', 'Yalıtkan plastik.'],
+        ['Ön kapak', 'Ayar ve butonlar ön yüzdedir; birçok modelde ayar mühürlenebilir kapakla örtülür.']
+      ],
+      kamera: { yon: [0.5, 0.4, 1], patlak: [0.7, 0.45, 1] },
+      secimdeOdak: true,
+      kesitler: [{ ad: 'kapaksız', planlar: [[0, 0, -1, 67]] }],
+      yeni: () => ({ yuk: 'normal', isi: [0.3, 0.3, 0.3], atti: false, sebep: '', k: 0, uyari: '' }),
+      dugmeler: (s) => [
+        ['asiri', 'Aşırı yük', s.yuk === 'asiri'],
+        ['faz', 'Faz kaybı', s.yuk === 'faz'],
+        ['reset', 'Reset'],
+        ['test', 'Test']
+      ],
+      olay(s, olay) {
+        s.uyari = '';
+        if (olay === 'asiri') s.yuk = s.yuk === 'asiri' ? 'normal' : 'asiri';
+        else if (olay === 'faz') s.yuk = s.yuk === 'faz' ? 'normal' : 'faz';
+        else if (olay === 'test') { if (!s.atti) { s.atti = true; s.sebep = 'test'; } }
+        else if (olay === 'reset') {
+          if (!s.atti) s.uyari = 'kurulu';
+          else if (Math.max(...s.isi) > 0.45) s.uyari = 'sicak';
+          else { s.atti = false; s.sebep = ''; }
+        }
+      },
+      tik(s, dt) {
+        const once = s.isi.join() + s.atti + s.k;
+        const hedef = (i) => (s.atti ? 0 : s.yuk === 'asiri' ? 1.25 : s.yuk === 'faz' ? (i === 0 ? 0 : 1.25) : 0.3);   // atınca motor durur, akım kesilir
+        s.isi = s.isi.map((v, i) => {
+          const h = hedef(i), hiz = h > v ? (s.yuk === 'faz' ? 0.5 : 0.35) : 0.2;   // gösterim: gerçekte dakikalar
+          const n = v + (h - v) * Math.min(1, dt * hiz * 2);
+          return Math.abs(h - n) < 0.002 ? h : n;
+        });
+        const enSicak = Math.max(...s.isi), enSoguk = Math.min(...s.isi);
+        if (!s.atti && (enSicak >= ESIK || (enSicak >= 0.7 && enSicak - enSoguk >= FARK))) { s.atti = true; s.sebep = enSicak >= ESIK ? 'asiri' : 'faz'; }
+        const hk = s.atti ? 1 : 0;
+        s.k = hk > s.k ? Math.min(hk, s.k + dt * 10) : Math.max(hk, s.k - dt * 10);
+        return s.isi.join() + s.atti + s.k !== once;
+      },
+      durum(s) {
+        const yuzde = Math.round(Math.min(1, Math.max(...s.isi)) * 100);
+        if (s.uyari === 'sicak') return { metin: 'Bimetaller henüz soğumadı: reset tutmaz. Biraz bekle; önce aşırı yükün nedenini bul.', uyari: true };
+        if (s.uyari === 'kurulu') return { metin: 'Röle zaten kurulu; reset gerekmiyor.' };
+        if (s.atti) {
+          const neden = s.sebep === 'test' ? 'Test butonu röleyi elle açtırdı.' : s.sebep === 'faz' ? 'Faz kaybı: soğuk kalan bimetal ile ısınanlar arasındaki fark röleyi erken açtırdı.' : 'Aşırı yük: bimetaller eşiğe kadar eğildi.';
+          return { metin: `${neden} 95-96 açıldı, kontaktör bobini enerjisiz kaldı ve motor durdu; 97-98 kapandı. Gösterge turuncu.${s.sebep !== 'test' && s.yuk !== 'normal' ? ' Neden sürüyor: reset sonrası yine atar.' : ''}`, uyari: s.sebep !== 'test' };
+        }
+        if (s.yuk === 'asiri') return { metin: `Aşırı yük (ör. 1,5 × Ir): ısıtıcılar bimetalleri ısıtıyor, bimetaller eğiliyor… %${yuzde}. Sınıf 10 röle 1,5 × Ir’de sıcak durumdan 2 dakikadan kısa sürede açar; gösterim hızlandırıldı.` };
+        if (s.yuk === 'faz') return { metin: `Faz kaybı: L1’de akım yok, öbür iki fazın akımı arttı. L1 bimetali soğuyor, ötekiler ısınıyor… %${yuzde}. Diferansiyel mekanizma farkı algılar.` };
+        return { metin: 'Motor anma akımında: bimetaller ılık ve biraz eğik, açma eşiğinin altında. 95-96 kapalı (bobin beslenir), 97-98 açık.' };
+      },
+
+      kur(y) {
+        const T = y.T;
+        const kok = new T.Group();
+        const grup = (...n) => { const g = new T.Group(); n.forEach((x) => g.add(x)); return g; };
+        const yer = (n, x, yy, z) => { n.position.set(x, yy, z); return n; };
+        const kutu = (w, h, d, m, x, yy, z, sec) => yer(y.ag(new T.BoxGeometry(w, h, d), m, sec), x, yy, z);
+        const koyu = (w, h, d, x, yy, z) => kutu(w, h, d, 'entegre', x, yy, z, { kenar: false });
+        const tel = (n, r = 1) => y.ag(y.boru(n, r, 24), 'bakir', { kenar: false });
+        const onVida = (x, yy, on) => [yer(y.ag(y.silindir(1.6, 69.95 - on, 16), 'celik', { esik: 60 }), x, yy, (on + 70) / 2), yer(y.ag(y.silindir(2.6, 1.4, 24), 'celik'), x, yy, 70.75), koyu(0.5, 3.4, 0.2, x, yy, 71.6)];   // kafesin önünden ön yüze
+        /* Birbirine değen parçalar arasında 0,05 mm boşluk vardır (kesitte z-fighting olmasın). */
+
+        /* ---- gövde (arka, yanlar, üst, alt) ve ön kapak ---- */
+        const govde = grup(kutu(45, 66, 1.5, 'plastikAcik', 0, 0, 0.75),
+          kutu(1.5, 66, 66.9, 'plastikAcik', -21.75, 0, 35), kutu(1.5, 66, 66.9, 'plastikAcik', 21.75, 0, 35),
+          kutu(41.9, 1.5, 66.9, 'plastikAcik', 0, 32.25, 35), kutu(41.9, 1.5, 66.9, 'plastikAcik', 0, -32.25, 35));
+        const onKapak = grup(kutu(45, 66, 1.5, 'plastikAcik', 0, 0, 69.25));
+
+        /* ---- bağlantı pimleri ve yük klemensleri ---- */
+        const pimler = grup(...KUTUP.flatMap((x) => [kutu(4, 22, 2, 'bakir', x, 44, 40), tel([[x, 33.5, 40], [x, 27, 27], [x, 21, 24], [x, 16, 26]])]));
+        const yuk = grup(...KUTUP.flatMap((x) => [kutu(8, 6, 10, 'celik', x, -27, 58), ...onVida(x, -27, 63), koyu(6, 0.1, 6, x, -33.05, 58),
+          tel([[x, -12.5, 27], [x, -18, 34], [x, -24, 52]])]));
+
+        /* ---- bimetaller ve ısıtıcılar: alt uçtan bağlı, ısınınca üst uç öne eğilir ---- */
+        const serit = [], bimetal = KUTUP.map((x) => {
+          const s = kutu(5, 32, 1.2, y.malzeme('celik').clone(), 0, 16, 0);
+          serit.push(s);
+          const isitici = yer(y.ag(y.helis(3.2, 0.55, 26, 7).rotateX(-Math.PI / 2), 'bakir', { kenar: false }), 0, 3, 0);
+          return yer(grup(s, isitici, kutu(7, 3, 4, 'plastik', 0, -1.55, 0)), x, -14, 27);
+        });
+        const bimetaller = grup(...bimetal);
+        const renkSoguk = serit[0].material.color.clone(), renkSicak = y.malzeme('kuzey').color.clone();
+
+        /* ---- açma sürgüsü, mandal, yardımcı kontaklar ---- */
+        const surguIc = grup(kutu(34, 4, 2, 'plastik', 0, 18, 30.5), kutu(3, 4, 1.9, 'plastik', 18.5, 18, 28.5));   // yandaki dil mandalı iter
+        const surgu = grup(surguIc);
+        const mandalIc = grup(kutu(3, 18, 3, 'plastik', 0, 9, 0), kutu(3, 3, 26, 'plastik', 0, 17, 14));
+        const mandal = yer(grup(mandalIc), 19, 4, 33);   // alt ucundan döner, üst kolu salıncağa uzanır
+        const yrdKlemens = grup(...YRD.flatMap(([x]) => [kutu(8, 6, 8, 'celik', x, 27, 62), ...onVida(x, 27, 66), koyu(6, 0.1, 6, x, 33.05, 62)]));
+        /* Salıncak: bekler durumda NC köprüsü 95-96 pabuçlarına değer, NO köprüsü 97-98’in 2,5 mm altındadır. */
+        const salincak = yer(grup(kutu(36, 2, 2, 'plastik', 0, 0, 0), kutu(14, 1.45, 2, 'bakir', 10, 1.775, 0), kutu(14, 1.45, 2, 'bakir', -10, 1.775, 0), kutu(3, 6, 2, 'plastik', 0, -3.5, 0)), 0, 18, 63);
+        const yrdKontak = grup(salincak, ...YRD.flatMap(([x, a]) => (a === '95' || a === '96'
+          ? [kutu(4, 2.45, 2, 'bakir', x, 22.725, 63), kutu(4, 0.9, 2, 'celik', x, 21.0, 63)]
+          : [kutu(4, 0.9, 2, 'celik', x, 23.5, 63)])));
+
+        /* ---- ön yüz: ayar düğmesi, reset ve test, gösterge ---- */
+        const ayar = grup(yer(y.ag(y.halka(7.6, 10.5, 0.1, 48), 'entegre', { kenar: false }), -8, 8, 70.1),
+          yer(y.ag(y.silindir(7, 3, 40), 'plastik'), -8, 8, 71.55), kutu(1, 5, 0.3, 'plastikAcik', -8, 11, 73.2, { kenar: false }));
+        const butonlar = grup(yer(y.ag(y.silindir(3.5, 3, 24), 'kabloMavi'), 10, 12, 71.55), yer(y.ag(y.silindir(2.5, 2, 24), 'kabloKirmizi'), 10, 2, 71.05));
+        const gostergeAg = kutu(8, 3, 0.1, y.malzeme('plastik').clone(), 0, -10, 70.1, { kenar: false });
+        const gosterge = grup(gostergeAg);
+
+        const parcalar = [
+          { nesne: pimler, isaret: [-11.5, 48, 41], patlat: [0, 14, 0] },
+          { nesne: yuk, isaret: [-12, -27, 71.45], patlat: [0, -12, 12] },
+          { nesne: yrdKlemens, isaret: [-13.5, 27, 71.45], patlat: [0, 12, 14] },
+          { nesne: bimetaller, isaret: [-13.5, 11, 27.6], patlat: [0, 0, 0] },
+          { nesne: surgu, isaretNesne: surguIc, isaret: [-10, 20, 30.5], patlat: [0, 0, 12] },
+          { nesne: mandal, isaretNesne: mandalIc, isaret: [1.5, 9, 0], patlat: [6, 0, 16] },
+          { nesne: yrdKontak, isaretNesne: salincak, isaret: [-10, 2.5, 0], patlat: [0, 0, 22] },
+          { nesne: ayar, isaret: [-8, 8, 73.05], patlat: [0, 0, 55] },
+          { nesne: butonlar, isaret: [10, 12, 73.05], patlat: [0, 0, 55] },
+          { nesne: gosterge, isaret: [0, -10, 70.15], patlat: [0, 0, 55] },
+          { nesne: govde, isaret: [22.5, 0, 35], patlat: [0, 0, -20] },
+          { nesne: onKapak, isaret: [16, -14, 70], patlat: [0, 0, 45] }
+        ];
+        parcalar.forEach((p) => kok.add(p.nesne));
+
+        const etiketYerleri = [
+          ...KUTUP.map((x) => ({ nesne: pimler, konum: [x, 58, 40], parca: 0 })),
+          ...KUTUP.map((x) => ({ nesne: yuk, konum: [x, -38, 60], parca: 1 })),
+          ...YRD.map(([x]) => ({ nesne: yrdKlemens, konum: [x, 38, 64], parca: 2 }))
+        ];
+        const turuncu = new T.Color(0xf08a24), sonuk = gostergeAg.material.color.clone();
+
+        return {
+          kok,
+          parcalar,
+          etiketYerleri,
+          uygula(s) {
+            /* Malzemeler burada okunur: çalışma zamanı her parçaya kendi kopyasını verir. */
+            bimetal.forEach((g, i) => { g.rotation.x = 0.12 * Math.min(1.1, s.isi[i]); serit[i].material.color.copy(renkSoguk).lerp(renkSicak, 0.8 * Math.min(1, s.isi[i])); });
+            const uc = Math.max(...s.isi.map((v) => 32 * Math.sin(0.12 * Math.min(1.1, v))));
+            surguIc.position.z = Math.max(0, uc - 1.9) + 1.5 * s.k;
+            mandal.rotation.x = 0.35 * s.k;   // üst uç öne, sürgüden uzağa
+            salincak.rotation.z = -0.25 * s.k;   // sağ uç (NC) iner, sol uç (NO) kalkar
+            gostergeAg.material.color.copy(s.atti ? turuncu : sonuk);
+          }
+        };
+      }
+    }
+  });
+})();

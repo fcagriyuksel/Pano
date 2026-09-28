@@ -9,6 +9,7 @@ VERI.konular.push({
     { id: 'kapasitif-sensor', kod: 'C', ad: 'Kapasitif sensör', alt: 'Metal olmayan malzeme · seviye', sayfa: 'kapasitif-sensor' },
     { id: 'fotoelektrik-sensor', kod: 'OPT', ad: 'Fotoelektrik sensör', alt: 'Karşılıklı, reflektörlü, cisimden yansımalı', sayfa: 'fotoelektrik-sensor' },
     { id: 'enkoder-plc', kod: 'HSC', ad: 'Enkoder–PLC bağlantısı', alt: 'HTL, line driver · hızlı sayıcı', sayfa: 'enkoder-plc' },
+    { id: 'sicaklik-ic-yapi', kod: '3B', ad: 'Sıcaklık sensörü: iç yapı (3B)', alt: 'PT100 ve termokupl · kafa transmitteri · tepki süresi', sayfa: 'sicaklik-ic-yapi' },
     { id: 'sicaklik', kod: 'PT100', ad: 'Sıcaklık: PT100 ve termokupl', alt: '2/3/4 telli · K, J, T tipi', sayfa: 'sicaklik' },
     { id: 'analog-4-20', kod: 'mA', ad: 'Analog 4–20 mA', alt: 'İki telli döngü · ölçekleme', sayfa: 'analog-4-20' }
   ]
@@ -238,6 +239,36 @@ Object.assign(VERI.sayfalar, {
       ]},
       { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
         { tip: 'parcalar', parcalar: ['Artımsal enkoder', 'Ekranlı enkoder kablosu', 'HSC modülü', 'Sinyal çevirici'] }
+      ]}
+    ]
+  },
+  'sicaklik-ic-yapi': {
+    baslik: 'Sıcaklık sensörünün iç yapısı',
+    giris: 'Endüstriyel sıcaklık sensörü; bağlantı kafası, proses bağlantısı ve koruyucu kılıftan oluşur. Ölçüm elemanı kılıfın ucundadır: PT100 direnciyle, termokupl ürettiği küçük gerilimle sıcaklığı bildirir.',
+    etiketler: ['3B model', 'IEC 60751', 'IEC 60584', '4–20 mA'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'sicaklik-sensoru' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Ölçüm nasıl oluşur', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Akışkan kılıfı ısıtır; kılıf ısıyı uçtaki elemana iletir. Bu gecikme tepki süresidir.',
+          'PT100’ün direnci sıcaklıkla artar: 0 °C’ta 100 Ω, 100 °C’ta 138,51 Ω.',
+          'Termokupl, sıcak uç ile klemensteki soğuk uç arasındaki farkla orantılı gerilim üretir (K tipinde 100 °C’ta 4,096 mV, 0 °C referansla).',
+          'Kafa transmitteri direnci ya da gerilimi ölçer, termokuplda soğuk ucu ekler ve 4–20 mA verir.',
+          'PLC analog girişi akımı sıcaklığa ölçekler.'
+        ]},
+        { tip: 'not', metin: 'Kılıf ucu akışkanın içinde, borunun ortasına yakın olmalı. Kılıf ne kadar kalınsa sensör o kadar geç tepki verir; hızlı değişen proseste ince kılıf ya da doğrudan temaslı eleman seçilir.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Kılıfı akışkana yeterince daldırmamak', 'Uç gövdeden ve ortamdan ısı kaçırır; ölçüm gerçek sıcaklıktan sapar. Doğrusu: ucu borunun ortasına yakın konumla, daldırma boyunu katalogdan seç.'],
+          ['Kafa kapağını açık ya da contasız bırakmak', 'Nem klemenslerde kaçak yol oluşturur; PT100 ölçümü kayar. Doğrusu: kapağı contasıyla kapat, rakoru sık.'],
+          ['Termokupl girişinde yanlış tip seçmek', 'J yerine K seçilirse değer onlarca derece yanlış çıkabilir. Doğrusu: kart ya da transmitterde termokupl tipini kılıftaki etiketle eşle.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Sıcaklık transmitteri', 'Kompanzasyon kablosu', 'Kaynak soketi', 'Analog giriş kartı'] }
       ]}
     ]
   },
