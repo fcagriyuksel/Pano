@@ -43,10 +43,13 @@ try:
         for tema in ('light', 'dark'):
             pg = b.new_page(viewport={'width': 360, 'height': 780}, device_scale_factor=2, color_scheme=tema, service_workers='block')
             pg.on('pageerror', lambda e: hatalar.append(str(e)))
+            # wait_for_function’a düz ifade değil ok işlevi ver: düz ifade sayfada eval ile çalışır ve CSP’ye takılır.
+            # İçerik güvenlik ilkesi (CSP) bir betiği, stili ya da bağlantıyı engellerse hata sayılır.
+            pg.add_init_script("document.addEventListener('securitypolicyviolation', (e) => console.error('CSP ihlali: ' + e.violatedDirective + ' ' + e.blockedURI))")
             pg.on('console', lambda m: hatalar.append(m.text) if m.type == 'error' else None)
             pg.goto(f'http://127.0.0.1:{port}/index.html'); pg.wait_for_timeout(500)
             # Açılış ekranı kendiliğinden kalkmalı ve giriş animasyonu bitmeli
-            try: pg.wait_for_function("!document.getElementById('acilis') && !document.documentElement.classList.contains('acilis')", timeout=4000)
+            try: pg.wait_for_function("() => !document.getElementById('acilis') && !document.documentElement.classList.contains('acilis')", timeout=4000)
             except Exception: sorunlar.append((tema, 'açılış', 'açılış ekranı 4 sn içinde kalkmadı'))
             pg.evaluate("localStorage.setItem('otomasyon-notlari.uyariOnay','true')")
             rotalar = pg.evaluate("() => { const r = []; for (const k of VERI.konular) { r.push(k.id); for (const x of k.altlar) if (x.sayfa) r.push(x.id); } return r; }")
@@ -63,7 +66,7 @@ try:
                     except Exception as e: sorunlar.append((tema, r, 'sim düğmesi', str(e)[:80]))
                 modeller = pg.locator('[data-model-kutu]')
                 if modeller.count():
-                    try: pg.wait_for_function("[...document.querySelectorAll('[data-model-kutu]')].every((k) => k.dataset.durum === 'hazir')", timeout=8000)
+                    try: pg.wait_for_function("() => [...document.querySelectorAll('[data-model-kutu]')].every((k) => k.dataset.durum === 'hazir')", timeout=8000)
                     except Exception: sorunlar.append((tema, r, '3B model çizilmedi', pg.evaluate("[...document.querySelectorAll('[data-model-kutu]')].map((k) => k.dataset.durum).join(',')")))
                     # Süre 3 sn: sürekli animasyonda (ör. kontaktör vınlaması) yazılımsal WebGL kareyi 100–350 ms’ye uzatır;
                     # Playwright’ın “düğme kıpırdamıyor” denetimi iki kare beklediği için 1 sn yetmeyebilir.

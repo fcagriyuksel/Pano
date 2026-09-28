@@ -6,7 +6,7 @@
 const UYGULAMA = {
   ad: 'Otomasyon Notları',
   alt: 'Elektrik, elektronik ve endüstriyel otomasyon',
-  surum: '1.20.0',
+  surum: '1.21.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {

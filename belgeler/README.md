@@ -13,6 +13,7 @@ Bir işe başlamadan önce ilgili rehberi oku. Her rehberde hangi dosyaya dokunu
 | Uygulama simgesini ya da açılış efektini değiştirmek | [simge-ve-acilis.md](simge-ve-acilis.md) |
 | Derleme, test, yayın, telefonda güncelleme | [yayin.md](yayin.md) |
 | Türkçe yazım ve terim kuralları | [yazim.md](yazim.md) |
+| Güvenlik: CSP, depo, satın alma, yayın öncesi kontrol | [guvenlik.md](guvenlik.md) |
 
 ## Kısa yol
 

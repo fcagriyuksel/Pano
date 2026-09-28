@@ -12,8 +12,12 @@ Birleştirme sırası (dosya adlarındaki 01-, 10- … önekleri sırayı belirl
   konular/NN-konu/{konu,semalar,hesaplar,simler,modeller}.js
   uygulama/*.js                      → tek bir IIFE içinde ('use strict')
 Birleşen betik node --check ile denetlenir; söz dizimi hatası varsa hiçbir dosya yazılmaz.
+
+Güvenlik: index.html’e içerik güvenlik ilkesi (CSP) yazılır. Satır içi <script> blokları SHA-256 özetleriyle
+izinlidir; başka betik çalışmaz. --kilit (Play) derlemesi, ayarlarda e-posta ve https doğrulama adresi yoksa durur.
+Ayrıntı: belgeler/guvenlik.md
 """
-import argparse, datetime, html, json, pathlib, re, subprocess, sys, tempfile
+import argparse, base64, datetime, hashlib, html, json, pathlib, re, subprocess, sys, tempfile, urllib.parse
 
 KOK = pathlib.Path(__file__).resolve().parent.parent
 KAYNAK = KOK / 'kaynak'
@@ -109,6 +113,37 @@ def doldur(sablon, degerler):
     return sablon
 
 
+def ayar(ad):
+    """30-ayarlar.js içinden tek tırnaklı metin ayarını okur (ör. eposta, dogrulamaAdresi)."""
+    m = re.findall(rf"\b{ad}: '([^']*)'", oku(KAYNAK / 'ortak/30-ayarlar.js'))
+    if len(m) != 1:
+        hata(f'ayarlarda {ad} tam bir kez geçmeli')
+    return m[0]
+
+
+def csp(sayfa):
+    """Sayfadaki satır içi betiklerin özetleriyle içerik güvenlik ilkesi. Dış adres yalnızca doğrulama sunucusu."""
+    if len(re.findall(r'<script\b', sayfa)) != len(re.findall(r'<script>', sayfa)):
+        hata('öznitelikli <script> var; CSP özeti yalnızca düz <script> bloklarına yazılır')
+    ozetler = ' '.join("'sha256-" + base64.b64encode(hashlib.sha256(b.encode('utf-8')).digest()).decode() + "'"
+                       for b in re.findall(r'<script>(.*?)</script>', sayfa, re.S))
+    adres = ayar('dogrulamaAdresi')
+    baglanti = "'self'" + (' ' + '{0.scheme}://{0.netloc}'.format(urllib.parse.urlsplit(adres)) if adres else '')
+    return ("default-src 'none'; " f"script-src 'self' {ozetler}; " "style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; "
+            f"connect-src {baglanti}; " "manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'")
+
+
+def yayin_hazir():
+    """Play derlemesi için eksik ayar kalmasın: iletişim e-postası ve satın alma doğrulama sunucusu."""
+    eksik = []
+    if not re.fullmatch(r'[^@\s\[\]]+@[^@\s]+\.[^@\s]+', ayar('eposta')):
+        eksik.append('eposta (gizlilik sayfasında görünür, Play için zorunlu)')
+    if not ayar('dogrulamaAdresi').startswith('https://'):
+        eksik.append('dogrulamaAdresi (https ile başlayan satın alma doğrulama sunucusu)')
+    if eksik:
+        hata('--kilit derlemesi için kaynak/ortak/30-ayarlar.js içinde eksik: ' + '; '.join(eksik))
+
+
 def gizlilik(font_css):
     betik = (oku(KAYNAK / 'ortak/10-yardimcilar.js') + '\n' + oku(KAYNAK / 'ortak/30-ayarlar.js') + '\n' + oku(KAYNAK / 'ortak/40-metinler.js')
              + '\nconst m = METINLER.gizlilik;\nprocess.stdout.write(JSON.stringify({ u: UYGULAMA, m: { baslik: baslikYaz(m.baslik), guncelleme: m.guncelleme, bolumler: m.bolumler.map(([b, t]) => [baslikYaz(b), t]) } }));')
@@ -122,6 +157,8 @@ def gizlilik(font_css):
 def derle(cikti, kilit=False):
     cikti = pathlib.Path(cikti)
     surum = datetime.datetime.now().strftime('%Y%m%d%H%M')
+    if kilit:
+        yayin_hazir()
     font_css = yazitipi_css()
     js = betik(kilit)
     soz_dizimi('betik (birleşik)', js)
@@ -133,7 +170,10 @@ def derle(cikti, kilit=False):
         if not (KOK / yol).exists():
             hata(f'betikte geçen dosya yok: {yol}')
     stil = '\n\n'.join(oku(p) for p in sirali(KAYNAK / 'stil', '*.css'))
-    index = doldur(oku(KAYNAK / 'sablon.html'), {'SURUM': surum, 'YAZITIPLERI': font_css, 'STIL': stil, 'GOVDE': govde(), 'BETIK': js})
+    index = doldur(oku(KAYNAK / 'sablon.html'), {'SURUM': surum, 'YAZITIPLERI': font_css, 'STIL': stil, 'GOVDE': govde(), 'BETIK': js, 'CSP': 'CSP-YER'})
+    if index.count('CSP-YER') != 1:
+        hata('CSP yer tutucusu tam bir kez geçmeli')
+    index = index.replace('CSP-YER', html.escape(csp(index), quote=False))
     manifest = json.loads(oku(KAYNAK / 'manifest.webmanifest'))
     for s in manifest['icons']:
         if not (KOK / s['src']).exists():

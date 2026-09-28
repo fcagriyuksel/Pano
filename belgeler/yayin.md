@@ -33,7 +33,7 @@ Yayın dosyaları (`index.html`, `privacy.html`, `manifest.webmanifest`, `sw.js`
 `araclar/derle.py` parçaları dosya adındaki sırayla (01-, 10- …) birleştirir:
 
 ```
-kaynak/sablon.html        sayfa iskeleti ({{SURUM}}, {{YAZITIPLERI}}, {{STIL}}, {{GOVDE}}, {{BETIK}})
+kaynak/sablon.html        sayfa iskeleti (SURUM, YAZITIPLERI, STIL, GOVDE, BETIK ve CSP yer tutucuları)
 kaynak/stil/*.css         → <style>
 kaynak/govde/*            → <body>; .js parçaları <script> içine alınır
 kaynak/ortak/*.js         → genel kapsam: sayi(), kayıtlar (VERI, SEMALAR, HESAPLAR, SIMLER, MODELLER), ayarlar, metinler, şema araçları
@@ -47,6 +47,8 @@ kaynak/uygulama/*.js      → tek bir IIFE içinde ('use strict')
 - `kaynak/sw.js` içinde `__SURUM__` ve `__DOSYALAR__` tam bir kez geçmeli. Yorumda bile yazma: derleme her geçtiği yere değer yazar.
 - `privacy.html`, `kaynak/gizlilik.html` şablonundan ve `METINLER.gizlilik` metninden üretilir.
 - `sw.js`, `kaynak/sw.js` şablonundan üretilir. Önbellek adı her derlemede değişir (`otomasyon-notlari-YYYYAAGGSSDD`). Etkinleşince yalnızca bu önekle ya da eski `pano-` önekiyle başlayan önbellekleri siler; aynı adresteki başka uygulamalara dokunmaz. `varliklar/` altındaki bütün `.woff2`, `.png`, `.js` dosyaları kendiliğinden önbellek listesine girer.
+- Sayfaya içerik güvenlik ilkesi (CSP) yazılır: satır içi `<script>` bloklarının SHA-256 özetleri her derlemede yeniden hesaplanır. Ayrıntı: `guvenlik.md`.
+- `--kilit` (Play) derlemesi, ayarlarda gerçek bir e-posta ve `https://` ile başlayan `dogrulamaAdresi` yoksa durur.
 - `--cikti DIR` başka klasöre derler. Testler bunu kullanır ve depodaki yayın dosyalarına dokunmaz.
 
 ## Telefonda güncelleme
@@ -55,11 +57,29 @@ kaynak/uygulama/*.js      → tek bir IIFE içinde ('use strict')
 - `varliklar/` altındaki dosyalar önce önbellekten gelir. Aynı adla değişen bir dosya, yeni derlemenin önbelleği yenilemesiyle güncellenir. Kütüphanelerin sürümü klasör adındadır (`varliklar/kutuphane/three-0.186.1/`); sürüm değişince yol da değişir ve telefonlar yeni dosyayı kendiliğinden alır.
 - Güncelleme görünmüyorsa uygulamayı tamamen kapatıp yeniden aç.
 
+## Depo adı ve adres
+
+- Depo: `fcagriyuksel/otomasyon-notlari`, adres: https://fcagriyuksel.github.io/otomasyon-notlari/
+- Depo adı değişirse GitHub, Pages adresini yönlendirmez: eski adres 404 verir. Ana ekrana eklenmiş uygulama kaldırılıp yeni adresten yeniden eklenmelidir.
+- Tarayıcı deposu ve önbellek adres (origin) başınadır, yola göre ayrılmaz. Anahtarlar bu yüzden `otomasyon-notlari.` önekiyle ayrılır (`guvenlik.md`).
+
 ## Premium ve Play Store (ertelendi)
 
 Altyapı hazır ama kapalı.
 
 - `kaynak/ortak/30-ayarlar.js`: `premium.kilit = false`. `python3 araclar/derle.py --kilit` kilidi açık derler.
 - `eposta: '[İLETİŞİM E-POSTASI]'`: kullanıcı ayrı bir adres açacak.
+- `dogrulamaAdresi`: satın alma doğrulama sunucusu henüz yok. Sunucu, uygulamanın gönderdiği satın alma kodunu Google Play Developer API ile denetler ve onaylar (acknowledge). Gizli hizmet hesabı anahtarı depoya değil, sunucunun ayarlarına konur.
 - Mağaza dosyaları (magaza/) şimdilik depoda değil, kullanıcının bilgisayarındaki proje zip’inde. Metinler güncel; ekran görüntüleri ve tanıtım görseli eski sürümden kaldı, yayından önce yenilenmeli.
 - Play için notlar (Eylül 2026 itibarıyla): hedef API 36; yeni kişisel hesapta 12 test kullanıcısıyla 14 gün kapalı test; dijital içerikte Play Billing zorunlu, satın alma 72 saat içinde sunucu tarafında onaylanmalı (doğrulama sunucusu gerekir); TWA için alan adının kökünde `assetlinks.json` gerekir (github.io/otomasyon-notlari alt yolu uygun değil, alan adı gerekir).
+
+## Yayın öncesi hukuk ve içerik notları
+
+Bunlar genel bilgidir, hukuki danışmanlık değildir. Ücretli yayından önce bir avukat ya da mali müşavirle doğrula.
+
+- **Telif:** Standartların (IEC, TS EN) ve katalogların metni, tabloları ve çizimleri telifle korunur. Uygulamada yalnızca standardın numarası, konusu ve olgu niteliğindeki değerler yer alır; tablo ve şekil kopyalanmaz, şemalar uygulamanın kendi çizimidir. Yeni içerik eklerken de böyle kal.
+- **Marka:** Marka ve ürün adları yalnızca tanıtmak için anılır; logo kullanılmaz. Uygulama adı için yayından önce TÜRKPATENT’te marka araştırması yap.
+- **Sorumluluk:** Güvenlik uyarısı ve kullanım koşulları uygulamadadır. Değerler “tipik” diye verilir ve kataloğa yönlendirilir. Bu, özensiz ya da yanlış bilgiden doğan sorumluluğu tamamen kaldırmaz; içerik doğruluğu en önemli korumadır.
+- **Kişisel veri (KVKK):** Uygulama kişisel veri toplamaz; her şey cihazda kalır. Analiz, reklam ya da hesap eklenirse gizlilik politikası ve Play “Veri güvenliği” formu güncellenmelidir.
+- **Satış ve vergi:** Premium satışı gelir doğurur. Play hesabında geliştirici adı ve iletişim bilgileri herkese görünür; ücretli uygulamada adres de istenebilir. Vergi durumu (ör. GVK 20/B kapsamı) için mali müşavire danış.
+- **Lisanslar:** Üçüncü taraf dosyaları ve lisansları `varliklar/LISANSLAR.md`’dedir. Yeni dosya eklersen oraya yaz.

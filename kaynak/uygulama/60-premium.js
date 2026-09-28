@@ -19,7 +19,7 @@ const PREMIUM = {
     try {
       const liste = await this.servis.listPurchases();
       const var_ = liste.some((p) => p.itemId === UYGULAMA.premium.urun);
-      if (var_ || !sessiz) this.ayarla(var_);
+      this.ayarla(var_); /* Play listesi esastır: iade edilen satın alma kilidi yeniden kapatır. */
       if (!sessiz) bildir(var_ ? 'Premium geri yüklendi' : 'Bu hesapta Premium satın alımı bulunamadı');
       return var_;
     } catch (e) {

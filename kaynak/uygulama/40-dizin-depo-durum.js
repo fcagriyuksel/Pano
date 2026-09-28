@@ -74,7 +74,7 @@ const durum = {
   sim: {},
   model: {}
 };
-if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
-if (!Array.isArray(durum.aramalar)) durum.aramalar = [];
+durum.kayitli = Array.isArray(durum.kayitli) ? durum.kayitli.filter((x) => typeof x === 'string') : [];
+durum.aramalar = Array.isArray(durum.aramalar) ? durum.aramalar.filter((x) => typeof x === 'string').slice(0, 6) : [];
 if (!durum.ilerleme || typeof durum.ilerleme !== 'object') durum.ilerleme = {};
 if (!durum.hesaplar || typeof durum.hesaplar !== 'object') durum.hesaplar = {};

@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-CzEaEXj8dGsKxcUPjpeu5DPBv65TvvodyuwSICb09Q4=' 'sha256-4gbRNaTyT6JLvSOiS6ORjXdT3xK3eLmn9oxKSawevq4=' 'sha256-cpcLJ+lYqGcumGCV3Dq7tu8qu48SF5e4sh6ejrEQmIQ='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Elektrik-elektronik konularında şemalı, hesaplı ve arıza odaklı bilgi notları.">
 <meta name="theme-color" content="#F3F1EA" media="(prefers-color-scheme: light)">
@@ -10,7 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Otomasyon">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="derleme" content="202609280844">
+<meta name="derleme" content="202609280857">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
@@ -503,7 +505,7 @@ const MODELLER = {};
 const UYGULAMA = {
   ad: 'Otomasyon Notları',
   alt: 'Elektrik, elektronik ve endüstriyel otomasyon',
-  surum: '1.20.0',
+  surum: '1.21.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
@@ -539,12 +541,12 @@ const METINLER = {
   },
   kosullar: {
     baslik: 'Kullanım koşulları',
-    guncelleme: '27 Eylül 2026',
+    guncelleme: '28 Eylül 2026',
     bolumler: [
       ['Kapsam', 'Otomasyon Notları, elektrik-elektronik konularında eğitim amaçlı bilgi notları sunar.'],
       ['Sorumluluk', 'İçerik özenle hazırlanır ancak hatasız olduğu garanti edilmez. Bilgileri uygulamadan önce ürün kataloğu ve yürürlükteki mevzuatla doğrula. Uygulamanın kullanımından doğabilecek zararlardan geliştirici sorumlu tutulamaz.'],
       ['Premium', 'Premium tek seferlik bir satın almadır ve satın alındığı Google hesabında geçerlidir. İade koşulları Google Play politikalarına tabidir.'],
-      ['Fikri mülkiyet', 'Metinler, şemalar ve tasarım geliştiriciye aittir; izinsiz çoğaltılamaz. Anılan marka ve ürün adları (ör. Kinco) sahiplerine aittir.'],
+      ['Fikri mülkiyet', 'Metinler, şemalar ve tasarım geliştiriciye aittir; izinsiz çoğaltılamaz. Anılan marka, ürün ve standart adları (ör. Kinco, IEC) sahiplerine aittir. Standartların metni çoğaltılmaz; yalnızca numarası ve konusu anılır.'],
       ['Değişiklikler', 'Koşullar değişirse güncel hâli bu sayfada yayımlanır.'],
       ['İletişim', '{eposta}']
     ]
@@ -9480,8 +9482,8 @@ const durum = {
   sim: {},
   model: {}
 };
-if (!Array.isArray(durum.kayitli)) durum.kayitli = [];
-if (!Array.isArray(durum.aramalar)) durum.aramalar = [];
+durum.kayitli = Array.isArray(durum.kayitli) ? durum.kayitli.filter((x) => typeof x === 'string') : [];
+durum.aramalar = Array.isArray(durum.aramalar) ? durum.aramalar.filter((x) => typeof x === 'string').slice(0, 6) : [];
 if (!durum.ilerleme || typeof durum.ilerleme !== 'object') durum.ilerleme = {};
 if (!durum.hesaplar || typeof durum.hesaplar !== 'object') durum.hesaplar = {};
 
@@ -9598,7 +9600,7 @@ const PREMIUM = {
     try {
       const liste = await this.servis.listPurchases();
       const var_ = liste.some((p) => p.itemId === UYGULAMA.premium.urun);
-      if (var_ || !sessiz) this.ayarla(var_);
+      this.ayarla(var_); /* Play listesi esastır: iade edilen satın alma kilidi yeniden kapatır. */
       if (!sessiz) bildir(var_ ? 'Premium geri yüklendi' : 'Bu hesapta Premium satın alımı bulunamadı');
       return var_;
     } catch (e) {

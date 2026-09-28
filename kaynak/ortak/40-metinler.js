@@ -23,12 +23,12 @@ const METINLER = {
   },
   kosullar: {
     baslik: 'Kullanım koşulları',
-    guncelleme: '27 Eylül 2026',
+    guncelleme: '28 Eylül 2026',
     bolumler: [
       ['Kapsam', 'Otomasyon Notları, elektrik-elektronik konularında eğitim amaçlı bilgi notları sunar.'],
       ['Sorumluluk', 'İçerik özenle hazırlanır ancak hatasız olduğu garanti edilmez. Bilgileri uygulamadan önce ürün kataloğu ve yürürlükteki mevzuatla doğrula. Uygulamanın kullanımından doğabilecek zararlardan geliştirici sorumlu tutulamaz.'],
       ['Premium', 'Premium tek seferlik bir satın almadır ve satın alındığı Google hesabında geçerlidir. İade koşulları Google Play politikalarına tabidir.'],
-      ['Fikri mülkiyet', 'Metinler, şemalar ve tasarım geliştiriciye aittir; izinsiz çoğaltılamaz. Anılan marka ve ürün adları (ör. Kinco) sahiplerine aittir.'],
+      ['Fikri mülkiyet', 'Metinler, şemalar ve tasarım geliştiriciye aittir; izinsiz çoğaltılamaz. Anılan marka, ürün ve standart adları (ör. Kinco, IEC) sahiplerine aittir. Standartların metni çoğaltılmaz; yalnızca numarası ve konusu anılır.'],
       ['Değişiklikler', 'Koşullar değişirse güncel hâli bu sayfada yayımlanır.'],
       ['İletişim', '{eposta}']
     ]

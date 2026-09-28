@@ -7,4 +7,4 @@
 | `yazitipleri/ibm-plex-mono-*.woff2` | IBM Plex Mono, IBM · npm `@fontsource/ibm-plex-mono` 5.3.0 | SIL Open Font License 1.1 |
 | `kutuphane/three-0.186.1/three.min.js` | three.js 0.186.1, yalnızca kullanılan sınıflar (`araclar/three_olustur.py`) · https://threejs.org | MIT (`kutuphane/three-0.186.1/LICENSE`) |
 
-`simgeler/` içindeki dosyalar PANO’ya aittir ve `araclar/simge_olustur.py` ile üretilir.
+`simgeler/` içindeki dosyalar Otomasyon Notları’na aittir ve `araclar/simge_olustur.py` ile üretilir.

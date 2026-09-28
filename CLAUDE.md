@@ -35,7 +35,7 @@ kaynak/                     ELLE DÜZENLENEN TEK YER
   konular/NN-konu/          konu başına: konu.js, semalar.js, hesaplar.js, simler.js, modeller.js
   uygulama/NN-*.js          uygulama kodu (tek IIFE): simgeler, dizin, arama, yönlendirme, ekranlar, bloklar, 3B modeller, olaylar
 varliklar/                  sabit dosyalar: yazitipleri/, simgeler/, kutuphane/ (Three.js), LISANSLAR.md
-araclar/                    derle.py, kontrol.py, simge_olustur.py, three_olustur.py
+araclar/                    derle.py (CSP’yi de yazar), kontrol.py, simge_olustur.py, three_olustur.py
 test/                       test_icerik.js (tarayıcısız), test_sayfalar.py (Playwright)
 belgeler/                   iş başına rehberler
 index.html, privacy.html, manifest.webmanifest, sw.js   DERLENİR, elle düzenleme
@@ -58,6 +58,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 | Simge ve açılış efekti | `belgeler/simge-ve-acilis.md` |
 | Derleme, test, yayın, Play Store notları | `belgeler/yayin.md` |
 | Yazım kuralları | `belgeler/yazim.md` |
+| Güvenlik (CSP, depo, satın alma, yayın öncesi) | `belgeler/guvenlik.md` |
 
 ## Değişiklik akışı
 
@@ -86,6 +87,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 - Uygulama kodu tek IIFE içindedir; `uygulama/` dosyaları aynı kapsamı paylaşır. Sıra önemlidir: bir dosya, kendinden sonra gelen dosyanın sabitini yükleme anında kullanamaz.
 - Konu dosyaları (`konular/`) genel kapsamdadır. Yardımcı sabit gerekiyorsa dosyayı IIFE içine al; yoksa başka konunun aynı adlı sabitiyle çakışır.
 - `localStorage` ve önbellek (Cache Storage) adres başınadır: `fcagriyuksel.github.io` altındaki bütün uygulamalar aynı depoyu görür. Anahtarlar `otomasyon-notlari.` (`DEPO_ONEK`), önbellekler `otomasyon-notlari-` önekiyle ayrılır. `sw.js` yalnızca kendi önekli önbelleklerini siler; başka önbelleğe dokunma.
+- Satır içi olay özniteliği (`onclick="…"`), `eval` ve dış adres CSP’ye takılır; sayfa testi bunu hata sayar. Kurallar `belgeler/guvenlik.md`’de.
 - Metne görünüşü Latin harfe benzeyen Kiril harf karışabilir (“toprakla” içinde “а”); gözle görülmez, aramayı bozar. Derleme artık bunu denetler.
 - Şablonlardaki yer tutucuları (`{{STIL}}`, `__SURUM__` …) yorumlarda bile yazma; derleme her geçtiği yere değer yazar. Derleme artık bunu denetler.
 - Ekran görüntüsü betiğinde sürükleme miktarı 0 ise tarayıcı bunu dokunuş sayar; 3B modelde parça seçilir ve görüntü yanıltır.
