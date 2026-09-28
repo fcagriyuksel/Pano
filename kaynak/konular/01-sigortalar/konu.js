@@ -11,6 +11,7 @@ VERI.konular.push({
     { id: 'nh-sigorta', kod: 'NH', ad: 'NH bıçaklı sigorta', alt: 'Yüksek akımlı ana dağıtım · gG ve aM', filtre: 'asiri', sayfa: 'nh-sigorta' },
     { id: 'motor-koruma-salteri', kod: 'MPCB', ad: 'Motor koruma şalteri', alt: 'Ayarlı termik ve manyetik koruma · motor devreleri', filtre: 'asiri', sayfa: 'motor-koruma-salteri' },
     { id: 'kompakt-salter', kod: 'MCCB', ad: 'Kompakt şalter', alt: 'Ir, Isd, Ii ayarları · Icu ve selektivite', filtre: 'asiri', sayfa: 'kompakt-salter' },
+    { id: 'rcd-ic-yapi', kod: '3B', ad: 'Kaçak akım rölesi: iç yapı (3B)', alt: 'Toroid, açma rölesi, test butonu · kaçakta açma', filtre: 'kacak', sayfa: 'rcd-ic-yapi' },
     { id: 'kacak-akim-rolesi', kod: 'RCD', ad: 'Kaçak akım rölesi', alt: '30 mA hayat koruması · 300 mA yangın koruması', filtre: 'kacak', sayfa: 'kacak-akim-rolesi' },
     { id: 'cam-sigorta', kod: '5×20', ad: 'Cam sigorta', alt: 'Elektronik kartlar · hızlı (F) ve gecikmeli (T)', filtre: 'elektronik', sayfa: 'cam-sigorta' },
     { id: 'yari-iletken-sigorta', kod: 'aR', ad: 'Yarı iletken sigorta', alt: 'Sürücü ve doğrultucu koruması · çok hızlı', filtre: 'elektronik', sayfa: 'yari-iletken-sigorta' }
@@ -333,6 +334,36 @@ Object.assign(VERI.sayfalar, {
       ]},
       { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
         { tip: 'parcalar', parcalar: ['Yardımcı kontak', 'Arıza sinyal kontağı', 'Motor mekanizması', 'Düşük gerilim bobini (UVR)', 'Bara'] }
+      ]}
+    ]
+  },
+  'rcd-ic-yapi': {
+    baslik: 'Kaçak akım rölesinin iç yapısı',
+    giris: 'Kaçak akım rölesinde faz ve nötr aynı toroidin içinden geçer. Akımlar eşitken toroidde alan oluşmaz. Bir kısım akım toprağa kaçınca fark, sekonder sargıda gerilim doğurur ve açma rölesi kontakları açar.',
+    etiketler: ['3B model', 'TS EN 61008-1', 'Toroid', 'Test butonu'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'kacak-akim-rolesi' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Kaçakta ne olur', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Normalde fazdan giden akım nötrden geri döner; toroiddeki iki alan birbirini götürür.',
+          'Yalıtımı bozuk bir cihaz ya da cihaza dokunan bir insan üzerinden akımın bir kısmı toprağa gider.',
+          'Nötrden dönen akım azalır; toroidde fark kadar alan oluşur, sekonder sargıda gerilim doğar.',
+          'Açma rölesi mandalı bırakır; yay faz ve nötr kontaklarını birlikte açar.',
+          'Kaçak giderilmeden röle yeniden kurulamaz.'
+        ]},
+        { tip: 'not', metin: 'Genel tip rölede IΔn akımında açma süresi en çok 300 ms, 5 × IΔn’de en çok 40 ms’dir (TS EN 61008-1). Röle 0,5 × IΔn’in altında açmamalı, IΔn’de mutlaka açmalıdır. Modeldeki süreler gösterim için uzatıldı.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Test butonunu kaçak ölçümü yerine saymak', 'Buton yalnızca mekanizmayı dener; açma akımını ve süresini ölçmez. Doğrusu: periyodik kontrolde RCD test cihazıyla ölç.'],
+          ['Atan röleyi tekrar tekrar kurmaya çalışmak', 'Kaçak sürdükçe röle yine atar; kaçak bir insan üzerinden de olabilir. Doğrusu: devreleri ya da cihazları tek tek ayırarak kaçağın yerini bul.'],
+          ['Nötrü röleden geçirmemek', 'Yük akımının tamamı fark olarak görünür; röle kurulur kurulmaz atar. Doğrusu: faz ve nötr birlikte röleden geçer, PE geçmez.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Otomatik sigorta (MCB)', 'RCBO', 'Nötr barası', 'Toprak barası', 'RCD test cihazı'] }
       ]}
     ]
   },
