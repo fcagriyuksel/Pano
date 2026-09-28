@@ -58,7 +58,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 })();
 ```
 
-- `parcalar[i]` ile `kur()` dönüşündeki `parcalar[i]` aynı parçadır. `isaret`: numaranın durduğu nokta (parçanın yerel koordinatı). `patlat`: parçalanınca kayma (parçanın üst nesnesinin koordinatında).
+- `parcalar[i]` ile `kur()` dönüşündeki `parcalar[i]` aynı parçadır. `isaret`: numaranın durduğu nokta (parçanın yerel koordinatı). `isaretNesne` (isteğe bağlı): numara bu iç nesneye bağlanır ve onunla birlikte kayar (ör. hareket eden hedef plaka). `patlat`: parçalanınca kayma (parçanın üst nesnesinin koordinatında).
 - Durum (`s`) bellekte tutulur; sayfaya dönünce kaldığı yerden sürer. Kamera her açılışta sıfırlanır.
 - **Etiketler** (ör. klemens uçları `PUL+`, `A−`) yalnızca ait oldukları parça seçiliyken 3B’de görünür. Etikete dokununca açıklaması seçim kutusunda çıkar. Aynı etiketler modelin altında tablo olarak listelenir ve aranabilir. `secimdeOdak: true` ile birlikte kullan: parça seçilince kamera yaklaşır, etiketler okunur hâle gelir.
 - `tik` yalnızca çizim döngüsü çalışırken çağrılır. Döngü bir düğmeye basınca, sürüklerken ve `tik` true döndürdükçe sürer; durunca kendiliğinden durur (pil tüketmez).
@@ -68,7 +68,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | Yardımcı | İş |
 |---|---|
 | `y.T` | Three.js sınıfları (`T.Group`, `T.Shape` …). Yalnızca `three_olustur.py` içindeki `DISA` listesindekiler vardır. |
-| `y.malzeme(ad)` | ortak malzeme: `aluminyum celik sac bakir miknatis kuzey guney plastik plastikAcik balata kart entegre vurgu kabloSiyah kabloYesil kabloKirmizi kabloMavi`. `kuzey`, `guney`, `vurgu` renklerini temadan alır. Yenisi `86-model.js` → `MALZEMELER`. |
+| `y.malzeme(ad)` | ortak malzeme: `aluminyum celik sac bakir miknatis kuzey guney plastik plastikAcik balata kart klemens kondansator ledYesil ledKirmizi entegre vurgu kabloSiyah kabloYesil kabloKirmizi kabloMavi kabloKahve`. `kuzey`, `guney`, `vurgu` renklerini temadan alır. Yenisi `86-model.js` → `MALZEMELER`. |
 | `y.ag(geo, malzeme, {kenar, esik})` | ağ + ince kenar çizgileri. `kenar: false` çizgisiz (küçük, çok yüzlü parçalar). `esik`: çizgi için en küçük kenar açısı (derece). |
 | `y.cek(sekil, uzunluk, {pah, bolum})` | 2B şekli z ekseni boyunca çeker, z = 0’a ortalar. `pah` kenarları içe doğru yuvarlatır; dış ölçü ve delikler şekildeki gibi kalır. |
 | `y.halka(ic, dis, uzunluk)` | z ekseninde halka (boru) |
@@ -81,6 +81,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | `y.rulman(ic, dis, genislik)` | sabit bilyalı rulman grubu |
 | `y.yuvarlakDikdortgen(w, h, r)` | köşeleri yuvarlatılmış dikdörtgen şekil (gövde, kapak, kart) |
 | `y.dinRay(uzunluk)` | TS35 × 7,5 DIN ray, x ekseni boyunca; ray yüzü z = 0 |
+| `y.torna(noktalar, bolum)` | dönel parça: `[r, z]` profilini z ekseni etrafında döndürür (diş, çanak nüve, mil, silindir kapağı). Kapalı ağ için profil kapalı olsun (ilk ve son nokta aynı ya da ikisi de eksende) ve saat yönünün tersine dolaşsın (r sağa, z yukarı). `[r, z, 1]` köşeyi keskin yapar. |
 | `y.helis(r, tel, uzunluk, tur)` | helis yay: z = 0’dan uzunluk kadar. Sıkışma için ağın `scale.z` değerini değiştir (alt ucu yerinde kalır). |
 
 Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleştir.

@@ -29,7 +29,8 @@ const MALZEMELER = {
   kabloSiyah: { renk: 0x1f2226, metal: 0, puruz: 0.6 },
   kabloYesil: { renk: 0x3f8a3a, metal: 0, puruz: 0.6 },
   kabloKirmizi: { renk: 0xb7352a, metal: 0, puruz: 0.6 },
-  kabloMavi: { renk: 0x2c63b0, metal: 0, puruz: 0.6 }
+  kabloMavi: { renk: 0x2c63b0, metal: 0, puruz: 0.6 },
+  kabloKahve: { renk: 0x7b4a2c, metal: 0, puruz: 0.6 }
 };
 
 const modelDurum = (tur) => {
@@ -281,6 +282,16 @@ function modelBaslat(T, o) {
       for (let i = 0; i <= n; i++) { const a = (i / n) * tur * Math.PI * 2; noktalar.push(new T.Vector3(r * Math.cos(a), r * Math.sin(a), (i / n) * uzunluk)); }
       return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar), n * 2, tel, 8, false);
     },
+    /* Dönel parça: (r, z) profilini z ekseni etrafında döndürür. Kapalı ağ için profil kapalı olmalı (ilk ve son nokta aynı
+       ya da ikisi de eksende) ve saat yönünün tersine dolaşmalı (r sağa, z yukarı). [r, z, 1] köşeyi keskin yapar. */
+    torna(noktalar, bolum = 48) {
+      const p = [], son = noktalar.length - 1;
+      noktalar.forEach(([r, z, k], i) => { p.push(new T.Vector2(r, z)); if (k && i > 0 && i < son) p.push(new T.Vector2(r, z)); });
+      const g = new T.LatheGeometry(p, bolum).rotateX(Math.PI / 2);
+      const n = g.attributes.normal, v = new T.Vector3();   // LatheGeometry son halkanın normalini boyutlandırmaz
+      for (let i = 0; i < n.count; i++) { v.fromBufferAttribute(n, i).normalize(); n.setXYZ(i, v.x, v.y, v.z); }
+      return g;
+    },
     /* Köşeleri yuvarlatılmış dikdörtgen şekil (merkezli). */
     yuvarlakDikdortgen(w, h, r) {
       const a = w / 2, b = h / 2;
@@ -328,7 +339,7 @@ function modelBaslat(T, o) {
         if (n.isMesh) { n.userData.parca = i; aglar.push(n); }
       }
     });
-    return { nesne: p.nesne, taban: p.nesne.position.clone(), patlat: new T.Vector3(...(p.patlat || [0, 0, 0])), isaret: new T.Vector3(...(p.isaret || [0, 0, 0])), aglar, malzemeler: [...kopya.values()] };
+    return { nesne: p.nesne, isaretNesne: p.isaretNesne || p.nesne, taban: p.nesne.position.clone(), patlat: new T.Vector3(...(p.patlat || [0, 0, 0])), isaret: new T.Vector3(...(p.isaret || [0, 0, 0])), aglar, malzemeler: [...kopya.values()] };
   });
   const tumMalzemeler = [...new Set(parcalar.flatMap((p) => p.malzemeler))];
   sahne.traverse((n) => { if ((n.isMesh || n.isLineSegments) && !tumMalzemeler.includes(n.material)) tumMalzemeler.push(n.material); });
@@ -463,7 +474,7 @@ function modelBaslat(T, o) {
       const el = noEl[i];
       if (!el) return;
       v.copy(pr.isaret);
-      pr.nesne.localToWorld(v);
+      pr.isaretNesne.localToWorld(v);
       const dunya = v.clone();
       v.project(kamera);
       const disarida = v.z > 1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05;

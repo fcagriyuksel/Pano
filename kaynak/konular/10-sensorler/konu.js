@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Endüktif, fotoelektrik, enkoder, PT100, 4–20 mA',
   giris: 'Sensörler makinenin gözleri ve kulaklarıdır: konumu, varlığı, seviyeyi ya da bir büyüklüğü ölçüp PLC’ye bildirirler.',
   altlar: [
+    { id: 'enduktif-ic-yapi', kod: '3B', ad: 'Endüktif sensör: iç yapı (3B)', alt: 'Nüve, bobin, osilatör, M12 konnektör · hedef yaklaşınca', sayfa: 'enduktif-ic-yapi' },
     { id: 'enduktif-sensor', kod: 'Sn', ad: 'Endüktif sensör', alt: 'Metal algılama · malzeme faktörü', sayfa: 'enduktif-sensor' },
     { id: 'kapasitif-sensor', kod: 'C', ad: 'Kapasitif sensör', alt: 'Metal olmayan malzeme · seviye', sayfa: 'kapasitif-sensor' },
     { id: 'fotoelektrik-sensor', kod: 'OPT', ad: 'Fotoelektrik sensör', alt: 'Karşılıklı, reflektörlü, cisimden yansımalı', sayfa: 'fotoelektrik-sensor' },
@@ -14,6 +15,35 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'enduktif-ic-yapi': {
+    baslik: 'Endüktif sensörün iç yapısı',
+    giris: 'Endüktif sensörün içinde bir osilatör, ferrit nüveli bir bobin ve çıkışı anahtarlayan bir değerlendirme devresi vardır. Hedefe dokunmaz; metal hedef alanı zayıflatınca çıkış değişir.',
+    etiketler: ['3B model', 'IEC 60947-5-2', 'M12 konnektör', 'PNP'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'enduktif-sensor' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Hedef yaklaşınca ne olur', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Osilatör bobinde yüksek frekanslı akım dolaştırır; ferrit nüve alanı aktif yüzeyin önüne yöneltir.',
+          'Metal hedef alana girer; içinde girdap akımları dolaşır ve osilatörden enerji çeker.',
+          'Hedef yaklaştıkça salınım genliği düşer. Genlik eşiğin altına inince çıkış açılır, LED yanar.',
+          'Hedef uzaklaşınca genlik yükselir; çıkış, açıldığı mesafeden biraz daha uzakta kapanır (histerezis). Bu fark, sınırda çıkışın titremesini önler.'
+        ]},
+        { tip: 'not', metin: 'Sn, standart çelik hedefle ölçülen nominal mesafedir. Alüminyum, pirinç ve bakırda girdap akımı kaybı farklıdır; çalışma mesafesi kısalır (Hesap bölümündeki malzeme faktörü). Güvenli çalışma için hedefi Sa = 0,81 × Sn içinde tut.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Aktif yüzeyde biriken talaşı önemsememek', 'Metal talaş alanda kalır, sensör hedef yokken de algılar. Doğrusu: yüzeyi düzenli temizle, gerekirse talaşa dayanıklı tip seç.'],
+          ['M12 soketi elle sonuna kadar sıkmamak', 'Conta oturmaz, su girer; kontaklar oksitlenir, sinyal gelip gider. Doğrusu: rakor somununu elle sonuna kadar sık.'],
+          ['Sensör kablosunu motor ve güç kablolarıyla aynı kanala koymak', 'Parazit yanlış sinyal üretebilir. Doğrusu: sinyal ve güç kablolarını ayrı kanaldan geçir.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['M12 sensör kablosu', 'Montaj braketi', 'PLC dijital giriş', '24 V DC güç kaynağı'] }
+      ]}
+    ]
+  },
   'enduktif-sensor': {
     baslik: 'Endüktif sensör',
     giris: 'Endüktif sensör önünde yüksek frekanslı bir manyetik alan oluşturur. Alana giren metal bu alanı zayıflatır ve çıkış değişir. Yalnızca metali, temas etmeden algılar.',
