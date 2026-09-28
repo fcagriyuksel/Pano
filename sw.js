@@ -1,6 +1,6 @@
 /* PANO çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır.
    Bu dosya şablondur: derle.py sürüm damgasını ve önbelleğe alınacak dosya listesini yerine yazar. */
-const KABUK = 'pano-202609272328';
+const KABUK = 'pano-202609280502';
 const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./varliklar/kutuphane/three-0.186.1/three.min.js", "./varliklar/simgeler/apple-touch-icon.png", "./varliklar/simgeler/icon-192.png", "./varliklar/simgeler/icon-512.png", "./varliklar/simgeler/icon-maskable-512.png", "./varliklar/yazitipleri/barlow-condensed-latin-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-700-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-700-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-600-normal.woff2"];
 
 self.addEventListener('install', (e) => {

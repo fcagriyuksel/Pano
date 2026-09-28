@@ -65,8 +65,10 @@ try:
                 if modeller.count():
                     try: pg.wait_for_function("[...document.querySelectorAll('[data-model-kutu]')].every((k) => k.dataset.durum === 'hazir')", timeout=8000)
                     except Exception: sorunlar.append((tema, r, '3B model çizilmedi', pg.evaluate("[...document.querySelectorAll('[data-model-kutu]')].map((k) => k.dataset.durum).join(',')")))
+                    # Süre 3 sn: sürekli animasyonda (ör. kontaktör vınlaması) yazılımsal WebGL kareyi 100–350 ms’ye uzatır;
+                    # Playwright’ın “düğme kıpırdamıyor” denetimi iki kare beklediği için 1 sn yetmeyebilir.
                     for d in pg.locator('[data-model-olay]').all():
-                        try: d.click(timeout=1000); pg.wait_for_timeout(80)
+                        try: d.click(timeout=3000); pg.wait_for_timeout(80)
                         except Exception as e: sorunlar.append((tema, r, 'model düğmesi', str(e)[:80]))
                 if a.ekran:
                     klasor = pathlib.Path(a.ekran); klasor.mkdir(parents=True, exist_ok=True)

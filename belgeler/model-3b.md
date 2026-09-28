@@ -70,7 +70,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | `y.T` | Three.js sınıfları (`T.Group`, `T.Shape` …). Yalnızca `three_olustur.py` içindeki `DISA` listesindekiler vardır. |
 | `y.malzeme(ad)` | ortak malzeme: `aluminyum celik sac bakir miknatis kuzey guney plastik plastikAcik balata kart entegre vurgu kabloSiyah kabloYesil kabloKirmizi kabloMavi`. `kuzey`, `guney`, `vurgu` renklerini temadan alır. Yenisi `86-model.js` → `MALZEMELER`. |
 | `y.ag(geo, malzeme, {kenar, esik})` | ağ + ince kenar çizgileri. `kenar: false` çizgisiz (küçük, çok yüzlü parçalar). `esik`: çizgi için en küçük kenar açısı (derece). |
-| `y.cek(sekil, uzunluk, {pah, bolum})` | 2B şekli z ekseni boyunca çeker, z = 0’a ortalar |
+| `y.cek(sekil, uzunluk, {pah, bolum})` | 2B şekli z ekseni boyunca çeker, z = 0’a ortalar. `pah` kenarları içe doğru yuvarlatır; dış ölçü ve delikler şekildeki gibi kalır. |
 | `y.halka(ic, dis, uzunluk)` | z ekseninde halka (boru) |
 | `y.silindir(r, uzunluk)` | z ekseninde silindir |
 | `y.pahliKare(kenar, pah)` | köşeleri pahlı kare (motor flanşı, pano kesiti …) |
@@ -81,6 +81,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
 | `y.rulman(ic, dis, genislik)` | sabit bilyalı rulman grubu |
 | `y.yuvarlakDikdortgen(w, h, r)` | köşeleri yuvarlatılmış dikdörtgen şekil (gövde, kapak, kart) |
 | `y.dinRay(uzunluk)` | TS35 × 7,5 DIN ray, x ekseni boyunca; ray yüzü z = 0 |
+| `y.helis(r, tel, uzunluk, tur)` | helis yay: z = 0’dan uzunluk kadar. Sıkışma için ağın `scale.z` değerini değiştir (alt ucu yerinde kalır). |
 
 Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleştir.
 
@@ -99,10 +100,13 @@ Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleşti
 - **Kesit yüzleri kapalı ağ ister.** Kesit, ağın arka yüzlerini düz renkle çizerek dolu görünür. Açık yüzeyli ya da iç içe geçen ağlarda kesit bozuk çıkar. `ExtrudeGeometry`, `CylinderGeometry` gibi kapalı geometriler kullan.
 - **Işın testi kesiti ve görünürlüğü bilmez.** Three.js `Raycaster` kırpma düzlemlerini ve `visible = false` nesneleri yok saymaz. Çalışma zamanı bunları `gorunenVurus` ile süzer; yeni bir ışın testi yazarsan aynı süzgeci kullan.
 - **Dönen parçalar kökün doğrudan çocuğu olmalı.** `patlat` kayması parçanın üst nesnesinin koordinatındadır. Dönen bir grubun içindeki parçaya yan kayma verirsen, grup döndükçe kayma yönü de döner. Dönen her parçayı ayrı ayrı döndür (`uygula` içinde `rotation.z`).
+- **Kayan parça iç grupta kaymalı.** Çalışma zamanı parçalama için parçanın kök nesnesinin `position` değerini yazar. `uygula` içinde kökün konumunu değiştirirsen parçalama bozulur. Kayan ağları iç bir gruba koy, `uygula` iç grubun `position` değerini değiştirsin (bkz. kontaktör modeli). Döndürmek için kökün `rotation` değeri kullanılabilir.
+- **Pah ölçüyü değiştirmemeli.** `ExtrudeGeometry` pahı varsayılan olarak dışa ekler: dış ölçü büyür, delikler küçülür. `y.cek` eskiden böyleydi; step motor ve servo kapaklarındaki rulman yuvası 0,4–0,5 mm daralıp rulmanın içine giriyordu. Artık `y.cek` pahı içe alır (`bevelOffset: −pah`). Doğrudan `ExtrudeGeometry` ile pah verirsen aynısını yap.
 - **Malzemeyi `uygula` anında oku.** Çalışma zamanı her parçaya kendi malzeme kopyasını verir (seçim vurgusu için). `kur` sırasında sakladığın malzeme nesnesi değil, `ag.material` değişir. Parça içinde ayrı renklenecek ağlara ayrı malzeme ver (ör. her bobine `bakir.clone()`).
 - **Yeni Three.js sınıfı.** `T.X is not a constructor` hatası: sınıfı `araclar/three_olustur.py` → `DISA` listesine ekle ve betiği çalıştır.
 - **Örtülme payı küçük ve sabit olmalı.** Numara ve etiketin arkada kalıp kalmadığı ışın testiyle bulunur. Pay mesafeye oranlı olursa (ör. %2) uzak kamerada 2 mm’lik bir kapağın arkasındaki numara görünür kalır. Pay mm cinsinden sabittir (numara 0,3 mm, etiket 0,5 mm); numarayı yüzeyin 0,05–0,1 mm dışına koy.
 - **Belgelenen her alan çalışmalı.** `durum().uyari` bir süre çalışma zamanında hiç okunmadı; uyarılar düz görünüyordu. Model biçimine yeni bir alan eklersen hem bu rehbere hem `86-model.js`’e ekle ve bir kez gözle dene.
+- **Testte yavaş kare.** Sayfa testi Chromium’u yazılımsal WebGL ile (swiftshader) çalıştırır. Sürekli animasyonda kare 100–350 ms sürer ve Playwright tıklamadan önce düğmenin iki kare boyunca kıpırdamadığını bekler; tıklama süresi 1 sn olunca test yanlışlıkla hata verdi. Model düğmelerinde süre 3 sn’dir. Telefondaki yükü ölçmek için CDP profiline bak (kontaktör vınlarken JS kare başına yaklaşık 8 ms).
 - **Işık.** Işık kameraya bağlıdır. Yoğunluğu artırırsan kameraya dik bakan açık renkli yüzler beyaza kaçar; önden bakarak kontrol et.
 
 ## Three.js’i güncellemek

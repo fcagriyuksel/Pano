@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Kontaktör, termik, zaman ve faz rölesi',
   giris: 'Kontaktör küçük bir kumanda akımıyla büyük yükleri anahtarlar. Röleler bu anahtarlamayı korur, geciktirir ya da denetler.',
   altlar: [
+    { id: 'kontaktor-ic-yapi', kod: '3B', ad: 'Kontaktör: iç yapı (3B)', alt: 'Bobin, nüve, taşıyıcı, ana ve yardımcı kontaklar', sayfa: 'kontaktor-ic-yapi' },
     { id: 'kontaktor', kod: 'K1', ad: 'Kontaktör', alt: 'Bobin, ana ve yardımcı kontaklar · AC-3', sayfa: 'kontaktor' },
     { id: 'termik-role', kod: 'F2', ad: 'Termik röle', alt: 'Aşırı yük koruması · 95-96 / 97-98', sayfa: 'termik-role' },
     { id: 'zaman-rolesi', kod: 'KT', ad: 'Zaman rölesi', alt: 'Çekmede ve düşmede gecikme · 15-16-18', sayfa: 'zaman-rolesi' },
@@ -12,6 +13,36 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'kontaktor-ic-yapi': {
+    baslik: 'Kontaktörün iç yapısı',
+    giris: 'Kontaktörün içinde bir elektromıknatıs ve onun hareket ettirdiği kontak taşıyıcı vardır. Bobin çekince bütün kontaklar birlikte konum değiştirir; bırakınca yaylar onları geri getirir.',
+    etiketler: ['3B model', 'IEC 60947-4-1', 'Gölge halkası', 'Kontak basıncı'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'kontaktor' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Bobin çekince ne olur', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'A1-A2’ye gerilim gelir; bobin sabit nüvede manyetik alan oluşturur.',
+          'Hareketli nüve sabit nüveye çekilir ve taşıyıcıyı geriye götürür; geri dönüş yayları sıkışır.',
+          'Önce NC yardımcı kontak (21-22) açılır, ardından ana kontaklar ve NO yardımcı kontak (13-14) kapanır.',
+          'Kontaklar değdikten sonra taşıyıcı biraz daha ilerler; taşıyıcı penceresindeki yay sıkışır ve kontak basıncını sağlar. Kontaklar aşındıkça bu pay azalır.',
+          'Gerilim kesilince geri dönüş yayları taşıyıcıyı öne iter; kontaklar ilk konumuna döner.'
+        ]},
+        { tip: 'not', metin: 'AC bobinde akım 50 Hz’de saniyede 100 kez sıfırdan geçer ve çekme kuvveti bu anlarda düşer. Gölge halkasındaki akım, kutbun bir bölümünde akıyı geciktirir; kuvvet sıfıra inmez, nüve titremez. DC bobinde akı sabittir, gölge halkası gerekmez. Kapanma ve açılma süreleri birkaç milisaniye ile birkaç on milisaniye arasındadır; kesin değer katalogdadır.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Taşıyıcıya elle basarak motoru çalıştırmak', 'Kumanda devresi atlanır: termik, acil stop ve kilitlemeler devre dışı kalır. Kontaklar yavaş kapanır, ark büyür. Doğrusu: enerjiyi kumanda devresinden ver; elle basmayı yalnızca enerjisizken mekanik kontrol için yap.'],
+          ['Yapışmış (kaynamış) ana kontağı fark etmemek', 'Bobin bıraksa da motor durmaz. Doğrusu: güvenlik devrelerinde ayna kontaklı (mirror contact, IEC 60947-4-1) kontaktör kullan ve NC yardımcı kontağı geri besleme olarak izle.'],
+          ['Bobine söndürme elemanı koymamak', 'Bobin açılırken yüksek gerilim darbesi oluşur; PLC çıkışını ve röle kontaklarını yıpratır, parazit yapar. Doğrusu: DC bobinde diyot ya da varistör (diyot bırakma süresini uzatır), AC bobinde RC ya da varistör.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Termik röle', 'Yardımcı kontak bloğu', 'Bobin söndürme modülü (RC, varistör, diyot)', 'Motor koruma şalteri'] }
+      ]}
+    ]
+  },
   'kontaktor': {
     baslik: 'Kontaktör',
     giris: 'Kontaktör, bobinine verilen kumanda gerilimiyle ana kontaklarını kapatan elektromanyetik anahtardır. Motorları ve büyük yükleri uzaktan, sık açıp kapamak için kullanılır.',

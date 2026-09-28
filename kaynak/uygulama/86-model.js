@@ -108,7 +108,8 @@ function modelHata(o, neden) {
   }
 }
 
-/* Durum metni ve düğmeler; yalnızca değiştiyse yeniden yazılır (odak korunur). */
+/* Durum metni, düğmeler ve seçim kutusu; animasyonda her karede çağrılır, bu yüzden yalnızca değişen yazılır
+   (odak korunur, aria-live alanları boşuna yeniden okunmaz). */
 function modelYaz(o) {
   const M = MODELLER[o.tur], s = modelDurum(o.tur);
   const de = document.getElementById(`model-${o.tur}-d`);
@@ -125,9 +126,14 @@ function modelYaz(o) {
     if (odak) { const b = be.querySelector(`[data-model-olay="${odak}"]`); if (b) b.focus({ preventScroll: true }); }
   }
   const ce = document.getElementById(`model-${o.tur}-c`);
-  if (ce) { ce.hidden = s.secili < 0; ce.innerHTML = modelSecimMetni(o.tur, s); }
-  $$('[data-model-parca]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelParca) === s.secili && s.etiket < 0)));
-  $$('[data-model-etiket]', o.kutu).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.modelEtiket) === s.etiket)));
+  if (ce) {
+    ce.hidden = s.secili < 0;
+    const metin = modelSecimMetni(o.tur, s);
+    if (ce.dataset.son !== metin) { ce.innerHTML = metin; ce.dataset.son = metin; }
+  }
+  const bas = (b, deger) => { if (b.getAttribute('aria-pressed') !== deger) b.setAttribute('aria-pressed', deger); };
+  $$('[data-model-parca]', o.kutu).forEach((b) => bas(b, String(Number(b.dataset.modelParca) === s.secili && s.etiket < 0)));
+  $$('[data-model-etiket]', o.kutu).forEach((b) => bas(b, String(Number(b.dataset.modelEtiket) === s.etiket)));
 }
 
 function modelTikla(o, e) {
@@ -207,10 +213,10 @@ function modelBaslat(T, o) {
       sekil.holes.push(new T.Path().absarc(0, 0, ic, 0, Math.PI * 2, true));
       return y.cek(sekil, u, { bolum });
     },
-    /* Şekli z boyunca u kadar çeker, ortalar. pah: kenar yuvarlatma (mm). */
+    /* Şekli z boyunca u kadar çeker, ortalar. pah: kenar yuvarlatma (mm); pah içe doğrudur, dış ölçü ve delikler şekildeki gibi kalır. */
     cek(sekil, u, sec = {}) {
       const pah = sec.pah || 0;
-      const g = new T.ExtrudeGeometry(sekil, { depth: u - pah * 2, bevelEnabled: pah > 0, bevelThickness: pah, bevelSize: pah, bevelSegments: 2, curveSegments: sec.bolum || 24 });
+      const g = new T.ExtrudeGeometry(sekil, { depth: u - pah * 2, bevelEnabled: pah > 0, bevelThickness: pah, bevelSize: pah, bevelOffset: -pah, bevelSegments: 2, curveSegments: sec.bolum || 24 });
       return g.translate(0, 0, -(u - pah * 2) / 2);
     },
     pahliKare(kenar, pah) {
@@ -268,6 +274,12 @@ function modelBaslat(T, o) {
       const s = new T.Shape(n);
       if (rDelik) s.holes.push(new T.Path().absarc(0, 0, rDelik, 0, Math.PI * 2, true));
       return s;
+    },
+    /* Helis yay: z = 0’dan uzunluk kadar, sarım yarıçapı r, tel yarıçapı tel, tur sayısı. Sıkışma için scale.z kullan. */
+    helis(r, tel, uzunluk, tur) {
+      const n = Math.max(16, Math.round(tur * 20)), noktalar = [];
+      for (let i = 0; i <= n; i++) { const a = (i / n) * tur * Math.PI * 2; noktalar.push(new T.Vector3(r * Math.cos(a), r * Math.sin(a), (i / n) * uzunluk)); }
+      return new T.TubeGeometry(new T.CatmullRomCurve3(noktalar), n * 2, tel, 8, false);
     },
     /* Köşeleri yuvarlatılmış dikdörtgen şekil (merkezli). */
     yuvarlakDikdortgen(w, h, r) {
