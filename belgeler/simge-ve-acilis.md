@@ -32,7 +32,7 @@ Telefonda: Android ana ekran simgesini, uygulama açıldıktan sonra genelde bir
 
 ### Nasıl çalışır
 
-- Oturum başına bir kez görünür (`sessionStorage` anahtarı `pano.acilis`). Uygulama baştan açılınca yeniden görünür; sayfa yenilenince görünmez.
+- Oturum başına bir kez görünür (`sessionStorage` anahtarı `otomasyon-notlari.acilis`). Uygulama baştan açılınca yeniden görünür; sayfa yenilenince görünmez.
 - “Hareketi azalt” açıksa hiç görünmez.
 - Ekran CSS ile kendi kendine kapanır. JavaScript çökse bile uygulamayı örtmez.
 - Dokununca atlanır: ekran 0,2 sn’de söner, ana ekran hemen görünür.

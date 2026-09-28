@@ -1,6 +1,9 @@
 /* Otomasyon Notları çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır.
    Bu dosya şablondur: derle.py sürüm damgasını ve önbelleğe alınacak dosya listesini yerine yazar. */
-const KABUK = 'pano-__SURUM__';
+/* Önbellek adları uygulamanın önekini taşır. Aynı adresteki (fcagriyuksel.github.io) başka uygulamaların önbelleği silinmesin diye
+   yalnızca bu önekle ya da eski adla (pano-) başlayanlar temizlenir. */
+const ONEK = 'otomasyon-notlari-';
+const KABUK = ONEK + '__SURUM__';
 const DOSYALAR = __DOSYALAR__;
 
 self.addEventListener('install', (e) => {
@@ -10,7 +13,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK).map((k) => caches.delete(k))))
+      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK && (k.startsWith(ONEK) || k.startsWith('pano-'))).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

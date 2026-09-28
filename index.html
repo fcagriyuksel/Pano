@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Otomasyon">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="pano-surum" content="202609280827">
+<meta name="derleme" content="202609280844">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="varliklar/simgeler/icon-192.png">
 <link rel="apple-touch-icon" href="varliklar/simgeler/apple-touch-icon.png">
@@ -395,11 +395,12 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
 <div class="app" id="uygulama" lang="tr"></div>
 
 <script>
-/* İlk kareden önce: seçili tema uygulanır (renk sıçraması olmasın) ve açılış ekranı oturum başına bir kez açılır. */
+/* İlk kareden önce: seçili tema uygulanır (renk sıçraması olmasın) ve açılış ekranı oturum başına bir kez açılır.
+   Depo öneki uygulama/40-dizin-depo-durum.js içindeki DEPO_ONEK ile aynı olmalı. */
 (function () {
   var k = document.documentElement;
   try {
-    var t = (JSON.parse(localStorage.getItem('pano.ayarlar')) || {}).tema;
+    var t = (JSON.parse(localStorage.getItem('otomasyon-notlari.ayarlar')) || {}).tema;
     if (t === 'acik' || t === 'koyu') {
       k.setAttribute('data-ilk-tema', k.getAttribute('data-theme') || '');
       k.setAttribute('data-theme', t === 'acik' ? 'light' : 'dark');
@@ -407,7 +408,7 @@ mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
   } catch (e) { /* depo kapalı olabilir */ }
   var goster = true;
   try { goster = !matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* yok say */ }
-  try { if (sessionStorage.getItem('pano.acilis')) goster = false; else sessionStorage.setItem('pano.acilis', '1'); } catch (e) { /* yok say */ }
+  try { if (sessionStorage.getItem('otomasyon-notlari.acilis')) goster = false; else sessionStorage.setItem('otomasyon-notlari.acilis', '1'); } catch (e) { /* yok say */ }
   if (goster) k.classList.add('acilis', 'acilis-var');
 })();
 </script>
@@ -502,12 +503,12 @@ const MODELLER = {};
 const UYGULAMA = {
   ad: 'Otomasyon Notları',
   alt: 'Elektrik, elektronik ve endüstriyel otomasyon',
-  surum: '1.19.0',
+  surum: '1.20.0',
   gelistirici: 'Furkan Çağrı YÜKSEL',
   eposta: '[İLETİŞİM E-POSTASI]',
   premium: {
     kilit: false,                 /* false: bütün içerik açık (geliştirme). Play sürümünde true. */
-    urun: 'pano_premium',         /* Play Console’daki uygulama içi ürün kimliği */
+    urun: 'otomasyon_notlari_premium', /* Play Console’daki uygulama içi ürün kimliği */
     dogrulamaAdresi: ''           /* Satın alma doğrulama sunucusu (yayın öncesi zorunlu) */
   }
 };
@@ -9457,9 +9458,12 @@ const hazirMi = (a) => !!sayfaOf(a);
 const hazirlar = () => VERI.konular.flatMap((k) => k.altlar.filter(hazirMi));
 
 /* ---------- Tarayıcı deposu (yalnızca bu cihaz) ---------- */
+/* localStorage aynı adresteki (fcagriyuksel.github.io) bütün uygulamalarca paylaşılır; anahtarlar bu önekle ayrılır.
+   Erken betik (govde/02-erken-betik.js) aynı öneki ayrıca yazar. */
+const DEPO_ONEK = 'otomasyon-notlari.';
 const DEPO = {
-  oku(k, v) { try { const x = localStorage.getItem('pano.' + k); return x == null ? v : JSON.parse(x); } catch (e) { return v; } },
-  yaz(k, v) { try { localStorage.setItem('pano.' + k, JSON.stringify(v)); } catch (e) { /* depo kapalı olabilir */ } }
+  oku(k, v) { try { const x = localStorage.getItem(DEPO_ONEK + k); return x == null ? v : JSON.parse(x); } catch (e) { return v; } },
+  yaz(k, v) { try { localStorage.setItem(DEPO_ONEK + k, JSON.stringify(v)); } catch (e) { /* depo kapalı olabilir */ } }
 };
 const durum = {
   kayitli: DEPO.oku('kayitli', []),
@@ -10899,7 +10903,7 @@ document.addEventListener('click', (e) => {
   if (d.sifirla) {
     if (d.sifirla === 'evet') {
       durum.kayitli = []; durum.son = null; durum.ilerleme = {}; durum.aramalar = []; durum.hesaplar = {};
-      ['kayitli', 'son', 'ilerleme', 'aramalar', 'hesaplar'].forEach((k) => { try { localStorage.removeItem('pano.' + k); } catch (x) { /* yok say */ } });
+      ['kayitli', 'son', 'ilerleme', 'aramalar', 'hesaplar'].forEach((k) => { try { localStorage.removeItem(DEPO_ONEK + k); } catch (x) { /* yok say */ } });
       durum.sifirlaOnay = false;
       bildir('Veriler sıfırlandı');
     } else {

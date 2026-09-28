@@ -26,7 +26,7 @@ def calistir(ad, komut):
 
 def yayin_guncel():
     print('\n== Yayın dosyaları güncel mi')
-    gecici = pathlib.Path(tempfile.mkdtemp(prefix='pano-kontrol-'))
+    gecici = pathlib.Path(tempfile.mkdtemp(prefix='otomasyon-kontrol-'))
     try:
         derle.derle(gecici)
         damga = lambda t: re.sub(r'\d{12}', 'SURUM', t)

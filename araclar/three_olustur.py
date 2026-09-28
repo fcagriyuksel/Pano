@@ -1,4 +1,4 @@
-"""Three.js’ten yalnızca PANO’nun kullandığı sınıfları içeren küçültülmüş tek modül üretir.
+"""Three.js’ten yalnızca Otomasyon Notları’nın kullandığı sınıfları içeren küçültülmüş tek modül üretir.
 
 Kullanım (depo kökünden; npm ve internet gerekir):
   python3 araclar/three_olustur.py
@@ -29,7 +29,7 @@ DISA = [
 
 kok = pathlib.Path(__file__).resolve().parent.parent
 hedef = kok / 'varliklar' / 'kutuphane' / f'three-{SURUM}'
-gecici = pathlib.Path(tempfile.mkdtemp(prefix='pano-three-'))
+gecici = pathlib.Path(tempfile.mkdtemp(prefix='otomasyon-three-'))
 try:
     calis = lambda *k: subprocess.run(list(k), cwd=gecici, check=True, capture_output=True, text=True)
     calis('npm', 'pack', f'three@{SURUM}')
@@ -38,7 +38,7 @@ try:
     (gecici / 'giris.js').write_text('export {\n  ' + ',\n  '.join(DISA) + "\n} from './package/build/three.module.js';\n", encoding='utf-8')
     hedef.mkdir(parents=True, exist_ok=True)
     calis('npx', '-y', f'esbuild@{ESBUILD}', 'giris.js', '--bundle', '--format=esm', '--minify', '--target=es2019',
-          '--legal-comments=none', f'--banner:js=/* three.js {SURUM} (PANO alt kümesi) · MIT License · https://threejs.org */',
+          '--legal-comments=none', f'--banner:js=/* three.js {SURUM} (Otomasyon Notları alt kümesi) · MIT License · https://threejs.org */',
           f'--outfile={hedef / "three.min.js"}')
     shutil.copy(gecici / 'package' / 'LICENSE', hedef / 'LICENSE')
 finally:

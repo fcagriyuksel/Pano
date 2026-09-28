@@ -1,8 +1,8 @@
 # Otomasyon Notları — proje kılavuzu
 
-Otomasyon Notları (eski adı PANO; depo adı `Pano` kaldı), Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Telefonun ana ekranına eklenen bir PWA’dır ve GitHub Pages’ten yayınlanır. Dil Türkçedir.
+Otomasyon Notları (eski adı PANO), Furkan Çağrı YÜKSEL’in elektrik-elektronik ve endüstriyel otomasyon bilgi notları uygulamasıdır. Telefonun ana ekranına eklenen bir PWA’dır ve GitHub Pages’ten yayınlanır. Dil Türkçedir.
 
-Canlı adres: https://fcagriyuksel.github.io/Pano/ (deponun kökü yayınlanır).
+Depo: `fcagriyuksel/otomasyon-notlari`. Canlı adres: https://fcagriyuksel.github.io/otomasyon-notlari/ (deponun kökü yayınlanır).
 
 Kaynak `kaynak/` klasöründe konu ve türe göre küçük dosyalara bölünmüştür. `araclar/derle.py` bunları birleştirip tek dosyalık `index.html` üretir.
 
@@ -85,6 +85,7 @@ Dosya adlarındaki `NN-` önekleri birleştirme sırasını belirler.
 - Erken betik (`govde/02-erken-betik.js`) seçili temayı `data-theme`’ye yazar; dışarıdan gelen asıl değer `data-ilk-tema`’da saklanır (`temaUygula` bunu okur).
 - Uygulama kodu tek IIFE içindedir; `uygulama/` dosyaları aynı kapsamı paylaşır. Sıra önemlidir: bir dosya, kendinden sonra gelen dosyanın sabitini yükleme anında kullanamaz.
 - Konu dosyaları (`konular/`) genel kapsamdadır. Yardımcı sabit gerekiyorsa dosyayı IIFE içine al; yoksa başka konunun aynı adlı sabitiyle çakışır.
+- `localStorage` ve önbellek (Cache Storage) adres başınadır: `fcagriyuksel.github.io` altındaki bütün uygulamalar aynı depoyu görür. Anahtarlar `otomasyon-notlari.` (`DEPO_ONEK`), önbellekler `otomasyon-notlari-` önekiyle ayrılır. `sw.js` yalnızca kendi önekli önbelleklerini siler; başka önbelleğe dokunma.
 - Metne görünüşü Latin harfe benzeyen Kiril harf karışabilir (“toprakla” içinde “а”); gözle görülmez, aramayı bozar. Derleme artık bunu denetler.
 - Şablonlardaki yer tutucuları (`{{STIL}}`, `__SURUM__` …) yorumlarda bile yazma; derleme her geçtiği yere değer yazar. Derleme artık bunu denetler.
 - Ekran görüntüsü betiğinde sürükleme miktarı 0 ise tarayıcı bunu dokunuş sayar; 3B modelde parça seçilir ve görüntü yanıltır.

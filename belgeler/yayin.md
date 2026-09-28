@@ -46,7 +46,7 @@ kaynak/uygulama/*.js      → tek bir IIFE içinde ('use strict')
 - Betikte geçen her `varliklar/…` yolu diskte var olmalı; yoksa derleme durur.
 - `kaynak/sw.js` içinde `__SURUM__` ve `__DOSYALAR__` tam bir kez geçmeli. Yorumda bile yazma: derleme her geçtiği yere değer yazar.
 - `privacy.html`, `kaynak/gizlilik.html` şablonundan ve `METINLER.gizlilik` metninden üretilir.
-- `sw.js`, `kaynak/sw.js` şablonundan üretilir. Önbellek adı her derlemede değişir (`pano-YYYYAAGGSSDD`). `varliklar/` altındaki bütün `.woff2`, `.png`, `.js` dosyaları kendiliğinden önbellek listesine girer.
+- `sw.js`, `kaynak/sw.js` şablonundan üretilir. Önbellek adı her derlemede değişir (`otomasyon-notlari-YYYYAAGGSSDD`). Etkinleşince yalnızca bu önekle ya da eski `pano-` önekiyle başlayan önbellekleri siler; aynı adresteki başka uygulamalara dokunmaz. `varliklar/` altındaki bütün `.woff2`, `.png`, `.js` dosyaları kendiliğinden önbellek listesine girer.
 - `--cikti DIR` başka klasöre derler. Testler bunu kullanır ve depodaki yayın dosyalarına dokunmaz.
 
 ## Telefonda güncelleme
@@ -62,4 +62,4 @@ Altyapı hazır ama kapalı.
 - `kaynak/ortak/30-ayarlar.js`: `premium.kilit = false`. `python3 araclar/derle.py --kilit` kilidi açık derler.
 - `eposta: '[İLETİŞİM E-POSTASI]'`: kullanıcı ayrı bir adres açacak.
 - Mağaza dosyaları (magaza/) şimdilik depoda değil, kullanıcının bilgisayarındaki proje zip’inde. Metinler güncel; ekran görüntüleri ve tanıtım görseli eski sürümden kaldı, yayından önce yenilenmeli.
-- Play için notlar (Eylül 2026 itibarıyla): hedef API 36; yeni kişisel hesapta 12 test kullanıcısıyla 14 gün kapalı test; dijital içerikte Play Billing zorunlu, satın alma 72 saat içinde sunucu tarafında onaylanmalı (doğrulama sunucusu gerekir); TWA için alan adının kökünde `assetlinks.json` gerekir (github.io/Pano alt yolu uygun değil, alan adı gerekir).
+- Play için notlar (Eylül 2026 itibarıyla): hedef API 36; yeni kişisel hesapta 12 test kullanıcısıyla 14 gün kapalı test; dijital içerikte Play Billing zorunlu, satın alma 72 saat içinde sunucu tarafında onaylanmalı (doğrulama sunucusu gerekir); TWA için alan adının kökünde `assetlinks.json` gerekir (github.io/otomasyon-notlari alt yolu uygun değil, alan adı gerekir).

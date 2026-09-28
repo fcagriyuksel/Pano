@@ -52,9 +52,12 @@ const hazirMi = (a) => !!sayfaOf(a);
 const hazirlar = () => VERI.konular.flatMap((k) => k.altlar.filter(hazirMi));
 
 /* ---------- Tarayıcı deposu (yalnızca bu cihaz) ---------- */
+/* localStorage aynı adresteki (fcagriyuksel.github.io) bütün uygulamalarca paylaşılır; anahtarlar bu önekle ayrılır.
+   Erken betik (govde/02-erken-betik.js) aynı öneki ayrıca yazar. */
+const DEPO_ONEK = 'otomasyon-notlari.';
 const DEPO = {
-  oku(k, v) { try { const x = localStorage.getItem('pano.' + k); return x == null ? v : JSON.parse(x); } catch (e) { return v; } },
-  yaz(k, v) { try { localStorage.setItem('pano.' + k, JSON.stringify(v)); } catch (e) { /* depo kapalı olabilir */ } }
+  oku(k, v) { try { const x = localStorage.getItem(DEPO_ONEK + k); return x == null ? v : JSON.parse(x); } catch (e) { return v; } },
+  yaz(k, v) { try { localStorage.setItem(DEPO_ONEK + k, JSON.stringify(v)); } catch (e) { /* depo kapalı olabilir */ } }
 };
 const durum = {
   kayitli: DEPO.oku('kayitli', []),

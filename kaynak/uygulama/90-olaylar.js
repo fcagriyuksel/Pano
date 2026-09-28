@@ -26,7 +26,7 @@ document.addEventListener('click', (e) => {
   if (d.sifirla) {
     if (d.sifirla === 'evet') {
       durum.kayitli = []; durum.son = null; durum.ilerleme = {}; durum.aramalar = []; durum.hesaplar = {};
-      ['kayitli', 'son', 'ilerleme', 'aramalar', 'hesaplar'].forEach((k) => { try { localStorage.removeItem('pano.' + k); } catch (x) { /* yok say */ } });
+      ['kayitli', 'son', 'ilerleme', 'aramalar', 'hesaplar'].forEach((k) => { try { localStorage.removeItem(DEPO_ONEK + k); } catch (x) { /* yok say */ } });
       durum.sifirlaOnay = false;
       bildir('Veriler sıfırlandı');
     } else {

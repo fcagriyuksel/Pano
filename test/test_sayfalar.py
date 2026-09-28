@@ -23,7 +23,7 @@ a = arg.parse_args()
 
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-gecici = pathlib.Path(tempfile.mkdtemp(prefix='pano-test-'))
+gecici = pathlib.Path(tempfile.mkdtemp(prefix='otomasyon-test-'))
 derle.derle(gecici)
 os.symlink(kok / 'varliklar', gecici / 'varliklar')
 
@@ -48,7 +48,7 @@ try:
             # Açılış ekranı kendiliğinden kalkmalı ve giriş animasyonu bitmeli
             try: pg.wait_for_function("!document.getElementById('acilis') && !document.documentElement.classList.contains('acilis')", timeout=4000)
             except Exception: sorunlar.append((tema, 'açılış', 'açılış ekranı 4 sn içinde kalkmadı'))
-            pg.evaluate("localStorage.setItem('pano.uyariOnay','true')")
+            pg.evaluate("localStorage.setItem('otomasyon-notlari.uyariOnay','true')")
             rotalar = pg.evaluate("() => { const r = []; for (const k of VERI.konular) { r.push(k.id); for (const x of k.altlar) if (x.sayfa) r.push(x.id); } return r; }")
             if a.sayfa: rotalar = [r for r in rotalar if r in a.sayfa.split(',')]
             for r in rotalar + ['ana', 'ara', 'kaydedilenler', 'ayarlar', 'hakkinda', 'gizlilik']:

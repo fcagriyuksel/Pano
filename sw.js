@@ -1,6 +1,9 @@
 /* Otomasyon Notları çevrimdışı çalışma. İnternet varken her açılışta güncel index.html alınır.
    Bu dosya şablondur: derle.py sürüm damgasını ve önbelleğe alınacak dosya listesini yerine yazar. */
-const KABUK = 'pano-202609280827';
+/* Önbellek adları uygulamanın önekini taşır. Aynı adresteki (fcagriyuksel.github.io) başka uygulamaların önbelleği silinmesin diye
+   yalnızca bu önekle ya da eski adla (pano-) başlayanlar temizlenir. */
+const ONEK = 'otomasyon-notlari-';
+const KABUK = ONEK + '202609280844';
 const DOSYALAR = ["./", "./index.html", "./manifest.webmanifest", "./privacy.html", "./varliklar/kutuphane/three-0.186.1/three.min.js", "./varliklar/simgeler/apple-touch-icon.png", "./varliklar/simgeler/icon-192.png", "./varliklar/simgeler/icon-512.png", "./varliklar/simgeler/icon-maskable-512.png", "./varliklar/yazitipleri/barlow-condensed-latin-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-700-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/barlow-condensed-latin-ext-700-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-mono-latin-ext-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-600-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-400-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-500-normal.woff2", "./varliklar/yazitipleri/ibm-plex-sans-latin-ext-600-normal.woff2"];
 
 self.addEventListener('install', (e) => {
@@ -10,7 +13,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK).map((k) => caches.delete(k))))
+      .then((ks) => Promise.all(ks.filter((k) => k !== KABUK && (k.startsWith(ONEK) || k.startsWith('pano-'))).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
