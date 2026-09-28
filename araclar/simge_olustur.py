@@ -4,7 +4,7 @@ Kullanım (depo kökünden):
   python3 araclar/simge_olustur.py              # icon-192, icon-512, icon-maskable-512, apple-touch-icon
   python3 araclar/simge_olustur.py --onizle DIR # ayrıca yuvarlak ve kare maskeli önizleme kaydeder
 
-Simge: sarı bara → sigorta (IEC 60617 sembolü, içi enerjili) → bağlantı ucu.
+Simge: not defteri sayfası, sarı ayraç; ortadaki satır açık kontağa (IEC 60617) ve sarı bağlantı ucuna dönüşür.
 Açılış ekranındaki çizim (kaynak/govde/03-acilis.html) aynı koordinatları kullanır; biri değişirse öbürünü de güncelle.
 Ayrıntılı adımlar: belgeler/simge-ve-acilis.md
 Gerekli: pip install playwright (ortamda Chromium varsa kurulum gerekmez).
@@ -27,19 +27,20 @@ def simge(px, olcek):
   <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC844"/><stop offset="1" stop-color="#EBA414"/></linearGradient>
 </defs>
 <rect width="512" height="512" fill="url(#z)"/>
-<g transform="translate(256 256) scale({olcek}) translate(-260 -256)">
-  <rect x="120" y="140" width="48" height="232" rx="12" fill="url(#b)"/>
-  <circle cx="144" cy="178" r="9" fill="{ZEMIN}"/><circle cx="144" cy="334" r="9" fill="{ZEMIN}"/>
-  <path d="M168 256H352" stroke="{KAGIT}" stroke-width="18"/>
-  <rect x="206" y="218" width="112" height="76" rx="10" fill="{ZEMIN}" stroke="{KAGIT}" stroke-width="18"/>
-  <path d="M215 256H309" stroke="{SARI}" stroke-width="14"/>
-  <circle cx="372" cy="256" r="20" fill="none" stroke="{KAGIT}" stroke-width="16"/>
+<g transform="translate(256 256) scale({olcek}) translate(-256 -256)">
+  <rect x="132" y="100" width="248" height="312" rx="22" fill="{KAGIT}"/>
+  <path d="M300 100h44v96l-22-18-22 18z" fill="url(#b)"/>
+  <g fill="none" stroke="{ZEMIN}" stroke-linecap="round">
+    <path d="M176 176H268M176 320H300M176 248H250M282 248H316" stroke-width="18"/>
+    <path d="M250 222V274M282 222V274" stroke-width="14"/>
+  </g>
+  <circle cx="330" cy="248" r="14" fill="{SARI}" stroke="{ZEMIN}" stroke-width="8"/>
 </g>
 </svg>'''
 
 
-# İşaretin uç noktası merkezden en fazla ≈ 182 birim uzakta: maskeli simgede 1,0 ölçek güvenli daireye (204) sığar.
-DOSYALAR = [('icon-192.png', 192, 1.12), ('icon-512.png', 512, 1.12), ('icon-maskable-512.png', 512, 1.0), ('apple-touch-icon.png', 180, 1.12)]
+# Sayfanın köşesi merkezden ≈ 191 birim uzakta (yuvarlatma dahil): maskeli simgede 1,0 ölçek güvenli daireye (204) sığar.
+DOSYALAR = [('icon-192.png', 192, 1.08), ('icon-512.png', 512, 1.08), ('icon-maskable-512.png', 512, 1.0), ('apple-touch-icon.png', 180, 1.08)]
 
 from playwright.sync_api import sync_playwright
 
@@ -56,7 +57,7 @@ with sync_playwright() as p:
         pg = b.new_page(viewport={'width': 860, 'height': 260})
         kutu = lambda px, olcek, r: f'<div style="border-radius:{r};overflow:hidden">{simge(px, olcek)}</div>'
         pg.set_content('<body style="margin:0;padding:24px;background:#8A8F94;display:flex;gap:24px;align-items:flex-start">'
-                       + kutu(200, 1.0, '50%') + kutu(200, 1.12, '44px') + kutu(96, 1.12, '22px') + kutu(48, 1.0, '50%') + kutu(32, 1.12, '7px') + '</body>')
+                       + kutu(200, 1.0, '50%') + kutu(200, 1.08, '44px') + kutu(96, 1.08, '22px') + kutu(48, 1.0, '50%') + kutu(32, 1.08, '7px') + '</body>')
         pg.screenshot(path=str(klasor / 'simge_onizleme.png'))
         print('önizleme:', klasor / 'simge_onizleme.png')
     b.close()

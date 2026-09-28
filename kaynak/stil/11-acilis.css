@@ -1,31 +1,39 @@
-/* Açılış ekranı: bara → iletken → sigorta çizilir, akım geçer, sigorta enerjilenir, uygulama adı belirir.
-   Çizim simge_olustur.py ile aynı koordinatları kullanır. Ekran CSS ile kendi kendine kapanır; JS yalnızca DOM’dan kaldırır. */
-.acilis-ekran{display:none;position:fixed;inset:0;z-index:50;overflow:hidden;background:var(--paper);align-items:center;justify-content:center;padding-bottom:8vh;cursor:pointer;animation:acilis-kapan .35s ease 1.35s forwards}
+/* Açılış ekranı: defter sayfası belirir, satırlar yazılır, orta satır kontağa dönüşür, uç yanar, ayraç düşer, uygulama adı belirir.
+   Çizim simge_olustur.py ile aynı koordinatları kullanır. Sayfa temanın mürekkep rengindedir: açık temada koyu, koyu temada açık sayfa.
+   Ekran CSS ile kendi kendine kapanır; JS yalnızca DOM’dan kaldırır. */
+.acilis-ekran{display:none;position:fixed;inset:0;z-index:50;overflow:hidden;background:var(--paper);align-items:center;justify-content:center;padding-bottom:8vh;cursor:pointer;animation:acilis-kapan .35s ease 1.55s forwards}
 .acilis-var .acilis-ekran{display:flex}
 .acilis-ekran.atla{animation:acilis-atla .2s ease forwards}
 .acilis-ic{display:flex;flex-direction:column;align-items:center;gap:12px}
-.acilis-isaret{display:block;width:164px;height:auto;margin-bottom:10px;overflow:visible}
-.a-bara{fill:var(--accent);transform-box:fill-box;transform-origin:center;animation:acilis-bara .45s cubic-bezier(.2,.8,.2,1) both}
-.a-bara circle{fill:var(--paper)}
-.a-tel{fill:none;stroke:var(--ink);stroke-width:18;stroke-dasharray:184;stroke-dashoffset:184;animation:acilis-ciz .4s cubic-bezier(.4,0,.2,1) .25s forwards}
-.a-akim{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;stroke-dasharray:26 400;stroke-dashoffset:26;animation:acilis-akim .5s linear .7s forwards}
-.a-govde{fill:var(--paper);stroke:var(--ink);stroke-width:18;stroke-dasharray:360;stroke-dashoffset:360;animation:acilis-ciz .45s cubic-bezier(.4,0,.2,1) .4s forwards}
-.a-eleman{fill:none;stroke:var(--accent);stroke-width:14;stroke-dasharray:94;stroke-dashoffset:94;animation:acilis-ciz .25s ease-out .8s forwards}
-.a-uc{fill:none;stroke:var(--ink);stroke-width:16;transform-box:fill-box;transform-origin:center;animation:acilis-uc .3s cubic-bezier(.3,1.6,.5,1) .6s both}
-.acilis-ad{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1;letter-spacing:.04em;padding-left:.04em;color:var(--ink);animation:acilis-ad .6s cubic-bezier(.2,.7,.2,1) .35s both}
+.acilis-isaret{display:block;width:132px;height:auto;margin-bottom:12px;overflow:visible}
+.a-sayfa{fill:var(--ink);transform-box:fill-box;transform-origin:50% 100%;animation:acilis-sayfa .45s cubic-bezier(.2,.8,.2,1) both}
+.a-satir,.a-kontak{fill:none;stroke:var(--paper);stroke-linecap:round}
+.a-satir{stroke-width:18}
+/* Çizgi boyu + 20: yuvarlak uç, çizim başlamadan görünmesin. Boy değişirse bu değerleri de güncelle. */
+.a-s1{stroke-dasharray:92 400;stroke-dashoffset:112;animation:acilis-ciz .22s ease-out .3s forwards}
+.a-s2{stroke-dasharray:74 400;stroke-dashoffset:94;animation:acilis-ciz .18s ease-out .46s forwards}
+.a-s3{stroke-dasharray:34 400;stroke-dashoffset:54;animation:acilis-ciz .1s ease-out .7s forwards}
+.a-s4{stroke-dasharray:124 400;stroke-dashoffset:144;animation:acilis-ciz .26s ease-out .56s forwards}
+.a-kontak{stroke-width:14;transform-box:fill-box;transform-origin:center;animation:acilis-kontak .2s cubic-bezier(.3,1.5,.5,1) .6s both}
+.a-uc{fill:var(--accent);stroke:var(--ink);stroke-width:8;transform-box:fill-box;transform-origin:center;animation:acilis-uc .3s cubic-bezier(.3,1.6,.5,1) .78s both}
+.a-halka{fill:none;stroke:var(--accent);stroke-width:6;opacity:0;transform-box:fill-box;transform-origin:center;animation:acilis-halka .6s ease-out .92s}
+.a-ayrac{fill:var(--accent);transform-box:fill-box;transform-origin:50% 0;animation:acilis-ayrac .45s cubic-bezier(.3,1.4,.5,1) .88s both}
+.acilis-ad{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1;white-space:nowrap;letter-spacing:.04em;padding-left:.04em;color:var(--ink);animation:acilis-ad .6s cubic-bezier(.2,.7,.2,1) .35s both}
 .acilis-alt{font-size:13px;color:var(--muted);animation:acilis-belir .5s ease .6s both}
-.acilis .app>*{animation:acilis-gir .55s cubic-bezier(.2,.7,.2,1) 1.5s both}
-.acilis .app>:nth-child(1){animation-delay:1.2s}
-.acilis .app>:nth-child(2){animation-delay:1.26s}
-.acilis .app>:nth-child(3){animation-delay:1.32s}
-.acilis .app>:nth-child(4){animation-delay:1.38s}
-.acilis .app>:nth-child(5){animation-delay:1.44s}
-.acilis .alt-menu{animation:acilis-menu .5s cubic-bezier(.2,.7,.2,1) 1.3s both}
-@keyframes acilis-bara{from{transform:scaleY(0)}}
+.acilis .app>*{animation:acilis-gir .55s cubic-bezier(.2,.7,.2,1) 1.7s both}
+.acilis .app>:nth-child(1){animation-delay:1.4s}
+.acilis .app>:nth-child(2){animation-delay:1.46s}
+.acilis .app>:nth-child(3){animation-delay:1.52s}
+.acilis .app>:nth-child(4){animation-delay:1.58s}
+.acilis .app>:nth-child(5){animation-delay:1.64s}
+.acilis .alt-menu{animation:acilis-menu .5s cubic-bezier(.2,.7,.2,1) 1.5s both}
+@keyframes acilis-sayfa{from{opacity:0;transform:translateY(14px) scale(.9)}}
 @keyframes acilis-ciz{to{stroke-dashoffset:0}}
-@keyframes acilis-akim{to{stroke-dashoffset:-184}}
-@keyframes acilis-uc{from{transform:scale(0)}}
-@keyframes acilis-ad{from{opacity:0;letter-spacing:.3em;padding-left:.3em}}
+@keyframes acilis-kontak{from{opacity:0;transform:scaleY(.2)}}
+@keyframes acilis-uc{from{opacity:0;transform:scale(.2)}}
+@keyframes acilis-halka{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(3)}}
+@keyframes acilis-ayrac{from{opacity:0;transform:scaleY(.2)}}
+@keyframes acilis-ad{from{opacity:0;letter-spacing:.16em;padding-left:.16em}}
 @keyframes acilis-belir{from{opacity:0;transform:translateY(6px)}}
 @keyframes acilis-kapan{to{opacity:0;visibility:hidden}}
 @keyframes acilis-atla{to{opacity:0;visibility:hidden}}
