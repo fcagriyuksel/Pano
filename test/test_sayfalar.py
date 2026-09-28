@@ -70,6 +70,15 @@ try:
                     for d in pg.locator('[data-model-olay]').all():
                         try: d.click(timeout=3000); pg.wait_for_timeout(80)
                         except Exception as e: sorunlar.append((tema, r, 'model düğmesi', str(e)[:80]))
+                    # Titreme: model görünürken durum metni bir değere geri dönüyorsa (A → B → A) tik hedefe oturmuyor demektir.
+                    # Düzenli değişim (ör. azalan mesafe) ve sabit metin sorun sayılmaz.
+                    modeller.first.scroll_into_view_if_needed(); pg.wait_for_timeout(800)
+                    if pg.evaluate("""new Promise((r) => {
+                        const d = [...document.querySelectorAll('[data-model-kutu] .sim-durum')], l = d.map(() => []); let n = 0;
+                        const f = () => { d.forEach((e, i) => l[i].push(e.textContent)); if (++n < 12) requestAnimationFrame(f);
+                          else r(l.some((a) => a.some((v, j) => j > 1 && v !== a[j - 1] && a.slice(0, j - 1).includes(v)))); };
+                        requestAnimationFrame(f); })"""):
+                        sorunlar.append((tema, r, 'model durumu titriyor (tik hedefe oturmuyor)'))
                 if a.ekran:
                     klasor = pathlib.Path(a.ekran); klasor.mkdir(parents=True, exist_ok=True)
                     semalar = pg.locator('.bolum svg.sema:not([data-sim-kutu] svg)')

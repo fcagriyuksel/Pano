@@ -50,6 +50,7 @@ Modeli bir IIFE içine yaz; yardımcı sabitler genel kapsama taşmasın.
           kok,
           parcalar: [{ nesne: govde, isaret: [0, 20, 15], patlat: [0, 0, 30] }],   // parcalar listesiyle aynı sıra
           etiketYerleri: [{ nesne: govde, konum: [0, 25, 15], parca: 0 }],          // etiketler listesiyle aynı sıra
+          cerceve: [[0, 0, 80]],                                                    // isteğe bağlı: hareketli parçaların ulaştığı uçlar da kadraja girer
           uygula(s) { /* durumu sahneye yansıt: dönüş, renk … */ }
         };
       }
@@ -108,6 +109,8 @@ Geometriler z ekseni boyunca, z = 0 merkezli üretilir; `position` ile yerleşti
 - **Örtülme payı küçük ve sabit olmalı.** Numara ve etiketin arkada kalıp kalmadığı ışın testiyle bulunur. Pay mesafeye oranlı olursa (ör. %2) uzak kamerada 2 mm’lik bir kapağın arkasındaki numara görünür kalır. Pay mm cinsinden sabittir (numara 0,3 mm, etiket 0,5 mm); numarayı yüzeyin 0,05–0,1 mm dışına koy.
 - **Belgelenen her alan çalışmalı.** `durum().uyari` bir süre çalışma zamanında hiç okunmadı; uyarılar düz görünüyordu. Model biçimine yeni bir alan eklersen hem bu rehbere hem `86-model.js`’e ekle ve bir kez gözle dene.
 - **Gösterge kesitte de görünmeli.** Asenkron motorda akımı gösteren renkler önce yalnızca oluk iletkenlerindeydi; kesitte iletkenler dişlerin arkasında kaldı, hiçbir şey görünmedi. Durumu gösteren renk ya da hareketi birleşik, parçalı ve kesitli görünümde de görünen parçalara da uygula (orada sargı başları da renklendi).
+- **Düzlemin üstündeki nokta.** Numara ve etiketleri kesitte görünsün diye kesit düzlemine koyarız. Döndürülmüş grupta yerel x = 0 olan nokta dünyada z ≈ 1e−15 çıkar ve kesilen tarafta sayılırdı; pnömatik modelde bazı etiketler kayboldu. `kesik()` artık 0,01 mm pay bırakır.
+- **`tik` hedefte titremesin.** Pnömatik modelde `hedef > x ? min(1, x + d) : max(0, x − d)` yazılmıştı: x hedefe eşit olunca ikinci dal çalışıp değeri geri çekiyor, her karede durum değişiyor, döngü hiç durmuyordu. Sınır olarak hedefin kendisini kullan: `hedef > x ? min(hedef, x + d) : max(hedef, x − d)`. Sayfa testi artık bunu yakalar (“model durumu titriyor”).
 - **Testte yavaş kare.** Sayfa testi Chromium’u yazılımsal WebGL ile (swiftshader) çalıştırır. Sürekli animasyonda kare 100–350 ms sürer ve Playwright tıklamadan önce düğmenin iki kare boyunca kıpırdamadığını bekler; tıklama süresi 1 sn olunca test yanlışlıkla hata verdi. Model düğmelerinde süre 3 sn’dir. Telefondaki yükü ölçmek için CDP profiline bak (kontaktör vınlarken JS kare başına yaklaşık 8 ms).
 - **Işık.** Işık kameraya bağlıdır. Yoğunluğu artırırsan kameraya dik bakan açık renkli yüzler beyaza kaçar; önden bakarak kontrol et.
 

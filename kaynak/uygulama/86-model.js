@@ -394,6 +394,7 @@ function modelBaslat(T, o) {
       const k = n.geometry.boundingBox;
       for (const x of [k.min.x, k.max.x]) for (const yy of [k.min.y, k.max.y]) for (const z of [k.min.z, k.max.z]) koseler.push(new T.Vector3(x, yy, z).applyMatrix4(n.matrixWorld));
     });
+    (m.cerceve || []).forEach((c) => koseler.push(new T.Vector3(...c)));   // hareketli parçaların ulaştığı uçlar (ör. ileri çıkan kol)
     const kutu = new T.Box3().setFromPoints(koseler), merkez = kutu.getCenter(new T.Vector3());
     let d = kutu.getBoundingSphere(new T.Sphere()).radius / Math.sin((kamera.fov * Math.PI) / 360);
     for (let i = 0; i < 4; i++) {
@@ -411,8 +412,9 @@ function modelBaslat(T, o) {
 
   const kesitPlanlari = modelKesitleri(o.tur).map((k) => k.planlar.map(([a, b, c, d]) => new T.Plane(new T.Vector3(a, b, c), d)));
   const planlar = () => kesitPlanlari[s.kesit - 1] || [];
-  /* Işın testi kesimi bilmez: kesit açıkken kesilip atılan bölgeye (bütün planların arkası) düşen vuruşlar yok sayılır. */
-  const kesik = (nk) => s.kesit > 0 && planlar().every((pl) => pl.distanceToPoint(nk) < 0);
+  /* Işın testi kesimi bilmez: kesit açıkken kesilip atılan bölgeye (bütün planların arkası) düşen vuruşlar yok sayılır.
+     0,01 mm pay: düzlemin tam üstündeki nokta (ör. döndürülmüş grupta yerel x = 0) yuvarlama hatasıyla kesik sayılmasın. */
+  const kesik = (nk) => s.kesit > 0 && planlar().every((pl) => pl.distanceToPoint(nk) < -0.01);
   const gorunenVurus = (liste) => liste.find((x) => x.object.visible && x.object.material.opacity > 0.5 && !kesik(x.point));
   let p = s.patlat ? 1 : 0, kesitUygulanan = null, seciliUygulanan = null;
 

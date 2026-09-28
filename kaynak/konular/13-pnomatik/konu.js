@@ -4,6 +4,7 @@ VERI.konular.push({
   ozet: 'Valf, silindir, hava hazırlama',
   giris: 'Basınçlı havayla doğrusal ve döner hareket üretilir. Elektrik tarafı valf bobinlerini sürer, sensörler silindirin konumunu PLC’ye bildirir.',
   altlar: [
+    { id: 'pnomatik-ic-yapi', kod: '3B', ad: 'Silindir ve 5/2 valf: iç yapı (3B)', alt: 'Makara, piston, sensörler · hava yolu', sayfa: 'pnomatik-ic-yapi' },
     { id: 'pnomatik-valf', kod: '5/2', ad: 'Valf tipleri ve sembolleri', alt: '3/2, 5/2, 5/3 · monostabil, bistabil · simülasyon', sayfa: 'pnomatik-valf' },
     { id: 'pnomatik-silindir', kod: 'Ø', ad: 'Silindir ve kuvvet', alt: 'Tek, çift etkili · kuvvet hesabı · sensör', sayfa: 'pnomatik-silindir' },
     { id: 'hava-hazirlama', kod: 'FRL', ad: 'Hava hazırlama', alt: 'Filtre, regülatör, kapatma valfi · tüketim', sayfa: 'hava-hazirlama' },
@@ -12,6 +13,36 @@ VERI.konular.push({
 });
 
 Object.assign(VERI.sayfalar, {
+  'pnomatik-ic-yapi': {
+    baslik: 'Silindir ve valfin iç yapısı',
+    giris: '5/2 valfin içindeki makara, basınçlı havayı silindirin bir tarafına verirken öbür tarafı egzoza açar. Piston bu basınç farkıyla hareket eder; pistondaki mıknatıs konum sensörlerini tetikler.',
+    etiketler: ['3B model', 'ISO 15552', 'ISO 5599', '5/2 monostabil'],
+    bolumler: [
+      { id: 'model', kisa: '3B model', baslik: 'Parçalar', bloklar: [
+        { tip: 'model', tur: 'pnomatik-silindir' }
+      ]},
+      { id: 'calisma', kisa: 'Çalışma', baslik: 'Bir çevrim', bloklar: [
+        { tip: 'adimlar', satirlar: [
+          'Y1 enerjisiz: yay makarayı sola iter. 1→2 açık, kol tarafı basınçlı; silindir geride durur. 4→5 açık, arka oda egzoza açık.',
+          'Y1’e sinyal gelir: bobin pilot valfi açar, 1’den alınan pilot hava makarayı sağa iter.',
+          '1→4 açılır, arka oda basınçlanır; 2→3 açılır, kol tarafındaki hava egzozdan çıkar. Silindir ileri gider.',
+          'Piston ileri konuma gelince mıknatıs B2’yi tetikler; PLC bir sonraki adıma geçer.',
+          'Sinyal kesilince yay makarayı geri iter; silindir geri döner, B1 algılar.'
+        ]},
+        { tip: 'not', metin: 'Kuvvet: F = p × A. Ø32 silindirde 6 bar ile ileri kuvvet yaklaşık 480 N, geri kuvvet (kol alanı çıkar, Ø12 kol) yaklaşık 415 N’dir; sürtünme bunu biraz azaltır. Hesap için “Silindir ve kuvvet” sayfasına bak.' }
+      ]},
+      { id: 'hatalar', kisa: 'Hatalar', baslik: 'Sık yapılan hatalar', bloklar: [
+        { tip: 'hatalar', hatalar: [
+          ['Kilitli manuel butonu basılı bırakmak', 'Valf PLC sinyalinden bağımsız kalır; PLC silindiri durduramaz. Doğrusu: manuel butonu yalnızca arıza ararken kullan, sonra geri al.'],
+          ['Hava kesilince silindirin yerinde kalacağını sanmak', 'Basınç düşünce yük kolu itebilir; dikey silindirde yük düşer. Doğrusu: yük tutma gereken yerde kilitli silindir ya da pilot kumandalı çek valf.'],
+          ['Sensörü kanala gevşek takmak', 'Titreşimle kayar; silindir yerine geldiği hâlde sinyal gelmez. Doğrusu: sensörü uç konumda ayarla, vidasını sık.']
+        ]}
+      ]},
+      { id: 'parcalar', kisa: 'Parçalar', baslik: 'Birlikte kullanılır', bloklar: [
+        { tip: 'parcalar', parcalar: ['Hava hazırlama ünitesi', 'Hız ayar (kısma) valfi', 'Silindir sensörü', 'Valf adası'] }
+      ]}
+    ]
+  },
   'pnomatik-valf': {
     baslik: 'Valf tipleri ve sembolleri',
     giris: 'Valf, basınçlı havanın yolunu değiştirir. Adı iki sayıdan oluşur: bağlantı ağzı sayısı / konum sayısı. 5/2 valf, 5 ağızlı ve 2 konumludur; çift etkili silindiri sürer.',
